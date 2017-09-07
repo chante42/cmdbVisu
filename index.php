@@ -1,22 +1,66 @@
-<html>
+	<html>
 <header>
 	<link rel="Stylesheet" type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js" target="_blank">
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script> 
-	<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script> 
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> 
-	<style>
-		h1 { text-align: center; font-size: 30px; }
-		#myTable thead th {  background-color: #6495ED; color : white ;}
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.js"></script>
+   <style>
+      h1 { text-align: center; font-size: 30px; }
+      #myTable thead th {  background-color: #6495ED; color : white ;}
+      td.details-control {
+        background: url(details_open.png) no-repeat center center;
+        cursor: pointer;
+      }
+      tr.shown td.details-control {
+        background: url(details_close.png) no-repeat center center;
+      }             
+   </style>
 
-		
-	</style>
 </header>
 <body>
 	<script>
+
+		/*
+			 Formatting function for row details - modify as you need 
+		*/
+
+		function format ( d ) {
+		  console.log("full info");
+		  // `d` is the original data object for the row
+		  return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+		      '<tr>'+
+		          '<td>Sauvegarde:</td>'+
+		          '<td>'+d.name+'</td>'+
+		      '</tr>'+
+		      '<tr>'+
+		          '<td>Supervision:</td>'+
+		          '<td>'+d.extn+'</td>'+
+		      '</tr>'+
+		      '<tr>'+
+		          '<td>Load Balancer:</td>'+
+		          '<td>And any further details here (images etc)...</td>'+
+		      '</tr>'+
+		  '</table>';
+		}
+
 		$(document).ready(function() {  
-		    $('#myTable').DataTable( {  
+		    var table = $('#myTable').DataTable( {  
         		lengthMenu: [[17, 25, 50, -1], [17, 25, 50, "All"]],
-    
+    			keys : true,
+              	colReorder: true,
+				dom: 'Bfrtip',
+				buttons: [
+					{
+					    extend: 'copy',
+					    text: '<u>C</u>opy',
+					    key: {
+					        key: 'c',
+					        altKey: true
+					    }
+					},              
+					'excel', 'pdf'
+				],
 		        initComplete: function () {  
 		            this.api().columns().every( function () {  
 		                var column = this;  
@@ -37,8 +81,26 @@
 		                } );  
 		            } );  
 		        }  
-		    } );  
+		    } ); // fin table variable  
+			table.buttons().container()
+				.appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
 
+				// Add event listener for opening and closing details
+				$('#myTable tbody').on('click', 'td.details-control', function () {
+				var tr = $(this).closest('tr');
+				var row = table.row( tr );
+
+				if ( row.child.isShown() ) {
+				  // This row is already open - close it
+				  row.child.hide();
+				  tr.removeClass('shown');
+				}
+				else {
+				  // Open this row
+				  row.child( format(row.data()) ).show();
+				  tr.addClass('shown');
+				}
+			} );
 
 		} );  
 	</script>
@@ -46,6 +108,18 @@
 <h1>CMDB : Liste des assets et des serveurs </h1>
 <?php
 
+   //
+   // ReadBackupVeeam
+   // 
+	function ReadBackupVeeam() {
+
+		return;
+	}
+
+
+	//
+	// MAIN
+	//
 	$xml_data = '<?xml version="1.0" encoding="UTF-8"?>
 	         <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:name="Name_space">
 	   <soapenv:Header/>
@@ -106,7 +180,9 @@
  		if (stripos($data, '<Fieldname') !== false) {
  			$ligne = str_replace("<Fieldname ", "<tr>", 		$data);
 	 		$ligne = str_replace("/>", "</th></tr>\n", 	$ligne);
-	 		$ligne = str_replace("_0=", "<th>", 		$ligne);
+	 		// insertion ligne detail
+        	$ligne = str_replace("_0=", "<th class='details-control sorting_disabled' aria-label></th><th>",                        $ligne);
+	 		//$ligne = str_replace("_0=", "<th>", 		$ligne);
 	 		$ligne = str_replace("_1=", "</th><th>", 	$ligne);
 	 		$ligne = str_replace("_2=", "</th><th>", 	$ligne);
 	 		$ligne = str_replace("_3=", "</th><th>", 	$ligne);
@@ -126,7 +202,8 @@
  		if (stripos($data, '<row') !== false) {
 	 		$ligne = str_replace("<row ", "<tr>", 		$data);
 	 		$ligne = str_replace("/>", "</td></tr>", 	$ligne);
-	 		$ligne = str_replace("_0=", "<td>", 		$ligne);
+	 		// insertion ligne detail
+	 		$ligne = str_replace("_0=", "<td class='details-control'></td><td>",                        $ligne);
 	 		$ligne = str_replace("_1=", "</td><td>", 	$ligne);
 	 		$ligne = str_replace("_2=", "</td><td>", 	$ligne);
 	 		$ligne = str_replace("_3=", "</td><td>", 	$ligne);
