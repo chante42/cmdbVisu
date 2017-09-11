@@ -1,0 +1,191 @@
+ <html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="Stylesheet" type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js" target="_blank">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script> 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.css"/>
+ 
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.1/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.1/js/buttons.print.min.js"></script>
+
+  
+    <style>
+      h1 { text-align: center; font-size: 30px; }
+      
+      table.dataTable thead th {  background-color: #6495ED; color : white ;}
+      td.details-control {
+        background: url(details_open.png) no-repeat center center;
+        cursor: pointer;
+      }
+      tr.shown td.details-control {
+        background: url(details_close.png) no-repeat center center;
+      }             
+    </style>
+</head>
+<body>
+    <h1>CMDB : Liste des assets et des serveurs JSON </h1>
+
+    <script>
+            /* Formatting function for row details - modify as you need */
+        function format ( d ) {
+            // `d` is the original data object for the row
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+                '<tr>'+
+                    '<td>Full name:</td>'+
+                    '<td>'+d.Nom+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td>spécification:</td>'+
+                    '<td> CPU MEM disk'+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td>stockage SAN :</td>'+
+                    '<td> baie : '+d.storage+' alloué : '+d.allocated+' utilisé '+d.used+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td>sauvegarde:</td>'+
+                    '<td>TSM :'+d.storage+' - '+d.allocated+' - '+d.used+'</td>'+
+                    '<td>Veeam :'+d.storage+' - '+d.allocated+' - '+d.used+'</td>'+
+                '</tr>'+
+            '</table>';
+        }
+         
+        $(document).ready(function() {
+            var printCounter = 0;
+
+            // Append a caption to the table before the DataTables initialisation
+           $('#example').append('<caption style="caption-side: bottom">A fictional company\'s staff table.</caption>');
+ 
+            var table = $('#example').DataTable( {
+                //"ajax": "../data/result.json",
+                "ajax": "../data/dataTable.json",
+                "columns": [
+                    {
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+                    { "data": "CICategorie" },
+                    { "data": "CINom" },
+                    { "data": "Nom" },
+                    { "data": "CIResponsable" }
+                ],
+                 "order": [[1, 'asc']],
+                lengthMenu: [[17, 25, 50, -1], [17, 25, 50, "All"]],
+                keys : true,
+                colReorder: true,
+                dom: 'Bfrtip',
+                "search": {
+                     "regex": true,
+                     "smart": false
+                },
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<u>C</u>opy',
+                        key: {
+                            key: 'c',
+                            altKey: true
+                        }
+                    },              
+                    {
+                        extend: 'excel',
+                        messageTop: 'innformation extraite de http://vli5res01/cmdb'
+                    },
+                    {
+                        extend: 'pdf',
+                        messageBottom: null
+                    },
+                    {
+                        extend: 'print',
+                        messageTop: function () {
+                            printCounter++;
+         
+                            if ( printCounter === 1 ) {
+                                return 'This is the first time you have printed this document.';
+                            }
+                            else {
+                                return 'You have printed this document '+printCounter+' times';
+                            }
+                        },
+                        messageBottom: null
+                    }  // fin PRINT
+                ],
+                initComplete: function () {  
+                    this.api().columns().every( function () {  
+                        var column = this;  
+                        var select = $('<select><option value=""></option></select>')  
+                            .appendTo( $(column.footer()).empty() )  
+                            .on( 'change', function () {  
+                                var val = $.fn.dataTable.util.escapeRegex(  
+                                    $(this).val()  
+                                );  
+                        //to select and search from grid  
+                                column  
+                                    .search( val ? '^'+val+'$' : '', true, false )  
+                                    .draw();  
+                            } );  
+           
+                        column.data().unique().sort().each( function ( d, j ) {  
+                            select.append( '<option value="'+d+'">'+d+'</option>' )  
+                        } );  
+                    } );  
+                }  
+            } ); // fin table variable 
+
+            table.buttons().container()
+                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+             
+            // Add event listener for opening and closing details
+            $('#example tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row( tr );
+         
+                if ( row.child.isShown() ) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child( format(row.data()) ).show();
+                    tr.addClass('shown');
+                }
+            } ); // FIN Add event listener for opening and closing details
+        } ); // FIN Document Ready
+    </script>
+    <table id="example" class="row-border cell-border hover display compact" cellspacing="0" width="100%">
+
+           <thead>
+                <tr>
+                    <th></th>
+                    <th>CICategorie</th>
+                    <th>CINom</th>
+                    <th>Nom </th>
+                    <th>CIResponsable</th>
+                    
+                    
+                </tr>
+            </thead>
+            <tfoot>
+               <tr>
+                    <th></th>
+                    <th>CICategorie</th>
+                    <th>CINom</th>
+                    <th>Nom</th>
+                    <th>CIResponsable </th>
+                    
+                    
+                </tr>
+            </tfoot>
+        </table>
+
+</body>
+</html>
