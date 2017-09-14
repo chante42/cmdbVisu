@@ -74,9 +74,9 @@
             }
 
             if  (d.VeeamScheduleStatus == undefined) {
-                classSauvegarde ="pas-d-info";
+                classSauvegarde = "pas-d-info";
             }else {
-                classSauvegarde ="sauvegarde-OK";
+                classSauvegarde = "sauvegarde-OK";
             }
 
             vmCpu               = d.vmCpu;
@@ -90,10 +90,6 @@
             VeeamScheduleStatus = d.VeeamScheduleStatus;
             VeeamFin            = d.VeeamFin;
             VeeamDure           = d.VeeamDure
-            VeeamDure           = VeeamDure.replace(':', 'h',1);
-            VeeamDure           = VeeamDure.replace(':', 'm',1);
-            VeeamDure           = VeeamDure + 's';
-
             
             if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
             if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
@@ -107,6 +103,10 @@
             if (d.VeeamFin                      == undefined) { VeeamFin                = "N/A"}
             if (d.VeeamDure                     == undefined) { VeeamDure               = "N/A"}
             
+            VeeamDure           = VeeamDure.replace(':', 'h',1);
+            VeeamDure           = VeeamDure.replace(':', 'm',1);
+            VeeamDure           = VeeamDure + 's';
+
             // `d` is the original data object for the row
             return '<table class="detail-info" cellspacing="0" border="0" >'+
                 '<tr style="background-color: #adc9f7">'+
