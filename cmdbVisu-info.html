@@ -1,0 +1,48 @@
+ <html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="cmdbVisu.css"/>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script> 
+</head>
+<body>
+	<script>
+        // 
+        // Pour la partie info
+        //
+        $(function(){
+            $('.deplie').hide(); // on masque tout 
+            $('.bouton-deplier').click(function(event){
+                event.preventDefault(); // on ne suit pas le lien
+                $(this).parent().next().slideToggle();
+            });
+        });
+
+        // 
+        // recuperation de l'info des date de fichier
+        //
+        $(document).ready(function() {
+           $("#fileDate").load('data/fileDate.html');
+        });
+
+    </script>
+
+
+	<div id="menu">
+        <div id="centre"><h1>Information CmdbVisu </h1></div>
+    </div>  
+	
+
+	<div class="replie">
+	    <a class="bouton-deplier">Liste des fichiers utilisé et leur date de génération</a>
+	</div>
+	<div class="deplie">
+		<div class="montexte" id="fileDate"></div>
+	</div>
+	<br /><br />
+	<div class="replie">
+	    <a class="bouton-deplier">Principe Assynchrone</a>
+	</div>
+	<div class="deplie">
+	    <div class="montexte">Principe Assynchrone texte</div>
+	</div>
+</body>

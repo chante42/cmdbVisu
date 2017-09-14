@@ -1,0 +1,90 @@
+h1 {  text-align:center; font-size: 30px; }
+      
+table.dataTable thead th {  background-color: #6495ED; color : white ;}
+
+td.details-control {
+  background: url(details_open.png) no-repeat center center;
+  cursor: pointer;
+}
+tr.shown td.details-control {
+  background: url(details_close.png) no-repeat center center;
+} 
+table.detail-info thead th {  background-color: #6495ED; color : white ;}
+.pas-d-info {
+    color: black;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      #ccc 10px,
+      #ccc 20px
+    ),
+    linear-gradient(
+      to bottom,
+      #eee,
+      #999
+    )
+}
+
+div#gauche {
+  float: left;
+  width: 160px;
+  margin-right: 10px;
+  text-align:center; 
+}
+div#droite {
+  float: right;
+  width: 160px;
+  margin-left: 10px; 
+  text-align:center; 
+}
+div#centre {
+  overflow: hidden;
+  overflow: auto;
+}
+div#menu {
+  background-color: #6495ED;
+   color : white;
+}
+
+div#main {
+  margin : 5px;
+}
+
+/* unvisited link */
+div#menu a {
+    color: white;
+}
+
+
+/* -------------------*/
+/* Pour la partie info */
+/* ------------------- */
+
+.replie {
+    margin: 10px;
+}
+.bouton-deplier {
+    text-decoration: none;
+    color: #fff;
+    background: #000;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.deplie {
+    margin: 10px;
+    background: red;
+    color: #fff;
+}
+.bouton-replier {
+    margin: 10px;
+    display: inline-block;
+    text-decoration: none;
+    color: #fff;
+    background: #000;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.montexte {
+    padding: 10px 10px 20px 10px;
+}

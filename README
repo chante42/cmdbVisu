@@ -1,9 +1,11 @@
-20170907 : Insertion du code permettant de :
+20170907 : 
+* Insertion du code permettant de :
 	changer la place des colonnes
 	de se deplacer avec les cuurseurs,
 	 et de faire des export PDF et clipbpoard
 	 ouvrir la ligne pour avoir plus d'info
-	
+
+* testLectureVeeam.php : Construction de la structure, mais impossible de l'afficher en dehors de la fonction malgrès global !! 	
 
 ------------------
 20170906 : Interrogation supervision Olivier lachere : http://winingappli/supappli/

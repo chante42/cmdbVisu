@@ -23,15 +23,21 @@
 
 		/*
 			 Formatting function for row details - modify as you need 
+
+			 https://datatables.net/examples/server_side/row_details.html
+			 https://datatables.net/examples/server_side/scripts/ids-objects.php
 		*/
 
-		function format ( d ) {
+		function format ( d ) {	
 		  console.log("full info");
 		  // `d` is the original data object for the row
 		  return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
 		      '<tr>'+
 		          '<td>Sauvegarde:</td>'+
-		          '<td>'+d.name+'</td>'+
+		          '<td>VEEAM</td>'+
+		          '<td>derniere sauvegarde le '+d.name+'</td>'+
+		          '<td>TSM</td>'+
+		          '<td>'+'</td>'+
 		      '</tr>'+
 		      '<tr>'+
 		          '<td>Supervision:</td>'+
@@ -50,6 +56,10 @@
     			keys : true,
               	colReorder: true,
 				dom: 'Bfrtip',
+				"search": {
+   					 "regex": true,
+   					 "smart": false
+  				},
 				buttons: [
 					{
 					    extend: 'copy',
@@ -85,8 +95,8 @@
 			table.buttons().container()
 				.appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
 
-				// Add event listener for opening and closing details
-				$('#myTable tbody').on('click', 'td.details-control', function () {
+			// Add event listener for opening and closing details
+			$('#myTable tbody').on('click', 'td.details-control', function () {
 				var tr = $(this).closest('tr');
 				var row = table.row( tr );
 
@@ -107,14 +117,97 @@
 
 <h1>CMDB : Liste des assets et des serveurs </h1>
 <?php
+	// Search RegularExpression PRC de prod : PRC[^P]*PRD
+	//
+	//	
 
+	$Veeam = array();
    //
    // ReadBackupVeeam
    // 
-	function ReadBackupVeeam() {
+	function readBackupVeeam($filename) {
+		global $Veeam;
+		$handle = fopen($filename, "r");
+		if ($handle) {
+			echo "<p>OK</p><pre>\n";
+		    while (($line = fgets($handle)) !== false) {
+		        // process the line read.
+		        if (preg_match("#^<tr>#i", $line, $matches)) {
+		        	// retire le <tr> et tous ce qu'il y a avant
+		        	$line = eregi_replace('[^<]*<tr[^>]*>', '', $line);
 
+		        	// retire les <td> et les option des td
+	       	 		$line = eregi_replace('<td[^>]*>([^<]*)</td>', '\1|', $line);
+
+	       	 		// retire le </tr> et tous ce qu'il y a après
+		        	$line = eregi_replace('</tr>', '', $line);
+
+		        	// construit la structure
+		        	$a = explode('|', $line);
+
+		        	// nom de serveur en minuscule
+		        	$a[2] = strtolower($a[2]);
+
+		        	$Veeam[$a[2]] = array("dossier" => $a[0], "dure" => $a[1], "debut" => $a[3], "fin" => $a[4],
+		        							"volTransfert" => $a[5],
+		        							"scheduleType" => $a[6], "backupType" => $a[7], "scheduleState" => $a[8]);
+					
+					//echo $line." <br>\n";
+		        	//echo $a[2] ."='".$Veeam[$a[2]]["backupType"]."' <br>\n";
+
+		        }
+		    }
+
+		    fclose($handle);
+		} else {
+		    // error opening the file.
+		    echo "<p style='color:red'>KO</p>";
+		} 
 		return;
+	} // fin fonction
+	
+	//
+	// DataPath($type)
+	//
+	// renvoie le chemin d'accès au fichier en fonction du type
+	function dataPath($type){
+		$rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/";
+		$rootPathStatBaies ="/home/i14sj00/cmdb/data";
+		switch($type){
+			case "VeeamProd" :
+				return $rootPathCtrlN1."2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
+			break;
+
+			case "VeeamRecette" :
+				return $rootPathCtrlN1."2017/septembre/Rapport%20Sauvegarde%20VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
+			break;
+
+			case "TSM" :
+				return $rootPathCtrlN1."http://vli5res01.si2m.tec/dashboardstock/capacity_TSM/check_niv1/2017/septembre/Rapport%20Sauvegarde%20TSM/20170908-TSM_Controle_Niv1.html";
+			break;
+
+			case "T400A" :
+				return $rootPathStatBaies."Volume-host T400_A92.csv";
+			break;
+
+			case "T400B" :
+				return $rootPathStatBaies."Volume-host T400_B94.csv";
+			break;
+
+			case "V400A" :
+				return $rootPathStatBaies. "Volume-host V400_A92.csv";
+			break;
+
+			case "V400B" :
+				return $rootPathStatBaies. "Volume-host V400_B94.csv";
+			break;
+
+			default:
+				return "le chemin pour accéder a ".$type." est inconnue";
+			break;
+		}// FIN SWITCH
 	}
+
 
 
 	//
@@ -223,6 +316,9 @@
  	echo "</tbody></table>";
 
  	//print_r($output);
+ 	readBackupVeeam(dataPath("VeeamProd"));
+ 	readBackupVeeam(dataPath("VeeamRecette"));
+
 ?>
 
 </body>
