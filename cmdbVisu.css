@@ -26,6 +26,16 @@ table.detail-info thead th {  background-color: #6495ED; color : white ;}
     )
 }
 
+.sauvegarde-OK {
+    background-color: green;
+}
+
+div#footer {
+  font-size: 6px;
+  text-align:center;
+  padding-left: 40px;
+
+}
 div#gauche {
   float: left;
   width: 160px;

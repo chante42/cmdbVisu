@@ -41,6 +41,7 @@ import os
 import platform
 import time
 import datetime
+import re
 
 Vm 		 		= {}
 Baie3PAR 		= {}
@@ -48,7 +49,7 @@ CmdbDataServer 	= {}
 CmdbDataAppli 	= {}
 BaieHDS  		= {}
 DateFile        = {}
-
+Veeam 			= {}
 
 def creationDateFile(path_to_file):
 	"""
@@ -240,11 +241,20 @@ def generateDateTableFile(filename):
 
 				
 			# ecrire les infos de VEEAM
+			if server in Veeam.keys():
+				for item, value  in Veeam[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
 
+				if server == "VLI3APP027":
+					print "KEY FOUND : %s " %server
+					pprint(Veeam[server])
+
+				
 			# ecrire les infos de VMWare 
 			if server in Vm.keys() :
-				if server == "VWI0CTD001":
-					print "KEY FOUND : %s " %server
+				#if server == "VWI0CTD001":
+				#	print "KEY FOUND : %s " %server
 				for item, value  in Vm[server].items() :
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
@@ -686,7 +696,7 @@ def dataPath(type):
 	if  type == "VeeamProd" :
 		return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
 	elif type ==  "VeeamRecette" :
-		return rootPathCtrlN1+"2017/septembre/Rapport%20Sauvegarde%20VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
+		return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
 	elif type == "TSM" :
 		return rootPathCtrlN1+"http://vli5res01.si2m.tec/dashboardstock/capacity_TSM/check_niv1/2017/septembre/Rapport%20Sauvegarde%20TSM/20170908-TSM_Controle_Niv1.html";
 	elif type == "T400A" :
@@ -743,17 +753,44 @@ def dataPathTmp(type):
 #
 # encodeJsonVeeam
 #
-def  encodeJsonVeeam(filenameDest):
+def  encodeJsonVeeam():
 	"""
 		Lit les 2 fichier de controle de niveau 1 de Veeam et les transforme en un HASH "VeeamData"
 	"""
-	fdDst = codecs.open(filenameDest, 'w', 'utf-8')
+	pTrTest = re.compile('^<tr>')
+	ptr     = re.compile('[^<]*<tr[^>]*>')
+	ptd     = re.compile('<td[^>]*>([^<]*)</td>')
+	ptr1    = re.compile('</tr>')
 	for filename in (dataPath("VeeamProd"), dataPath("VeeamRecette")):
 		DateFile[filename] = creationDateFile(filename)
+		print "traitement fichier : %s " % filename
 		with open(filename) as fdSrc:
 			for line in fdSrc.readlines():
-		    	# Traiter la ligne et ainsi de suite ...
-				print(line.strip())
+		  		if pTrTest.match(line) :
+					# retire le <tr> et tous ce qu'il y a avant
+					line = ptr.sub('', line) 
+					#//$line = eregi_replace('[^<]*<tr[^>]*>', '', $line);
+
+					# retire les <td> et les option des td
+					#//$line = eregi_replace('<td[^>]*>([^<]*)</td>', '\1|', $line);
+					line = ptd.sub(r'\1|', line)
+
+							#// retire le </tr> et tous ce qu'il y a après
+					#//$line = eregi_replace('</tr>', '', $line);
+					line = ptr1.sub('', line)
+
+					# construit la structure
+					a = line.split('|')
+
+					#// nom de serveur en majuscule
+					a[2] = a[2].upper()
+					#print a[2]
+
+					#Veeam[a[2]] = {"VeeamDossier" : a[0], "VeeamDure" : a[1], "VeeamDebut" : a[3], "VeeamFin" : a[4],
+					#						"VeeamVolTransfert" : a[5],
+					#						"VeeamScheduleType" : a[6], "VeeamBackupType" : a[7], "VeeamScheduleStatus" : a[8]}
+					Veeam[a[2]] = {"VeeamDure" : a[1], "VeeamFin" : a[4], "VeeamScheduleStatus" : a[8]}
+				
 
 #
 # encodeJsonTSM
@@ -1064,15 +1101,16 @@ sys.setdefaultencoding('utf-8')
 encodeJson3PAR("result3PAR.json")
 encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
-#encodeJsonVeeam("resultVeeam.json")
+encodeJsonVeeam()
 
-
-
+ 
 generateDateTableFile("dataTable.json")
 
 generateExcel("cmdbVisu.xlsx")
 
-generateFileDate();
+generateFileDate()
+
+#pprint(Veeam)
 
 #pprint(data['data'][1]['CINom']) -=- pour DataTable
 #data['data'][1]['CINom']="toto" -=- pour DataTable

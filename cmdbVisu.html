@@ -52,8 +52,8 @@
         function format ( d ) {
             var count = {};
             var storageCount = storageHDSCount = "N/A";
-            class3PAR = classHDS = classVirtu = "normal";
-            classSauvegarde = classSupervision  = "pas-d-info";
+            class3PAR = classHDS = classVirtu = classSauvegarde = "normal";
+             classSupervision  = "pas-d-info";
             if  (d.storage != undefined) {
                 //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
                 storageCount = formatBaie(d.storage);
@@ -69,30 +69,43 @@
                 classHDS = "pas-d-info";
             }
             
-            if  (d.vmCpu != undefined) {
-                //var tmp = d.storage_HDS.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
-            }
-            else {
+            if  (d.vmCpu == undefined) {
                 classVirtu ="pas-d-info";
             }
+
+            if  (d.VeeamScheduleStatus == undefined) {
+                classSauvegarde ="pas-d-info";
+            }else {
+                classSauvegarde ="sauvegarde-OK";
+            }
+
+            vmCpu               = d.vmCpu;
+            vmMem               = d.vmMem;
+            vmDisk              = d.vmDisk;
+            vmOs                = d.vmOs;
+            allocated           = d.allocated;
+            used                = d.used;
+            allocated_HDS       = d.allocated_HDS;
+            used_HDS            = d.used_HDS;
+            VeeamScheduleStatus = d.VeeamScheduleStatus;
+            VeeamFin            = d.VeeamFin;
+            VeeamDure           = d.VeeamDure
+            VeeamDure           = VeeamDure.replace(':', 'h',1);
+            VeeamDure           = VeeamDure.replace(':', 'm',1);
+            VeeamDure           = VeeamDure + 's';
+
             
-            vmCpu           = d.vmCpu;
-            vmMem           = d.vmMem;
-            vmDisk          = d.vmDisk;
-            vmOs            = d.vmOs;
-            allocated       = d.allocated;
-            used            = d.used;
-            allocated_HDS   = d.allocated_HDS;
-            used_HDS        = d.used_HDS;
-            
-            if (d.vmCpu             == undefined) { vmCpu           = "N/A"} 
-            if (d.vmMem             == undefined) { vmMem           = "N/A"}
-            if (d.vmDisk            == undefined) { vmDisk          = "N/A"}
-            if (d.vmOs              == undefined) { vmOs            = "N/A"}
-            if (d.allocated         == undefined) { allocated       = "N/A"}
-            if (d.used              == undefined) { used            = "N/A"}
-            if (d.allocated_HDS     == undefined) { allocated_HDS   = "N/A"}
-            if (d.used_HDS          == undefined) { used_HDS        = "N/A"}
+            if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
+            if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
+            if (d.vmDisk                        == undefined) { vmDisk                  = "N/A"}
+            if (d.vmOs                          == undefined) { vmOs                    = "N/A"}
+            if (d.allocated                     == undefined) { allocated               = "N/A"}
+            if (d.used                          == undefined) { used                    = "N/A"}
+            if (d.allocated_HDS                 == undefined) { allocated_HDS           = "N/A"}
+            if (d.used_HDS                      == undefined) { used_HDS                = "N/A"}
+            if (d.VeeamScheduleStatus           == undefined) { VeeamScheduleStatus     = "N/A"}
+            if (d.VeeamFin                      == undefined) { VeeamFin                = "N/A"}
+            if (d.VeeamDure                     == undefined) { VeeamDure               = "N/A"}
             
             // `d` is the original data object for the row
             return '<table class="detail-info" cellspacing="0" border="0" >'+
@@ -101,7 +114,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th> Virtualisation</th></tr>'+
                                 '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
-                                '<tr><td class="'+classVirtu+'"> MEM : '+vmMem+'Go </td></tr>'+
+                                '<tr><td class="'+classVirtu+'"> MEM : '+vmMem+' Go </td></tr>'+
                                 '<tr><td class="'+classVirtu+'"> Disk : '+vmDisk+' Go</td></tr>'+
                                 '<tr><td class="'+classVirtu+'"> OS :'+vmOs+'</td></tr>'+
                         '</table>'+
@@ -126,10 +139,10 @@
                     '</td>'+
                     '<td width="20%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th class="'+classSauvegarde+'">Sauvegarde</th></tr>'+
-                            '<tr><td class="'+classSauvegarde+'">VEEAM  </td></tr>'+
-                            '<tr><td class="'+classSauvegarde+'">TSM </td></tr>'+
-                            '<tr><td class="'+classSauvegarde+'"> </td></tr>'+
+                            '<tr><th class="'+classSauvegarde+'">Sauvegarde VEEAM</th></tr>'+
+                            '<tr><td class="'+classSauvegarde+'"> status : '+VeeamScheduleStatus+'</td></tr>'+
+                            '<tr><td class="'+classSauvegarde+'"> heure Fin : '+VeeamFin+'</td></tr>'+
+                            '<tr><td class="'+classSauvegarde+'"> heure durée : '+VeeamDure+'</td></tr>'+
                             '<tr><td class="'+classSauvegarde+'"> </td></tr>'+
                             '<tr><td class="'+classSauvegarde+'"> </td></tr>'+
                         '</table>'+
@@ -288,6 +301,7 @@
 
         
     </div>
+    <div id="footer" >@Olivier Chanteloup 14/09/2017</div>
 
 </body>
 </html>
