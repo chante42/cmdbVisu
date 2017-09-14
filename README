@@ -1,12 +1,19 @@
-20170907 : 
-* Insertion du code permettant de :
-	changer la place des colonnes
-	de se deplacer avec les cuurseurs,
-	 et de faire des export PDF et clipbpoard
-	 ouvrir la ligne pour avoir plus d'info
+20170910
+	* Réalisation de RAF2 : lire le fichier volume 3PAR en python en s'impirant du code php
+	
+-------------------
 
-* testLectureVeeam.php : Construction de la structure, mais impossible de l'afficher en dehors de la fonction malgrès global !! 	
+20170909 
+	* Pour dataTable , il faut que le json soit un tableau 
+			{ data [{"a":"vala","b":"valb"}, {"a":"vala","b":"valb"}]}
+		Mais pour faire l raprochement avec veeam ou vmWare il faut :
+			{ data {"nomvm1":{"a":"vala","b":"valb"}, "nomvm2":{"a":"vala","b":"valb"}]}
 
-------------------
-20170906 : Interrogation supervision Olivier lachere : http://winingappli/supappli/
+		je sais générer les 2 cf test-http-cmdb-json.py avec les commenatire : -=- pour DataTable
+	* RAF1 : lire le fichier veeam en python en s'impirant du code php
+	
+	* RAF3 : lire le fichier virtu en python en s'impirant du code php
+	* RAF3 :  a partir du caode de maxime, voir comment associer les vm a une VIP
 
+
+--------------------------
