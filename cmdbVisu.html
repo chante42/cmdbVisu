@@ -52,8 +52,8 @@
         function format ( d ) {
             var count = {};
             var storageCount = storageHDSCount = "N/A";
-            class3PAR = classHDS = classVirtu = classSauvegarde = "normal";
-             classSupervision  = "pas-d-info";
+            class3PAR = classHDS = classVirtu = classVeeam = classTSM = "normal";
+            classSupervision  = classNlyte  = classNetscaler  ="pas-d-info";
             if  (d.storage != undefined) {
                 //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
                 storageCount = formatBaie(d.storage);
@@ -74,9 +74,15 @@
             }
 
             if  (d.VeeamScheduleStatus == undefined) {
-                classSauvegarde = "pas-d-info";
+                classVeeam = "pas-d-info";
             }else {
-                classSauvegarde = "sauvegarde-OK";
+                classVeaam = "sauvegarde-OK";
+            }
+
+            if  (d.TSMStatus == undefined) {
+                classTSM = "pas-d-info";
+            }else {
+                classTSM = "sauvegarde-OK";
             }
 
             vmCpu               = d.vmCpu;
@@ -90,7 +96,10 @@
             VeeamScheduleStatus = d.VeeamScheduleStatus;
             VeeamFin            = d.VeeamFin;
             VeeamDure           = d.VeeamDure
-            
+            TSMDebut            = d.TSMDebut
+            TSMStatus           = d.TSMStatus
+            TSMFin              = d.TSMFin 
+
             if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
             if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
             if (d.vmDisk                        == undefined) { vmDisk                  = "N/A"}
@@ -102,15 +111,18 @@
             if (d.VeeamScheduleStatus           == undefined) { VeeamScheduleStatus     = "N/A"}
             if (d.VeeamFin                      == undefined) { VeeamFin                = "N/A"}
             if (d.VeeamDure                     == undefined) { VeeamDure               = "N/A"}
+            if (d.TSMDebut                      == undefined) { TSMDebut                = "N/A"}
+            if (d.TSMFin                        == undefined) { TSMFin                  = "N/A"}
+            if (d.TSMStatus                     == undefined) { TSMStatus               = "N/A"}
             
             VeeamDure           = VeeamDure.replace(':', 'h',1);
             VeeamDure           = VeeamDure.replace(':', 'm',1);
             VeeamDure           = VeeamDure + 's';
-
+ 
             // `d` is the original data object for the row
             return '<table class="detail-info" cellspacing="0" border="0" >'+
                 '<tr style="background-color: #adc9f7">'+
-                    '<td width="60%">'+
+                    '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th> Virtualisation</th></tr>'+
                                 '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
@@ -119,41 +131,68 @@
                                 '<tr><td class="'+classVirtu+'"> OS :'+vmOs+'</td></tr>'+
                         '</table>'+
                     '</td>'+
-                    '<td width="20%">'+
+                    '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th class="'+class3PAR+'"> SAN 3PAR</th></tr>'+
+                            '<tr><th> SAN 3PAR</th></tr>'+
                             '<tr><td class="'+class3PAR+'">'+storageCount+'</td></tr>'+
                             '<tr><td class="'+class3PAR+'"> alloué :'+allocated+' Go</td></tr>'+
                             '<tr><td class="'+class3PAR+'"> utilisé :'+used+' Go</td></tr>'+
                             '<tr><td class="'+class3PAR+'"> </td></tr>'+
                         '</table>'+
                     '</td>'+
-                    '<td width="20%">'+
+                    '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th class="'+classHDS+'"> SAN HDS</th></tr>'+
+                            '<tr><th> SAN HDS</th></tr>'+
                             '<tr><td class="'+classHDS+'">'+storageHDSCount+'</td></tr>'+
                             '<tr><td class="'+classHDS+'">alloué :'+allocated_HDS+' Go</td></tr>'+
                             '<tr><td class="'+classHDS+'">utilisé : '+used_HDS+' Go</td></tr>'+
                             '<tr><td class="'+classHDS+'"> </td></tr>'+
                         '</table>'+
                     '</td>'+
-                    '<td width="20%">'+
+                    '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th class="'+classSauvegarde+'">Sauvegarde VEEAM</th></tr>'+
-                            '<tr><td class="'+classSauvegarde+'"> status : '+VeeamScheduleStatus+'</td></tr>'+
-                            '<tr><td class="'+classSauvegarde+'"> heure Fin : '+VeeamFin+'</td></tr>'+
-                            '<tr><td class="'+classSauvegarde+'"> heure durée : '+VeeamDure+'</td></tr>'+
-                            '<tr><td class="'+classSauvegarde+'"> </td></tr>'+
-                            '<tr><td class="'+classSauvegarde+'"> </td></tr>'+
+                            '<tr><th>Sauvegarde VEEAM</th></tr>'+
+                            '<tr><td class="'+classVeeam+'"> status : '+VeeamScheduleStatus+'</td></tr>'+
+                            '<tr><td class="'+classVeeam+'"> Fin : '+VeeamFin+'</td></tr>'+
+                            '<tr><td class="'+classVeeam+'"> durée : '+VeeamDure+'</td></tr>'+
+                            '<tr><td class="'+classVeeam+'"> </td></tr>'+
+                            '<tr><td class="'+classVeeam+'"> </td></tr>'+
                         '</table>'+
                     '</td>'+
-                    '<td width="20%">'+
+                    '<td width="10%">'+ 
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th class="'+classSupervision+'">Supervision</th></tr>'+
+                            '<tr><th> Sauvegarde TSM</th></tr>'+
+                            '<tr><td class="'+classTSM+'"> status : '+TSMStatus+'</td></tr>'+
+                            '<tr><td class="'+classTSM+'"> début : '+TSMDebut+'</td></tr>'+
+                            '<tr><td class="'+classTSM+'"> fin : '+TSMFin+'</td></tr>'+
+                            '<tr><td class="'+classTSM+'"> </td></tr>'+
+                        '</table>'+
+                    '</td>'+
+                    '<td width="10%">'+
+                        '<table cellspacing="0" border="1" >'+
+                            '<tr><th>Supervision</th></tr>'+
                             '<tr><td class="'+classSupervision+'"> attente Web Service O lachéré</td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
+                        '</table>'+
+                    '</td>'+
+                    '<td width="10%">'+
+                        '<table cellspacing="0" border="1" >'+
+                            '<tr><th>Netscaler</th></tr>'+
+                            '<tr><td class="'+classNetscaler+'"> attente Netscaler</td></tr>'+
+                            '<tr><td class="'+classNetscaler+'"> </td></tr>'+
+                            '<tr><td class="'+classNetscaler+'"> </td></tr>'+
+                            '<tr><td class="'+classNetscaler+'"> </td></tr>'+
+                        '</table>'+
+                    '</td>'+
+                    '<td width="10%">'+
+                        '<table cellspacing="0" border="1" >'+
+                            '<tr><th>Nlyte</th></tr>'+
+                            '<tr><td class="'+classNlyte+'"> attente Nlyte</td></tr>'+
+                            '<tr><td class="'+classNlyte+'"> </td></tr>'+
+                            '<tr><td class="'+classNlyte+'"> </td></tr>'+
+                            '<tr><td class="'+classNlyte+'"> </td></tr>'+
                         '</table>'+
                     '</td>'+
                 '</tr>'+

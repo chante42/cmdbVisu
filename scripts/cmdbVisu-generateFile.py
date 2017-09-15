@@ -42,6 +42,7 @@ import platform
 import time
 import datetime
 import re
+import json
 
 Vm 		 		= {}
 Baie3PAR 		= {}
@@ -50,6 +51,8 @@ CmdbDataAppli 	= {}
 BaieHDS  		= {}
 DateFile        = {}
 Veeam 			= {}
+Tsm 			= {}
+
 
 def creationDateFile(path_to_file):
 	"""
@@ -108,7 +111,7 @@ def html_decode(s):
 #
 # generateDateTableFile
 #
-def generateDateTableFile(filename):
+def generateDateTableFile():
 	"""
 		génére le fichier qui sera lu par le javascriot dataTable en ajax pour présentation
 		utise les variable Globale
@@ -120,6 +123,7 @@ def generateDateTableFile(filename):
 	"""
 	chaine = getCmdbSoap()	
 
+	filename = dataPath("DataTableFile")	
 	print "sauvegarde dans le fichier %s" % filename
 	fd = codecs.open(filename, 'w', 'utf-8')
 
@@ -243,14 +247,12 @@ def generateDateTableFile(filename):
 			# ecrire les infos de VEEAM
 			if server in Veeam.keys():
 				for item, value  in Veeam[server].items() :
+					if item == "VeeamFin" :
+						value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
+
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
-				if server == "VLI3APP027":
-					print "KEY FOUND : %s " %server
-					pprint(Veeam[server])
-
-				
 			# ecrire les infos de VMWare 
 			if server in Vm.keys() :
 				#if server == "VWI0CTD001":
@@ -259,7 +261,22 @@ def generateDateTableFile(filename):
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
+			# ecrire les infos de TSM
+			if server in Tsm.keys() :
+				#if server == "VWI0CTD001":
+				#	print "KEY FOUND : %s " %server
+				for item, value  in Tsm[server].items() :
+					if item == "TSMFin" or item == "TSMDebut":
+						value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
 
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+
+			# ecrire les infos de NetScaler
+
+			# ecrire les infos de Nlyte
+				
+			
 			# ecrire les info CMDB
 			for buf in data :
 
@@ -295,15 +312,23 @@ def generateFileDate():
 	print "Liste des fichiers et leur date de modification %s" % filename
 	fd = codecs.open(filename, 'w', 'utf-8')
 
-	for file in  DateFile.keys():
-		fd.write("<div>"+file+" : "+DateFile[file]+"</div>\n")
+	fd.write('{\n\t"data" : [\n') #-=- pour dataTable
+	
+	# ecrire les infos de VEEAM
+	
+	for item, value  in DateFile.items() :
+		fd.write('\t\t{')  #-=- pour dataTable
+		fd.write('"file" :"'+item+'" , "date" : "'+str(value)+'"')
+		fd.write('},\n')
+
+	fd.write('\n\t]\n}') #   -=- pour dataTable
 
 	fd.close()
 
 #
 # générateExcell
 #
-def generateExcel(file):
+def generateExcel():
 	"""
 	Export les données en excel bien formaté avec 2 Onglets 
 	 -  1) Une ligne par serveur
@@ -311,8 +336,10 @@ def generateExcel(file):
 	 -  3) Aide : Principe de fonctionnement du ficher
 	 -  4) Liste des fichier avec date de génération qui ont servi a construire
 	"""
+	filename = dataPath("DataTableExcel")
 	# verification sur file a faire (.xlsx, ....)
-	workbook = xlsxwriter.Workbook(file)
+	workbook = xlsxwriter.Workbook(filename)
+	print "génération du fichier : %s" %filename
 
 	GB_format = workbook.add_format({'num_format': '$#,##0'})
 
@@ -537,7 +564,7 @@ def generateExcel(file):
 	            'data': data
 	           }
 
-	print "Liste des fichiers et leur date de modification"
+
 	data = []
 
 	for file in  DateFile.keys():
@@ -691,18 +718,32 @@ def dataPath(type):
 	"""
 		renvoie le chemin d'accès au fichiers de donnée brute  en fonction du type
 	"""
-	rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/";
-	rootPathStatBaies ="/home/i14sj00/cmdb/data/";
+	jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+	mois = ["Janvier", u"Février", "Mars", "Avril", "Mai", "Juin", "Juillet", u"Août", "Septembre", "Octobre", "Novembre", u"Décembre"]
+	
+	joursStr = str(time.localtime().tm_mday).zfill(2)
+	moisStr  = str(time.localtime().tm_mon).zfill(2)
+	anneeStr = str(time.localtime().tm_year)
+
+	rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
+	rootPathStatBaies ="/home/i14sj00/cmdb/cmdb-test/data/"
+
+	#rootPathStatBaies ="/home/i14sj00/cmdb/data/";
 	if  type == "VeeamProd" :
-		return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
+		#return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
+		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Production.html";
 	elif type ==  "VeeamRecette" :
-		return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
+		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Recette.html";
+		#return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
+	elif type ==  "Teste" :
+		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/"+moisStr+joursStr
+		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Recette.html";
 	elif type == "TSM" :
-		return rootPathCtrlN1+"http://vli5res01.si2m.tec/dashboardstock/capacity_TSM/check_niv1/2017/septembre/Rapport%20Sauvegarde%20TSM/20170908-TSM_Controle_Niv1.html";
+		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
 	elif type == "T400A" :
-		return rootPathStatBaies+"Volume-host T400_A92-20170908.csv";
+		return rootPathStatBaies+"Volume-host T400_A92-20170908.csv"
 	elif type == "T400B" :
-		return rootPathStatBaies+"Volume-host T400_B94-20170908.csv";
+		return rootPathStatBaies+"Volume-host T400_B94-20170908.csv"
 	elif type == "V400A" :
 		return rootPathStatBaies+ "Volume-host V400_A92-20170908.csv";
 	elif type == "V400B" :
@@ -718,7 +759,12 @@ def dataPath(type):
 	elif type == "VmWare" :
 		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
 	elif type == "fileDate":
-		return rootPathStatBaies+ "fileDate.html";
+		return rootPathStatBaies+ "fileDate.json";
+	elif type == "DataTableFile":
+		return rootPathStatBaies+ "dataTable.json";
+	elif type == "DataTableExcel":
+		return rootPathStatBaies+ "cmdbVisu.xlsx";
+
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue";
 
@@ -790,25 +836,49 @@ def  encodeJsonVeeam():
 					#						"VeeamVolTransfert" : a[5],
 					#						"VeeamScheduleType" : a[6], "VeeamBackupType" : a[7], "VeeamScheduleStatus" : a[8]}
 					Veeam[a[2]] = {"VeeamDure" : a[1], "VeeamFin" : a[4], "VeeamScheduleStatus" : a[8]}
-				
+	print "\n"				
 
 #
 # encodeJsonTSM
 #
-def  encodeJsonTSM(filenameDest):
+def  encodeJsonTsm():
 	"""
-		Lit les 2 fichier de controle de niveau 1 de TSM et les transforme en un HASH "TsmData"
+		Lit le fichier de controle de niveau 1 de TSM et les transforme en un HASH "TsmData"
 	"""
-	DateFile[filenameDest] = creationDateFile(filenameDest)
+	pTrTest = re.compile('^<tr>')
+	ptr     = re.compile('[^<]*<tr[^>]*>')
+	ptd     = re.compile('<td[^>]*>([^<]*)</td>')
+	ptr1    = re.compile('</tr>')
 
-	fdDst = codecs.open(filenameDest, 'w', 'utf-8')
-	for filename in (dataPath("TSMProd"), dataPath("TSMRecette")):
-		DateFile[filename] = creationDateFile(filename)
-		with open(filename) as fdSrc:
-			for line in fdSrc.readlines():
-		    	# Traiter la ligne et ainsi de suite ...
-				print(line.strip())
+	filename = dataPath("TSM")
+	DateFile[filename] = creationDateFile(filename)
+	print "traitement fichier : %s " % filename
+	with open(filename) as fdSrc:
+		for line in fdSrc.readlines():
+	  		if pTrTest.match(line) :
+				# retire le <tr> et tous ce qu'il y a avant
+				line = ptr.sub('', line) 
+				#//$line = eregi_replace('[^<]*<tr[^>]*>', '', $line);
 
+				# retire les <td> et les option des td
+				#//$line = eregi_replace('<td[^>]*>([^<]*)</td>', '\1|', $line);
+				line = ptd.sub(r'\1|', line)
+
+				#// retire le </tr> et tous ce qu'il y a après
+	 			#//$line = eregi_replace('</tr>', '', $line);
+				line = ptr1.sub('', line)
+ 
+				# construit la structure
+				a = line.split('|')
+
+				#// nom de serveur en majuscule
+				a[1] = a[1].upper()
+				#print a[2]
+
+				Tsm[a[1]] = {"TSMDebut" : a[2], "TSMFin" : a[3], "TSMStatus" : a[4]}
+	print "\n"				
+		
+			
 #
 # encodeJson3PAR
 #
@@ -1010,22 +1080,20 @@ def  encodeJsonHDS(filenameDest):
 								else :
 									BaieHDS[serv] = {u"storage_HDS" : baie, u"allocated_HDS" : allocatedVal/2, u"used_HDS" : usedVal/2 }
 
-
+	print "\n"
 
 	#pprint(Baie3PAR)
-	pprint(BaieHDS["LINDBCLUSTA11"]) 
-	print "LIN1BDD002"
-	pprint(BaieHDS["LIN1BDD001"]) 
+	#pprint(BaieHDS["LINDBCLUSTA11"]) 
+	#print "LIN1BDD002"
+	#pprint(BaieHDS["LIN1BDD001"]) 
 
-	print "LIN1BDD002"
-	pprint(BaieHDS["LIN1BDD002"]) 	
+	#print "LIN1BDD002"
+	#pprint(BaieHDS["LIN1BDD002"]) 	
 
-	print
-	pprint(BaieHDS["AIXURWTA"]) 
-	print
-	#ecriture de la structure dans un fichier json
-	fdDst = codecs.open(filenameDest, 'w', 'utf-8')
-
+	#print
+	#pprint(BaieHDS["AIXURWTA"]) 
+	#print
+	
 #
 #   ReadVmInfo()
 #	
@@ -1090,6 +1158,7 @@ def encodeJsonVmWare():
 		#print nomVm
 		Vm[nomVm]={u'vmMem':sh1.row_values(rownum)[colMEM],u'vmCpu':sh1.row_values(rownum)[colVCPU], u'vmDisk':sh1.row_values(rownum)[colDisk], u'vmOs' : os.encode('utf8'), u'vmBanc' : banc.encode('utf8')}
 
+	print "\n"
 #
 # M A I N 
 #
@@ -1097,16 +1166,16 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
-
 encodeJson3PAR("result3PAR.json")
 encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
+encodeJsonTsm()
 
  
-generateDateTableFile("dataTable.json")
+generateDateTableFile()
 
-generateExcel("cmdbVisu.xlsx")
+generateExcel()
 
 generateFileDate()
 

@@ -3,6 +3,11 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="cmdbVisu.css"/>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script> 
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.css"/>
+ 
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.js"></script>
+
 </head>
 <body>
 	<script>
@@ -21,8 +26,21 @@
         // recuperation de l'info des date de fichier
         //
         $(document).ready(function() {
-           $("#fileDate").load('data/fileDate.html');
-        });
+           
+                var table = $('#listeFile').DataTable( {
+                "ajax": "data/fileDate.json",
+                columns :[
+                    {data : 'file'},
+                    {data : 'date'}
+                ],
+                "order": [[1, 'desc']],
+                lengthMenu: [[17, 25, 50, -1], [17, 25, 50, "All"]],
+                keys : true,
+                colReorder: true,
+                dom: 'Blfrtip',
+                  
+            } ); // fin table variable 
+        }); // fin ready()
 
     </script>
 
@@ -36,7 +54,23 @@
 	    <a class="bouton-deplier">Liste des fichiers utilisés et leur date de génération</a>
 	</div>
 	<div class="deplie">
-		<div class="montexte" id="fileDate"></div>
+          <table id="listeFile" class="compact row-border cell-border hover display compact"  cellspacing="0" width="100%">
+
+           <thead>
+             <tr>
+                    <th>Fichier</th>
+                    <th>Date du fichier</th>
+             </tr>
+            </thead>
+            <tfoot>
+               <tr>
+                    <th>Fichier</th>
+                    <th>Date du fichier</th>  
+                    
+               </tr>
+            </tfoot>
+        </table>
+		
 	</div>
 	<br /><br />
 	<div class="replie">
