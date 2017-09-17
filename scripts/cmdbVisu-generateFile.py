@@ -247,7 +247,7 @@ def generateDateTableFile():
 			# ecrire les infos de VEEAM
 			if server in Veeam.keys():
 				for item, value  in Veeam[server].items() :
-					if item == "VeeamFin" :
+					if item == "VeeamFin"  and len(value) > 6:
 						value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
 
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
@@ -266,7 +266,7 @@ def generateDateTableFile():
 				#if server == "VWI0CTD001":
 				#	print "KEY FOUND : %s " %server
 				for item, value  in Tsm[server].items() :
-					if item == "TSMFin" or item == "TSMDebut":
+					if (item == "TSMFin" or item == "TSMDebut") and len(value)> 7:
 						value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
 
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
@@ -377,6 +377,8 @@ def generateExcel():
 			NomServer = CINom = CIResponsable = CLE_APP =CIImpactantResponsable =""
 			vmCpu = vmMem = vmDisk = vmBanc =vmOs = CICategorie =""
 			allocated = used = storage =  allocated_HDS = used_HDS = storage_HDS = ""
+			veeamDure = veeamFin = VeeamScheduleStatus = VeeamVolTransfert = ""
+			tsmDebut = tsmFin = tsmStatus = TsmData = ""
 
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
@@ -393,6 +395,7 @@ def generateExcel():
 			if CmdbDataServer[server].get("CIImpactantResponsable") != None:
 				CIImpactantResponsable = CmdbDataServer[server]["CIImpactantResponsable"]
 
+			# VMWare
 			if CmdbDataServer[server].get("vmCpu") != None:
 				vmCpu = CmdbDataServer[server]["vmCpu"]
 
@@ -411,6 +414,7 @@ def generateExcel():
 			if CmdbDataServer[server].get("CICategorie") != None:
 				CICategorie = CmdbDataServer[server]["CICategorie"]
 
+			# 3PAR
 			if CmdbDataServer[server].get("allocated") != None:
 				allocated = CmdbDataServer[server]["allocated"]
 
@@ -420,6 +424,7 @@ def generateExcel():
 			if CmdbDataServer[server].get("storage") != None:
 				storage = CmdbDataServer[server]["storage"]
 
+			#HDS
 			if CmdbDataServer[server].get("allocated_HDS") != None:
 				allocated_HDS = CmdbDataServer[server]["allocated_HDS"]
 
@@ -429,9 +434,32 @@ def generateExcel():
 			if CmdbDataServer[server].get("storage_HDS") != None:
 				storage_HDS = CmdbDataServer[server]["storage_HDS"]
 
+			#VEEAM
+			if CmdbDataServer[server].get("VeeamDure") != None:
+				veeamDure = CmdbDataServer[server]["VeeamDure"]
+			
+			if CmdbDataServer[server].get("VeeamFin") != None:
+				veeamFin = CmdbDataServer[server]["VeeamFin"]
+			
+			if CmdbDataServer[server].get("VeeamScheduleStatus") != None:
+				VeeamScheduleStatus = CmdbDataServer[server]["VeeamScheduleStatus"]
+			
+			# TMS
+			if CmdbDataServer[server].get("TSMDebut") != None:
+				tsmDebut = CmdbDataServer[server]["TSMDebut"]
+
+			if CmdbDataServer[server].get("TSMFin") != None:
+				tsmFin = CmdbDataServer[server]["TSMFin"]
+
+			if CmdbDataServer[server].get("TSMStatus") != None:
+				tsmStatus = CmdbDataServer[server]["TSMStatus"]
+
+
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
-						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS ])
+						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
+						 veeamDure, veeamFin,  VeeamScheduleStatus,
+						tsmDebut, tsmFin, tsmStatus])
 
 		options = {
 		           'columns': [{'header': 'Nom serveur',
@@ -490,15 +518,39 @@ def generateExcel():
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'HDS alloué (Go)',
+		                        {'header': u'HDS alloué (Go)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'HDS utilisé (Go)',
+		                        {'header': u'HDS utilisé (Go)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
 		                        {'header': 'HDS Baie',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Veeam durée',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Veeam fin',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Veeam status',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'TSM début',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'TSM fin',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'TSM status',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        }
@@ -525,7 +577,7 @@ def generateExcel():
 		worksheetServer.set_column('R:R', 14)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +8, options)
 
 	except :
 		print "Exception in user code:"
@@ -550,7 +602,11 @@ def generateExcel():
 	worksheetFichier.set_column('B:B', 60)
 	worksheetFichier.set_column('C:C', 38)
 
-	
+	data = []
+
+	for file in  DateFile.keys():
+		data.append([str(file), str(DateFile[file])])
+
 	options = {
 	           'columns': [{'header': "chemin d'accès à la ressource",
 	           				'header_format' :  column_format,
@@ -565,11 +621,7 @@ def generateExcel():
 	           }
 
 
-	data = []
-
-	for file in  DateFile.keys():
-		data.append([str(file), str(DateFile[file])])
-
+	
 		#worksheetFichier.write_rich_string('B'+str(i), fileinfo_format, str(file))
 		#worksheetFichier.write_rich_string('C'+str(i), fileinfo_format, str(DateFile[file]))
 		#i = i+ 1
