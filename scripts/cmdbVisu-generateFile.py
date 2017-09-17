@@ -314,12 +314,15 @@ def generateFileDate():
 
 	fd.write('{\n\t"data" : [\n') #-=- pour dataTable
 	
-	# ecrire les infos de VEEAM
-	
+	virgule = 0
 	for item, value  in DateFile.items() :
+		if virgule > 0:
+			fd.write(',\n')
+		else :
+			virgule = 1
 		fd.write('\t\t{')  #-=- pour dataTable
 		fd.write('"file" :"'+item+'" , "date" : "'+str(value)+'"')
-		fd.write('},\n')
+		fd.write('}')
 
 	fd.write('\n\t]\n}') #   -=- pour dataTable
 
@@ -781,7 +784,7 @@ def dataPath(type):
 	if  "cmdb-test" in os.getcwd() :
 		rootPathStatBaies ="/home/i14sj00/cmdb/cmdb-test/data/"
 	else : 
-		rootPathStatBaies ="/home/i14sj00/cmdb/data/"
+		rootPathStatBaies ="/home/i14sj00/cmdb/data/" 
 
 	#rootPathStatBaies ="/home/i14sj00/cmdb/data/";
 	if  type == "VeeamProd" :
@@ -1214,6 +1217,8 @@ def encodeJsonVmWare():
 		Vm[nomVm]={u'vmMem':sh1.row_values(rownum)[colMEM],u'vmCpu':sh1.row_values(rownum)[colVCPU], u'vmDisk':sh1.row_values(rownum)[colDisk], u'vmOs' : os.encode('utf8'), u'vmBanc' : banc.encode('utf8')}
 
 	print "\n"
+
+# ----------------------------------------------------------------------------
 #
 # M A I N 
 #
