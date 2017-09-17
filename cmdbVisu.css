@@ -3,11 +3,11 @@ h1 {  text-align:center; font-size: 30px; }
 table.dataTable thead th {  background-color: #6495ED; color : white ;}
 
 td.details-control {
-  background: url(details_open.png) no-repeat center center;
+  background: url(images/details_open.png) no-repeat center center;
   cursor: pointer;
 }
 tr.shown td.details-control {
-  background: url(details_close.png) no-repeat center center;
+  background: url(images/details_close.png) no-repeat center center;
 } 
 table.detail-info thead th {  background-color: #6495ED; color : white ;}
 .pas-d-info {
