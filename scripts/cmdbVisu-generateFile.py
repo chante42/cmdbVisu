@@ -778,7 +778,10 @@ def dataPath(type):
 	anneeStr = str(time.localtime().tm_year)
 
 	rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
-	rootPathStatBaies ="/home/i14sj00/cmdb/cmdb-test/data/"
+	if  "cmdb-test" in os.getcwd() :
+		rootPathStatBaies ="/home/i14sj00/cmdb/cmdb-test/data/"
+	else : 
+		rootPathStatBaies ="/home/i14sj00/cmdb/data/"
 
 	#rootPathStatBaies ="/home/i14sj00/cmdb/data/";
 	if  type == "VeeamProd" :
@@ -1218,6 +1221,8 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
+print "-----------------------------------------------------------------------------"
+print "-- Début : "+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 encodeJson3PAR("result3PAR.json")
 encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
@@ -1230,30 +1235,8 @@ generateDateTableFile()
 generateExcel()
 
 generateFileDate()
+print "-- Fin : "+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+print "-----------------------------------------------------------------------------"
+print
 
-#pprint(Veeam)
-
-#pprint(data['data'][1]['CINom']) -=- pour DataTable
-#data['data'][1]['CINom']="toto" -=- pour DataTable
-#pprint(data['data'][1]['CINom']) -=- pour DataTable
-#data['data'][1]['veeam']="full" -=- pour DataTable
-#pprint(data['data'][1]) -=- pour DataTable
-
-#pprint(CmdbDataServer['data']['WINBLH14']) 
-#pprint(CmdbDataServer['WINBLH14'])  
-
-#print "\n"
-#pprint(CmdbDataServer['data']['WINBLH14']) 
-#pprint(CmdbDataServer['VWI0CTD001']) 
-#print "\n"
-#pprint(CmdbDataServer['data']['LIN2BDD001']) 
-#pprint(CmdbDataServer['LIN2BDD001']) 
-#print "\n"
-#pprint(CmdbDataServer['LIN2BDD002']) 
-#print "\n"
-#pprint(CmdbDataServer['AIXURWTA']) 
-#print "\n"
-
-#pprint(CmdbDataServer)
-#print (entete)
 
