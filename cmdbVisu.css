@@ -30,6 +30,14 @@ table.detail-info thead th {  background-color: #6495ED; color : white ;}
     background-color: green;
 }
 
+.sauvegarde-Warning {
+    background-color: orange;
+}
+
+.sauvegarde-Alert {
+    background-color: red;
+}
+
 div#footer {
   font-size: 6px;
   text-align:center;
@@ -97,4 +105,33 @@ div#menu a {
 .montexte {
     color : black;
     padding: 10px 10px 20px 10px;
+}
+
+
+/* -------------------*/
+/* Pour les bulles */
+/* ------------------- */
+.bulle a {
+  color : black;
+}
+.bulle  a:hover,a:focus{
+     background:rgba(0,0,0,.4);
+     box-shadow:0 1px 0 rgba(255,255,255,.4);
+}
+.bulle a span{
+     position:absolute;    
+     margin-top:23px;
+     margin-left:-35px;   
+     color:#09c;
+     background:rgba(0,0,0,.9);
+     padding:15px;
+     border-radius:3px;
+     box-shadow:0 0 2px rgba(0,0,0,.5);   
+    transform:scale(0) rotate(-12deg);     
+    transition:all .25s; 
+      opacity:0;
+}
+.bulle a:hover span,  .bulle a:focus span{
+     transform:scale(1) rotate(0);  
+      opacity:1;      
 }

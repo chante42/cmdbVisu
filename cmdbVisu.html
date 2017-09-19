@@ -52,8 +52,8 @@
         function format ( d ) {
             var count = {};
             var storageCount = storageHDSCount = "N/A";
-            class3PAR = classHDS = classVirtu = classVeeam = classTSM = "normal";
-            classSupervision  = classNlyte  = classNetscaler  ="pas-d-info";
+            class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = "normal";
+            classSupervision   = classNetscaler  ="pas-d-info";
             if  (d.storage != undefined) {
                 //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
                 storageCount = formatBaie(d.storage);
@@ -84,6 +84,9 @@
             }else {
                 classTSM = "sauvegarde-OK";
             }
+            if  (d.RAM == undefined) {
+                classDiscovery ="pas-d-info";
+            }
 
             vmCpu               = d.vmCpu;
             vmMem               = d.vmMem;
@@ -99,6 +102,10 @@
             TSMDebut            = d.TSMDebut
             TSMStatus           = d.TSMStatus
             TSMFin              = d.TSMFin 
+            discoveryRAM        = d.RAM 
+            dicoveryNbProc      = d.PROCESSOR_COUNT
+            discoveryProcessor  = d.Processeur
+            discoveryFrequence  = d.Frequence
 
             if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
             if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
@@ -114,7 +121,11 @@
             if (d.TSMDebut                      == undefined) { TSMDebut                = "N/A"}
             if (d.TSMFin                        == undefined) { TSMFin                  = "N/A"}
             if (d.TSMStatus                     == undefined) { TSMStatus               = "N/A"}
-            
+            if (d.RAM                           == undefined) { discoveryRAM            = "N/A"}
+            if (d.PROCESSOR_COUNT               == undefined) { dicoveryNbProc          = "N/A"}
+            if (d.Processeur                    == undefined) { discoveryProcessor      = "N/A"}
+            if (d.Frequence                     == undefined) { discoveryFrequence      = "N/A"}
+
             VeeamDure           = VeeamDure.replace(':', 'h',1);
             VeeamDure           = VeeamDure.replace(':', 'm',1);
             VeeamDure           = VeeamDure + 's';
@@ -124,7 +135,7 @@
                 '<tr style="background-color: #adc9f7">'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th> Virtualisation</th></tr>'+
+                            '<tr><th><div  class ="bulle"><a href="#"> Virtualisation<span>bulle</span></div></th></tr>'+
                                 '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
                                 '<tr><td class="'+classVirtu+'"> MEM : '+vmMem+' Go </td></tr>'+
                                 '<tr><td class="'+classVirtu+'"> Disk : '+vmDisk+' Go</td></tr>'+
@@ -188,11 +199,11 @@
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th>Nlyte</th></tr>'+
-                            '<tr><td class="'+classNlyte+'"> attente Nlyte</td></tr>'+
-                            '<tr><td class="'+classNlyte+'"> </td></tr>'+
-                            '<tr><td class="'+classNlyte+'"> </td></tr>'+
-                            '<tr><td class="'+classNlyte+'"> </td></tr>'+
+                            '<tr><th>DISCOVERY</th></tr>'+
+                            '<tr><td class="'+classDiscovery+'">RAM : '+discoveryRAM+' Mo</td></tr>'+
+                            '<tr><td class="'+classDiscovery+'">NbProc :'+dicoveryNbProc+' </td></tr>'+
+                            '<tr><td class="'+classDiscovery+'">Proc Type :'+discoveryProcessor+' </td></tr>'+
+                            '<tr><td class="'+classDiscovery+'">Proc Freq :'+discoveryFrequence+' Mhz </td></tr>'+
                         '</table>'+
                     '</td>'+
                 '</tr>'+
@@ -303,6 +314,13 @@
                     tr.addClass('shown');
                 }
             } ); // FIN Add event listener for opening and closing details
+
+            // récupère les date de fichier pour les info Bulle
+            var DateFile = null;
+            $.getJSON("data/fileDate.json", function(data) {
+                DateFile = data;
+            });
+        
         } ); // FIN Document Ready
     </script>
 </head>

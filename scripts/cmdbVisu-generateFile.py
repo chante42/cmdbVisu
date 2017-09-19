@@ -43,6 +43,8 @@ import time
 import datetime
 import re
 import json
+import unicodecsv
+
 
 Vm 		 		= {}
 Baie3PAR 		= {}
@@ -52,7 +54,7 @@ BaieHDS  		= {}
 DateFile        = {}
 Veeam 			= {}
 Tsm 			= {}
-
+DiscoveryData	= {}
 
 def creationDateFile(path_to_file):
 	"""
@@ -274,9 +276,14 @@ def generateDateTableFile():
 
 			# ecrire les infos de NetScaler
 
-			# ecrire les infos de Nlyte
-				
-			
+			# ecrire les infos de Discovery
+			if server in DiscoveryData.keys() :
+				#print server
+				for item, value  in DiscoveryData[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+				#pprint(CmdbDataServer[server])
+
 			# ecrire les info CMDB
 			for buf in data :
 
@@ -815,13 +822,16 @@ def dataPath(type):
 	elif type == "HDS-PROD-B" :
 		return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
 	elif type == "VmWare" :
-		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
+		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
+		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-17.xlsx";
 	elif type == "fileDate":
 		return rootPathStatBaies+ "fileDate.json";
 	elif type == "DataTableFile":
 		return rootPathStatBaies+ "dataTable.json";
 	elif type == "DataTableExcel":
 		return rootPathStatBaies+ "cmdbVisu.xlsx";
+	elif type == "Discovery":
+		return rootPathStatBaies+ "discovery-easyvista-20170918.csv";
 
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue";
@@ -1153,7 +1163,7 @@ def  encodeJsonHDS(filenameDest):
 	#print
 	
 #
-#   ReadVmInfo()
+#   encodeJsonVmWare
 #	
 def encodeJsonVmWare():
 	"""
@@ -1180,11 +1190,11 @@ def encodeJsonVmWare():
 		
 		# Positionnement des colonne 
 		#-=- Crade a refaire en utilisant les noms de colonnes
-		colMEM		= 6
-		colVCPU		= 5
-		colDisk		= 7
-		colOS 		= 15
-		colCluster	= 2
+		colMEM		= 7
+		colVCPU		= 6
+		colDisk		= 8
+		colOS 		= 16
+		colCluster	= 3
 		colNomVM	= 0
 
 
@@ -1218,6 +1228,39 @@ def encodeJsonVmWare():
 
 	print "\n"
 
+#
+# encodeJsonDiscovery
+#
+def encodeJsonDiscovery():
+	tmpDiscoveryData ={}
+
+	filename = dataPath("Discovery")
+	DateFile[filename] = creationDateFile(filename)
+	print "traitement fichier : %s " % filename
+	
+	with codecs.open(filename,'rb', encoding='utf-8-sig') as f:
+		lines=f.readlines()
+
+	i = 0
+	for line in lines :
+		line = line.replace('\n','').replace('\r','')
+		if i == 0 :
+			headers = line.split(";")
+			#pprint(headers)
+		else :
+			col = line.split(';')
+			colNum = 0
+			for colname in headers:
+				#print '|'+colname+'|'
+				tmpDiscoveryData[colname]=col[colNum]
+				colNum = colNum + 1
+			#print DiscoveryData[u"Identifiant PC"]+'|'+DiscoveryData[u"RAM"]+'|'+DiscoveryData[u"PROCESSOR_COUNT"]+'|'+DiscoveryData[u"Processeur"]+'|'+DiscoveryData[u"Fréquence"]
+			server = tmpDiscoveryData[u"Identifiant PC"].upper()
+			server = server.replace('.SI2M.TEC','')
+			DiscoveryData[server] = {u'RAM' : tmpDiscoveryData[u"RAM"], u'PROCESSOR_COUNT' : tmpDiscoveryData[ u'PROCESSOR_COUNT'], u'Processeur':  tmpDiscoveryData[u'Processeur'], u'Frequence' : tmpDiscoveryData[u'Fréquence']}
+		i = i +  1
+		
+
 # ----------------------------------------------------------------------------
 #
 # M A I N 
@@ -1226,6 +1269,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
+
 print "-----------------------------------------------------------------------------"
 print "-- Début : "+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 encodeJson3PAR("result3PAR.json")
@@ -1233,6 +1277,8 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
+encodeJsonDiscovery()
+
 
  
 generateDateTableFile()
