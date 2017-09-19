@@ -112,7 +112,7 @@ div#menu a {
 /* Pour les bulles */
 /* ------------------- */
 .bulle a {
-  color : black;
+    color : black;
 }
 .bulle  a:hover,a:focus{
      background:rgba(0,0,0,.4);

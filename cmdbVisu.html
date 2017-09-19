@@ -21,7 +21,29 @@
   
  
     <script>
-        
+        var DateFile = null;
+
+        //
+        // getDataFile
+        //
+        // recupère la bonne string dans le tabelau de hash DateFile en fct des paramètre passé
+        function getDataFile(type, field) {
+            rep = ""
+            match = 0
+            for (item in DateFile['data']) {
+                console.log(DateFile['data'][item]['type']);
+                if (DateFile['data'][item]['type'].search(type) != -1) {
+                    if (match > 0) { rep =rep +", "}
+                    if (match % 2 == 0) { rep = rep +'<BR>'}
+                    rep = rep + DateFile['data'][item][field];
+                    match ++;
+                }
+            }
+            if (rep == "") {
+                rep = "N/A";
+            }
+            return rep;
+        }
         //
         // formatBaie
         //
@@ -135,25 +157,37 @@
                 '<tr style="background-color: #adc9f7">'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th><div  class ="bulle"><a href="#"> Virtualisation<span>bulle</span></div></th></tr>'+
-                                '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
-                                '<tr><td class="'+classVirtu+'"> MEM : '+vmMem+' Go </td></tr>'+
-                                '<tr><td class="'+classVirtu+'"> Disk : '+vmDisk+' Go</td></tr>'+
-                                '<tr><td class="'+classVirtu+'"> OS :'+vmOs+'</td></tr>'+
+                            '<tr><th>'+
+                                '<div  class ="bulle"><a href="#"> Virtualisation<span>'+
+                                    'la date de génération des données est le '+getDataFile('VmWare', 'date')+
+                                '</span></a></div>'+
+                            '</th></tr>'+
+                            '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"> MEM : '+vmMem+' Go </td></tr>'+
+                            '<tr><td class="'+classVirtu+'"> Disk : '+vmDisk+' Go</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"> OS :'+vmOs+'</td></tr>'+
                         '</table>'+
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th> SAN 3PAR</th></tr>'+
+                            '<tr><th>'+
+                                '<div  class ="bulle"><a href="#"> SAN 3PAR<span>'+
+                                    'la date de génération des données est le '+getDataFile('400', 'date')+
+                                '</span></a></div>'+
+                            '</th></tr>'+
                             '<tr><td class="'+class3PAR+'">'+storageCount+'</td></tr>'+
                             '<tr><td class="'+class3PAR+'"> alloué :'+allocated+' Go</td></tr>'+
                             '<tr><td class="'+class3PAR+'"> utilisé :'+used+' Go</td></tr>'+
                             '<tr><td class="'+class3PAR+'"> </td></tr>'+
-                        '</table>'+
+                        '</table>'+ 
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th> SAN HDS</th></tr>'+
+                            '<tr><th>'+
+                                '<div  class ="bulle"><a href="#"> SAN HDS<span>'+
+                                    'la date de génération des données est le '+getDataFile('HDS', 'date')+
+                                '</span></a></div>'+
+                            '</th></tr>'+
                             '<tr><td class="'+classHDS+'">'+storageHDSCount+'</td></tr>'+
                             '<tr><td class="'+classHDS+'">alloué :'+allocated_HDS+' Go</td></tr>'+
                             '<tr><td class="'+classHDS+'">utilisé : '+used_HDS+' Go</td></tr>'+
@@ -162,7 +196,11 @@
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th>Sauvegarde VEEAM</th></tr>'+
+                            '<tr><th>'+
+                                '<div  class ="bulle"><a href="#">Sauvegarde VEEAM<span>'+
+                                'la date de génération des données est le '+getDataFile('Veeam', 'date')+
+                                '</span></a></div>'+
+                            '</th></tr>'+
                             '<tr><td class="'+classVeeam+'"> status : '+VeeamScheduleStatus+'</td></tr>'+
                             '<tr><td class="'+classVeeam+'"> Fin : '+VeeamFin+'</td></tr>'+
                             '<tr><td class="'+classVeeam+'"> durée : '+VeeamDure+'</td></tr>'+
@@ -172,7 +210,11 @@
                     '</td>'+
                     '<td width="10%">'+ 
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th> Sauvegarde TSM</th></tr>'+
+                            '<tr><th>'+
+                                '<div  class ="bulle"><a href="#"> Sauvegarde TSM<span>'+
+                                'la date de génération des données est le '+getDataFile('TSM', 'date')+
+                                '</span></a></div>'+
+                            '</th></tr>'+
                             '<tr><td class="'+classTSM+'"> status : '+TSMStatus+'</td></tr>'+
                             '<tr><td class="'+classTSM+'"> début : '+TSMDebut+'</td></tr>'+
                             '<tr><td class="'+classTSM+'"> fin : '+TSMFin+'</td></tr>'+
@@ -181,7 +223,7 @@
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th>Supervision</th></tr>'+
+                            '<tr><th><div  class ="bulle"><a href="#">Supervision<span>le fichier source "fic" date du "date"</span></a></div></th></tr>'+
                             '<tr><td class="'+classSupervision+'"> attente Web Service O lachéré</td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
@@ -190,7 +232,7 @@
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th>Netscaler</th></tr>'+
+                            '<tr><th><div  class ="bulle"><a href="#">Netscaler<span>le fichier source "fic" date du "date"</span></div></th></tr>'+
                             '<tr><td class="'+classNetscaler+'"> attente Netscaler</td></tr>'+
                             '<tr><td class="'+classNetscaler+'"> </td></tr>'+
                             '<tr><td class="'+classNetscaler+'"> </td></tr>'+
@@ -199,7 +241,11 @@
                     '</td>'+
                     '<td width="10%">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th>DISCOVERY</th></tr>'+
+                            '<tr><th>'+
+                                '<div  class ="bulle"><a href="#">DISCOVERY<span>'+
+                                'la date de génération des données est le '+getDataFile('Discovery', 'date')+
+                                '<span></a></div>'+
+                            '</th></tr>'+
                             '<tr><td class="'+classDiscovery+'">RAM : '+discoveryRAM+' Mo</td></tr>'+
                             '<tr><td class="'+classDiscovery+'">NbProc :'+dicoveryNbProc+' </td></tr>'+
                             '<tr><td class="'+classDiscovery+'">Proc Type :'+discoveryProcessor+' </td></tr>'+
@@ -316,9 +362,9 @@
             } ); // FIN Add event listener for opening and closing details
 
             // récupère les date de fichier pour les info Bulle
-            var DateFile = null;
             $.getJSON("data/fileDate.json", function(data) {
                 DateFile = data;
+                console.log(data)
             });
         
         } ); // FIN Document Ready

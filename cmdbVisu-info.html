@@ -30,8 +30,10 @@
                 var table = $('#listeFile').DataTable( {
                 "ajax": "data/fileDate.json",
                 columns :[
+                    {data : 'type'},
+                    {data : 'date'},
                     {data : 'file'},
-                    {data : 'date'}
+                    {data : 'info'}
                 ],
                 "order": [[1, 'desc']],
                 lengthMenu: [[17, 25, 50, -1], [17, 25, 50, "All"]],
@@ -58,15 +60,19 @@
 
            <thead>
              <tr>
-                    <th>Fichier</th>
+                    <th> Type</th>
                     <th>Date du fichier</th>
+                    <th>Fichier</th>
+                    <th>infos</th>
              </tr>
             </thead>
             <tfoot>
                <tr>
-                    <th>Fichier</th>
-                    <th>Date du fichier</th>  
                     
+                    <th> Type</th>
+                    <th>Date du fichier</th>  
+                    <th>Fichier</th>
+                    <th>infos</th>
                </tr>
             </tfoot>
         </table>

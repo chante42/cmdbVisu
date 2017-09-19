@@ -328,7 +328,7 @@ def generateFileDate():
 		else :
 			virgule = 1
 		fd.write('\t\t{')  #-=- pour dataTable
-		fd.write('"file" :"'+item+'" , "date" : "'+str(value)+'"')
+		fd.write('"type" : "'+item+'", "file" :"'+str(value['file'])+'" , "date" : "'+str(value['date'])+'", "info" :"'+str(value['info'])+'"')
 		fd.write('}')
 
 	fd.write('\n\t]\n}') #   -=- pour dataTable
@@ -609,23 +609,32 @@ def generateExcel():
 	#
 	#   Onglet Fichier
 	worksheetFichier.write_rich_string('A1', dateTable_format, "Liste des fichier ou URL qui ont servie a réaliser ce fichier avec leurs date de création")
-	worksheetFichier.set_column('B:B', 60)
-	worksheetFichier.set_column('C:C', 38)
-
+	worksheetFichier.set_column('B:B', 25)
+	worksheetFichier.set_column('C:C', 25)
+	worksheetFichier.set_column('D:D', 80)
+	worksheetFichier.set_column('E:E', 60)
 	data = []
 
-	for file in  DateFile.keys():
-		data.append([str(file), str(DateFile[file])])
+	for type in  DateFile.keys():
+		data.append([str(type), str(DateFile[type]["date"]),str(DateFile[type]["file"]),str(DateFile[type]["info"])])
 
 	options = {
-	           'columns': [{'header': "chemin d'accès à la ressource",
+	           'columns': [{'header': "type de  ressource",
 	           				'header_format' :  column_format,
 	           				'format' : firstColumn_format
-	           				},
+	           				},           				
 	                       {'header': "date de dernière modification de la resssource",
 	                        'header_format' :  column_format,
 	                        'format' : column_format
-	                        }
+	                        },
+	                        {'header': "chemin d'accès à la ressource",
+	           				'header_format' :  column_format,
+	           				'format' : firstColumn_format
+	           				},
+	           				{'header': "information",
+	           				'header_format' :  column_format,
+	           				'format' : firstColumn_format
+	           				}
 	                       ],
 	            'data': data
 	           }
@@ -637,7 +646,7 @@ def generateExcel():
 		#i = i+ 1
 		#print "\t %s : %s\n" % (file, DateFile[file])
 	# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-	worksheetFichier.add_table(2,1,len(data) + 2,1 +2, options)
+	worksheetFichier.add_table(2,1,len(data) + 2, len(data[0]), options)
 #
 # encodeJsonCmdbSoapFile
 #
@@ -768,7 +777,7 @@ def  getCmdbSoap():
 	chaine1 = html_decode(response.text)
 	chaine= chaine1.decode('utf-8')
 
-	DateFile[url]= datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+	DateFile['CMDB']= { u'file' : url, 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de l'association serveur/appli de la CMDB sur EASYVIST" }
 
 	return chaine;
 
@@ -875,8 +884,10 @@ def  encodeJsonVeeam():
 	ptr     = re.compile('[^<]*<tr[^>]*>')
 	ptd     = re.compile('<td[^>]*>([^<]*)</td>')
 	ptr1    = re.compile('</tr>')
-	for filename in (dataPath("VeeamProd"), dataPath("VeeamRecette")):
-		DateFile[filename] = creationDateFile(filename)
+	for veeamType in ("VeeamProd","VeeamRecette"):
+		filename=dataPath(veeamType)
+		DateFile[veeamType]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de controle de niveau 1 des sauvegardes "+veeamType+" généré par un script de joaquim le matin a 8H00" }
+		
 		print "traitement fichier : %s " % filename
 		with open(filename) as fdSrc:
 			for line in fdSrc.readlines():
@@ -919,7 +930,8 @@ def  encodeJsonTsm():
 	ptr1    = re.compile('</tr>')
 
 	filename = dataPath("TSM")
-	DateFile[filename] = creationDateFile(filename)
+	DateFile['TSM']= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de controle de niveau 1 des sauvegardes TSM généré par un script de joaquim le matin a 8H00"  }
+		
 	print "traitement fichier : %s " % filename
 	with open(filename) as fdSrc:
 		for line in fdSrc.readlines():
@@ -961,7 +973,8 @@ def  encodeJson3PAR(filenameDest):
 	
 	for baie in ("T400A","T400B","V400A","V400B"):
 		filename = dataPath(baie)
-		DateFile[filename] = creationDateFile(filename)
+		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par export manuel de l'interface d'admin"  }
+		
 		print "traitement fichier : %s " % filename
 		with open(filename) as fdSrc:
 			i = 0;
@@ -1057,10 +1070,12 @@ def  encodeJsonHDS(filenameDest):
 		La bonne méthode sera de se baser sur le WorldWideName, mais pas dispo dans le cmddb
 	"""
 	print
-	for baie in ("HDS-PPROD-A","HDS-PPROD-B","HDS-PROD-A","HDS-PPROD-B"):
+	for baie in ("HDS-PPROD-A","HDS-PPROD-B","HDS-PROD-A","HDS-PROD-B"):
 
 		filename = dataPath(baie)
-		DateFile[filename] = creationDateFile(filename)
+
+		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par la concaténation de 2 export manuel a aprtir de l'interface d'admin"  }
+
 		print "traitement fichier : %s " % filename
 		with open(filename) as fdSrc:
 			i = 0;
@@ -1170,7 +1185,8 @@ def encodeJsonVmWare():
 		Lecture du fichier inventaire complet généré par Paul
 	"""
 	filename = dataPath("VmWare")
-	DateFile[filename] = creationDateFile(filename)
+	DateFile["VmWare"]= { u'file' : filename, 'date' :creationDateFile(filename), 'info' : 'Fichier généré par un script  d export FULL de l infra Vmware de de Paul gugulski le dimanche' }
+	
 	print "traitement fichier : %s " % filename
 	# ouverture du fichier Excel 
 	try: 
@@ -1235,7 +1251,8 @@ def encodeJsonDiscovery():
 	tmpDiscoveryData ={}
 
 	filename = dataPath("Discovery")
-	DateFile[filename] = creationDateFile(filename)
+	DateFile["Discovery"]= { u'file' : filename, 'date' :creationDateFile(filename), 'info' :"Fichier généré manuellment par benoit Khales de Discovery" }
+	
 	print "traitement fichier : %s " % filename
 	
 	with codecs.open(filename,'rb', encoding='utf-8-sig') as f:
