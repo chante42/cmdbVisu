@@ -1209,7 +1209,7 @@ def encodeJsonVmWare():
 		colMEM		= 7
 		colVCPU		= 6
 		colDisk		= 8
-		colOS 		= 16
+		colOS 		= 17	
 		colCluster	= 3
 		colNomVM	= 0
 
@@ -1218,11 +1218,11 @@ def encodeJsonVmWare():
 		if noLigne < 2 :
 			continue
 		# valeur par defaut
-		os = u"Linux"
+		#os = u"Linux"
 		banc = u"non Prod"
-
-		if sh1.row_values(rownum)[colOS].find(u'Windows') != -1  :
-			os = u"Windows"
+		os = sh1.row_values(rownum)[colOS]
+		#if sh1.row_values(rownum)[colOS].find(u'Windows') != -1  :
+		#	os = u"Windows"
 
 		if type(sh1.row_values(rownum)[colCluster]) in [str, unicode]:
 			if sh1.row_values(rownum)[colCluster].find(u'Prod') != -1  :
