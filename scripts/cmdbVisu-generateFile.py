@@ -772,7 +772,7 @@ def  getCmdbSoap():
 	</soapenv:Envelope>"""
 
 
-	print "get %s \n" % url
+	print "Cmdb get %s \n" % url
 	response = requests.post(url,data=body,headers=headers)
 	chaine1 = html_decode(response.text)
 	chaine= chaine1.decode('utf-8')
@@ -780,6 +780,150 @@ def  getCmdbSoap():
 	DateFile['CMDB']= { u'file' : url, 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de l'association serveur/appli de la CMDB sur EASYVIST" }
 
 	return chaine;
+
+#
+# getDiscoverySoap
+#
+def  getDiscoverySoap():
+	"""
+		Interroge en SOAP une API EasyVista pour avoir l'association Serveur Appli
+	"""
+
+
+
+	#url="https://malakoffmederic.easyvista.com:443/WebService/SmoBridge.php"
+	url="https://malakoffmederic-qualif.easyvista.com:443/WebService/SmoBridge.php"
+	#headers = {'content-type': 'application/soap+xml'}
+	headers = {'content-type': 'text/xml', 'accept-encoding': 'gzip;q=0,deflate,sdch'}
+	body = """<?xml version="1.0" encoding="UTF-8"?>
+	         <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:name="Name_space">
+	   <soapenv:Header/>
+	   <soapenv:Body>
+	      <name:EZV_SYS_ExecuteInternalQuery soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	         <Account xsi:type="xsd:string">50004</Account>
+	         <Login xsi:type="xsd:string">zz_virtualisation</Login>
+	         <Password xsi:type="xsd:string">ESX_EZV</Password>
+	         <requestguid xsi:type="xsd:string">{925A5E65-F328-4934-95C9-7E1C620AD4D5}</requestguid>
+	         <filterguid xsi:type="xsd:string">{F31D0F08-000D-40EB-9ECE-B8AB41F911CD}</filterguid>
+	         <viewguid xsi:type="xsd:string">{8FBF616E-D6A7-49A1-A7FA-C329AEB964A4}</viewguid>
+	        
+	         <iscount xsi:type="xsd:string"></iscount> 
+	         <maxlines xsi:type="xsd:string"></maxlines>
+	         <custom_filter xsi:type="xsd:string"></custom_filter>
+	         <send_php_object xsi:type="xsd:string">0</send_php_object>
+	         
+	      </name:EZV_SYS_ExecuteInternalQuery>
+	   </soapenv:Body>
+	</soapenv:Envelope>"""
+
+	print "Discovery get %s \n" % url
+	response = requests.post(url,data=body,headers=headers)
+	chaine1 = html_decode(response.text)
+	chaine= chaine1.decode('utf-8')
+
+	DateFile['Discovery']= { u'file' : url, 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de DISCOVERY (base inventaire EasyVista)" }
+
+	return chaine;
+
+
+#
+#
+#
+def encodeJsonDiscoverySoap():
+	
+	chaine =getDiscoverySoap()
+
+	lastLine =""
+	j=0
+	for line in chaine.split("\n"):
+
+		#<Fieldname _0= "" _1= "" _2= "Nb de processeurs" _3= "" _4= "" _5= "" _6= "" _7= "" _8= "" _9= "" _10= "Marque"
+		# _11= "Modèle" _12= "FREQUENCY" _13= "PROCESSOR_TFMS_ID" _14= "PROCESSOR_TFMS_PK"/>
+		
+		if line.find("<Fieldname") == 0:
+			line = line.replace("<Fieldname", "")
+			line = line.replace("_0= ","")   # Identifiant PC
+			line = line.replace("_1= ","~")  # CPU 
+			line = line.replace("_2= ","~")  # Nb de processeurs
+			line = line.replace("_3= ","~")  # Nb de coeurs
+			line = line.replace("_4= ","~")  # Fréquence CPU
+			line = line.replace("_5= ","~")  # RAM
+			line = line.replace("_6= ","~")  # D.Dur(Mo)
+			line = line.replace("_7= ","~")  # N° de série
+			line = line.replace("_8= ","~")  # OS
+			line = line.replace("_9= ","~")  # Version de l&apos;OS
+			line = line.replace("_10= ","~") # Marque
+			line = line.replace("_11= ","~") # Modèle
+			line = line.replace("_12= ","~") # FREQUENCY
+			line = line.replace("_13= ","~") # PROCESSOR_TFMS_ID
+			line = line.replace("_14= ","~") # PROCESSOR_TFMS_PK
+
+			line = line.replace("/>", "") # 
+			
+			# pour pouvoir est traiter correctement pas dataTable, pas espace ni de : dans les nom des colonnes
+			line = line.replace(" ", "");
+			line = line.replace(":", "");
+			line = line.replace("é", "e");
+			line = line.replace("ê", "e");
+			line = line.replace("à", "a");
+			line = line.replace("è", "e");
+			line = line.replace("ç", "c");
+
+			entete = line.split('~')
+			
+		#
+		# 
+		#
+		if line.find("<row") == 0  :
+			lastLine =""
+			line = line.replace("<row ","")
+			line = line.replace("_0= ","")   # Identifiant PC
+			line = line.replace("_1= ","~")  # CPU 
+			line = line.replace("_2= ","~")  # Nb de processeurs
+			line = line.replace("_3= ","~")  # Nb de coeurs
+			line = line.replace("_4= ","~")  # Fréquence CPU
+			line = line.replace("_5= ","~")  # RAM
+			line = line.replace("_6= ","~")  # D.Dur(Mo)
+			line = line.replace("_7= ","~")  # N° de série
+			line = line.replace("_8= ","~")  # OS
+			line = line.replace("_9= ","~")  # Version de l&apos;OS
+			line = line.replace("_10= ","~") # Marque
+			line = line.replace("_11= ","~") # Modèle
+			line = line.replace("_12= ","~") # FREQUENCY
+			line = line.replace("_13= ","~") # PROCESSOR_TFMS_ID
+			line = line.replace("_14= ","~") # PROCESSOR_TFMS_PK
+			line = line.replace("/>", "") # 
+
+			data 		= line.split('~')
+			server 		= data[0].upper().replace('"',"").rstrip()
+			os 			= data[8].upper().replace('"',"").rstrip()
+			modele 		= data[10].upper().replace('"',"").rstrip()
+			nbProc 		= data[2].upper().replace('"',"").rstrip()
+			ram 		= data[5].upper().replace('"',"").rstrip()
+			frequence 	= data[4].upper().replace('"',"").rstrip()
+			typeProc	= data[1].upper().replace('"',"").rstrip()
+			if os == "" :
+				os = data[9].upper().replace('"',"").rstrip()
+			if os =="" :
+				os = "inconnue"
+
+			if modele == "(Unknown)":
+				modele = data[11].upper().replace('"',"").rstrip()
+			if modele == "":
+				modele = "inconnue"
+
+			#print "s :%s, os : %s, ram: %s, nbProc : %s" %(server, os, ram, nbProc	)
+			DiscoveryData[server] = {
+						u'RAM' : ram, 
+						u'PROCESSOR_COUNT' : nbProc,
+					 	u'Processeur':  typeProc,
+					 	u'Frequence' : frequence,
+					 	u'modele' : modele,
+					 	u'os' : os}
+
+
+				
+			
 
 #
 # dataPAth
@@ -845,33 +989,7 @@ def dataPath(type):
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue";
 
-#
-# dataPAth
-#
-# 	renvoie le chemin d'accès au fichier en fonction du type
-def dataPathTmp(type):
-	"""
-	"""
-	rootPathCtrlN1 = "../data/";
-	rootPathStatBaies ="../data/";
-	if  type == "VeeamProd" :
-		return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
-	elif type ==  "VeeamRecette" :
-		return rootPathCtrlN1+"2017/septembre/Rapport%20Sauvegarde%20VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
-	elif type == "TSM" :
-		return rootPathCtrlN1+"http://vli5res01.si2m.tec/dashboardstock/capacity_TSM/check_niv1/2017/septembre/Rapport%20Sauvegarde%20TSM/20170908-TSM_Controle_Niv1.html";
-	elif type == "T400A" :
-		return rootPathStatBaies+"Volume-host T400_A92.csv";
-	elif type == "T400B" :
-		return rootPathStatBaies+"Volume-host T400_B94.csv";
-	elif type == "V400A" :
-		return rootPathStatBaies+ "Volume-host V400_A92.csv";
-	elif type == "V400B" :
-		return rootPathStatBaies+ "Volume-host V400_B94.csv";
-	elif type == "VmWare" :
-		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
-	else :
-		return "le chemin pour accéder a "+type+" est inconnue";
+
 
 #
 # encodeJsonVeeam
@@ -1245,9 +1363,9 @@ def encodeJsonVmWare():
 	print "\n"
 
 #
-# encodeJsonDiscovery
+# encodeJsonDiscoveryFile
 #
-def encodeJsonDiscovery():
+def encodeJsonDiscoveryFile():
 	tmpDiscoveryData ={}
 
 	filename = dataPath("Discovery")
@@ -1282,6 +1400,8 @@ def encodeJsonDiscovery():
 #
 # M A I N 
 #
+# ----------------------------------------------------------------------------
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
@@ -1294,7 +1414,8 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
-encodeJsonDiscovery()
+#encodeJsonDiscoveryFile()
+encodeJsonDiscoverySoap()
 
 
  
