@@ -22,28 +22,86 @@
  
     <script>
         var DateFile = null;
+        var DataJson = null;
+        // permet de faire une recherche dans les DataJson et non seulement dans les colonnes affichées
+        var ExtendSearch = false;
+        ExtendSearch = true;
+        //
+        // getObjects
+        //
+		//return an array of objects according to key, value, or key and value matching
+		function getObjects(obj, key, val) {
+		    var objects = [];
+		    for (var i in obj) {
+		    	console.log(" getObjects : "+i +" val : "+obj[i]);
+		        if (!obj.hasOwnProperty(i)) continue;
+		        if (typeof obj[i] == 'object') {
+		            objects = objects.concat(getObjects(obj[i], key, val));    
+		        } 
+		        //if key matches and value matches or if key matches and value is not passed (eliminating the case where key matches but passed value does not)
+		        if (i == key && obj[i] == val || i == key && val == '') { //
+		            objects.push(obj);
+		        } else if (obj[i] == val && key == ''){
+		            //only add if the object is not already in the array
+		            if (objects.lastIndexOf(obj) == -1){
+		                objects.push(obj);
+		            }
+		        }
+		    }
+		    return objects;
+		}
+
+		//
+        // getValues
+        //    
+		//return an array of values that match on a certain value of hash
+		// https://gist.github.com/iwek/3924925		
+		// getvalues(DataJson.data[1],'a)'
+		function getValues(obj, val) {
+		    var objects = [];
+		    var re = new RegExp(val);
+
+		    for (var i in obj) {
+		        if (!obj.hasOwnProperty(i)) continue;
+		        if (typeof obj[i] == 'object') {
+		            objects = objects.concat(getKeys(obj[i], val));
+		        } else if (re.test(obj[i])) {
+		            objects.push(obj[i]);
+		        }
+		    }
+		    return objects;
+		}
+
 
         //
-        // getDataFile
+        // getDataFileDisplay
         //
         // recupère la bonne string dans le tabelau de hash DateFile en fct des paramètre passé
-        function getDataFile(type, field) {
+        function getDataFileDisplay(type, field) {
+
+            var tab_jour=new Array("Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam");
             rep = ""
             match = 0
             for (item in DateFile['data']) {
-                console.log(DateFile['data'][item]['type']);
+                //console.log(DateFile['data'][item]['type']);
                 if (DateFile['data'][item]['type'].search(type) != -1) {
-                    if (match > 0) { rep =rep +", "}
-                    if (match % 2 == 0) { rep = rep +'<BR>'}
-                    rep = rep + DateFile['data'][item][field];
+                    if (match > 0) {rep += ', ';}
+                    var tmp = DateFile['data'][item][field];
+                    tmp = tmp.substr(0,10);
+                    d = new Date(tmp);
+                    console.log("tmp :"+tmp);
+                    console.log("d :"+d);
+                    rep = rep + tab_jour[d.getDay()] +" "+tmp;
                     match ++;
                 }
             }
             if (rep == "") {
                 rep = "N/A";
             }
+            console.log(rep);
             return rep;
         }
+
         //
         // formatBaie
         //
@@ -68,6 +126,7 @@
             }
             return(resultStr);
         }
+
         //
         /* Formatting function for row details - modify as you need */
         //
@@ -159,7 +218,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> Virtualisation<span>'+
-                                    'la date de génération des données est le '+getDataFile('VmWare', 'date')+
+                                    'la date de génération des données est le '+getDataFileDisplay('VmWare', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
@@ -172,7 +231,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> SAN 3PAR<span>'+
-                                    'la date de génération des données est le '+getDataFile('400', 'date')+
+                                    'la date de génération des données est le '+getDataFileDisplay('400', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+class3PAR+'">'+storageCount+'</td></tr>'+
@@ -185,7 +244,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> SAN HDS<span>'+
-                                    'la date de génération des données est le '+getDataFile('HDS', 'date')+
+                                    'la date de génération des données est le '+getDataFileDisplay('HDS', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classHDS+'">'+storageHDSCount+'</td></tr>'+
@@ -198,7 +257,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#">Sauvegarde VEEAM<span>'+
-                                'la date de génération des données est le '+getDataFile('Veeam', 'date')+
+                                'la date de génération des données est le '+getDataFileDisplay('Veeam', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classVeeam+'"> status : '+VeeamScheduleStatus+'</td></tr>'+
@@ -212,7 +271,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> Sauvegarde TSM<span>'+
-                                'la date de génération des données est le '+getDataFile('TSM', 'date')+
+                                'la date de génération des données est le '+getDataFileDisplay('TSM', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classTSM+'"> status : '+TSMStatus+'</td></tr>'+
@@ -243,7 +302,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#">DISCOVERY<span>'+
-                                'la date de génération des données est le '+getDataFile('Discovery', 'date')+
+                                'la date de génération des données est le '+getDataFileDisplay('Discovery', 'date')+
                                 '<span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classDiscovery+'">RAM : '+discoveryRAM+' Mo</td></tr>'+
@@ -337,8 +396,9 @@
                         column.data().unique().sort().each( function ( d, j ) {  
                             select.append( '<option value="'+d+'">'+d+'</option>' )  
                         } );  
-                    } );  
-                }  
+                    } );
+
+                } // fin de initcomplete 
             } ); // fin table variable 
 
             table.buttons().container()
@@ -361,6 +421,38 @@
                 }
             } ); // FIN Add event listener for opening and closing details
 
+            // fin de lecture du json
+            table.on( 'xhr', function () {
+    			DataJson = table.ajax.json();
+    			
+			} );
+
+
+			//$(function () {
+			//    $('.dataTables_wrapper table').dataTable().fnFilterOnReturn();
+			//});
+
+			// tentative de recherche sur le json complet et pas seulement sur les info affiché directement par datatable
+//         $.fn.dataTable.ext.search.push(
+//         	
+//		    function( settings, data, dataIndex, rowData, counter ) {
+//		    	if (ExtendSearch != true) {
+//		    		return true;
+//		    	}
+
+
+//		    	var searchData = $('.dataTables_filter input').val().toLowerCase();
+//		        console.log(searchData);
+//		        //console.log(DataJson.data[dataIndex].CIResponsable);
+//		        if (getValues(DataJson.data[dataIndex], searchData) == []) {
+//		        	console.log(searchData+"not Found");
+//		        	return false;
+//         		} else {
+//         			//console.log(searchData+"Found !!!!");
+//         			return true;
+//         		}
+//		    }
+//		);
             // récupère les date de fichier pour les info Bulle
             $.getJSON("data/fileDate.json", function(data) {
                 DateFile = data;
@@ -369,7 +461,7 @@
         
         } ); // FIN Document Ready
     </script>
-</head>
+</head> 
 <body>
     <div id="menu">
         <div id="gauche"><a href ="cmdbVisu-info.html" target="_blank"><img src="images/info.png" height="37" width="37"></a></div>
