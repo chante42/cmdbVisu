@@ -114,7 +114,7 @@ div#menu a {
 .bulle a {
     color : black;
 }
-.bulle  a:hover,a:focus{
+.bulle  a:hover,a:focus, a:active{
      background:rgba(0,0,0,.4);
      box-shadow:0 1px 0 rgba(255,255,255,.4);
 }
@@ -131,7 +131,7 @@ div#menu a {
     transition:all .25s; 
       opacity:0;
 }
-.bulle a:hover span,  .bulle a:focus span{
+.bulle a:hover span,  .bulle a:focus span .bulle a:active span{
      transform:scale(1) rotate(0);  
       opacity:1;      
 }

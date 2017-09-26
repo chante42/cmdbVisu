@@ -89,9 +89,7 @@
                     var tmp = DateFile['data'][item][field];
                     tmp = tmp.substr(0,10);
                     d = new Date(tmp);
-                    console.log("tmp :"+tmp);
-                    console.log("d :"+d);
-                    rep = rep + tab_jour[d.getDay()] +" "+tmp;
+                    rep = rep + tab_jour[d.getDay()] +" "+tmp[8]+tmp[9]+"/"+tmp[5]+tmp[6]+"/"+tmp.substr(0,4);
                     match ++;
                 }
             }
