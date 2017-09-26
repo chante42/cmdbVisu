@@ -389,6 +389,7 @@ def generateExcel():
 			allocated = used = storage =  allocated_HDS = used_HDS = storage_HDS = ""
 			veeamDure = veeamFin = VeeamScheduleStatus = VeeamVolTransfert = ""
 			tsmDebut = tsmFin = tsmStatus = TsmData = ""
+			ram = frequence = processor_count = os = modele = processeur = ""
 
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
@@ -464,12 +465,31 @@ def generateExcel():
 			if CmdbDataServer[server].get("TSMStatus") != None:
 				tsmStatus = CmdbDataServer[server]["TSMStatus"]
 
+			# DISCOVERY
+			if CmdbDataServer[server].get("RAM") != None:
+				ram = CmdbDataServer[server]["RAM"]
+
+			if CmdbDataServer[server].get("Frequence") != None:
+				frequence 	= CmdbDataServer[server]["Frequence"]
+
+			if CmdbDataServer[server].get("PROCESSOR_COUNT") != None:
+				processor_count = CmdbDataServer[server]["PROCESSOR_COUNT"]
+			
+			if CmdbDataServer[server].get("os") != None:
+				os 	= CmdbDataServer[server]["os"]
+			
+			if CmdbDataServer[server].get("modele") != None:
+				modele 	= CmdbDataServer[server]["modele"]
+
+			if CmdbDataServer[server].get("Processeur") != None:
+				processeur 	= CmdbDataServer[server]["Processeur"]
 
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
 						 veeamDure, veeamFin,  VeeamScheduleStatus,
-						tsmDebut, tsmFin, tsmStatus])
+						tsmDebut, tsmFin, tsmStatus,
+						ram, os, processor_count, frequence, processeur, modele	])
 
 		options = {
 		           'columns': [{'header': 'Nom serveur',
@@ -563,6 +583,30 @@ def generateExcel():
 		                        {'header': 'TSM status',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': 'Discovery RAM',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Discovery OS',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Discovery Nb Proc',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Discovery Fréquence',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Discovery Processeur',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': 'Discovery modele',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
 		                       ],
 		            'data': data
@@ -585,9 +629,15 @@ def generateExcel():
 		worksheetServer.set_column('P:P', 9)
 		worksheetServer.set_column('Q:Q', 9)
 		worksheetServer.set_column('R:R', 14)
+		worksheetServer.set_column('S:S', 9)
+		worksheetServer.set_column('T:T', 9)
+		worksheetServer.set_column('U:U', 9)
+		worksheetServer.set_column('V:V', 9)
+		worksheetServer.set_column('V:V', 9)
+		worksheetServer.set_column('V:V', 9)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +8, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +12, options)
 
 	except :
 		print "Exception in user code:"
@@ -755,7 +805,7 @@ def  getCmdbSoap():
 	   <soapenv:Header/>
 	   <soapenv:Body>
 	      <name:EZV_SYS_ExecuteInternalQuery soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-	         <Account xsi:type="xsd:string">50005</Account>
+	         <Account xsi:type="xsd:string">50004</Account>
 	         <Login xsi:type="xsd:string">zz_virtualisation</Login>
 	         <Password xsi:type="xsd:string">ESX_EZV</Password>
 	         <requestguid xsi:type="xsd:string">{1F809368-5E09-4AE9-B652-9EBB132D9F77}</requestguid>
@@ -976,7 +1026,8 @@ def dataPath(type):
 		return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
 	elif type == "VmWare" :
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
-		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-17.xlsx";
+		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-17.xlsx";
+		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-24.xlsx";
 	elif type == "fileDate":
 		return rootPathStatBaies+ "fileDate.json";
 	elif type == "DataTableFile":
