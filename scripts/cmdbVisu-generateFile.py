@@ -44,6 +44,7 @@ import datetime
 import re
 import json
 import unicodecsv
+from stat import ST_CTIME
 
 
 Vm 		 		= {}
@@ -109,6 +110,23 @@ def html_decode(s):
     for code in htmlCodes:
         s = s.replace(code[1], code[0])
     return s
+
+#
+# getLastFilesByDate
+# 
+def getLastFilesByDate(directory, name):
+	"""
+	renvoie le nom du fichier de "directory" qui matche "name"  
+	"""
+	files = [ f for f in os.listdir(directory) ]
+	files.sort()
+	lastfile =""
+	for f in files:
+		if re.match(name, f):
+			lastfile = f
+	if directory[:-1] != "/" :
+		directory = directory + "/" 
+	return directory+lastfile
 
 #
 # generateDateTableFile
@@ -827,7 +845,7 @@ def  getCmdbSoap():
 	chaine1 = html_decode(response.text)
 	chaine= chaine1.decode('utf-8')
 
-	DateFile['CMDB']= { u'file' : url, 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de l'association serveur/appli de la CMDB sur EASYVIST" }
+	DateFile['CMDB']= { u'file' : url+"  : Account : 50004", 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de l'association serveur/appli de la CMDB sur EASYVIST" }
 
 	return chaine;
 
@@ -871,7 +889,7 @@ def  getDiscoverySoap():
 	chaine1 = html_decode(response.text)
 	chaine= chaine1.decode('utf-8')
 
-	DateFile['Discovery']= { u'file' : url, 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de DISCOVERY (base inventaire EasyVista)" }
+	DateFile['Discovery']= { u'file' : url+"  : Account : 50004", 'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), u'info' : "URL SOAP d'interrogation de DISCOVERY (base inventaire EasyVista)" }
 
 	return chaine;
 
@@ -1025,9 +1043,10 @@ def dataPath(type):
 	elif type == "HDS-PROD-B" :
 		return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
 	elif type == "VmWare" :
+		return getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-17.xlsx";
-		return "/var/www/virtu/exportWindows/InfraVMware-2017-09-24.xlsx";
+		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-24.xlsx";
 	elif type == "fileDate":
 		return rootPathStatBaies+ "fileDate.json";
 	elif type == "DataTableFile":
@@ -1457,6 +1476,8 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
+#print "|"+getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")+"|"
+#sys.exit(-1)
 
 print "-----------------------------------------------------------------------------"
 print "-- Début : "+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
