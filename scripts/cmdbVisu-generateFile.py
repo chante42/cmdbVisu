@@ -124,14 +124,55 @@ def getLastFilesByDate(directory, name):
 	for f in files:
 		if re.match(name, f):
 			lastfile = f
-	if directory[:-1] != "/" :
+	#print "dir :"+directory+"|"+directory[-1]+"|" 
+	if directory[-1] != "/" :
 		directory = directory + "/" 
 	return directory+lastfile
 
+
 #
-# generateDateTableFile
+# insertInfoServerNotInCMDB
 #
-def generateDateTableFile():
+def insertInfoServerNotInCMDB(server, infoAppli):
+	"""
+		Ajoute toutes les infos (TSM,VEEAM, ......) sur un serveur qui n'est pas dans la CMDB
+	"""
+	CmdbDataServer[server] = {
+							"Nom"			: server,
+							"CINom" 		: "APPLI INCONNUE(info "+infoAppli+")",
+							"CIResponsable" : "",
+							"GSA"			: ""
+						}
+
+	# Ajoute info TSM
+	if server in Tsm.keys() :
+		for item, value  in Tsm[server].items() :
+			if (item == "TSMFin" or item == "TSMDebut") and len(value)> 7:
+				value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
+			CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info VEEAM
+	if server in Veeam.keys() :
+		for item, value  in Veeam[server].items() :
+			if item == "VeeamFin"  and len(value) > 6:
+				value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
+			CmdbDataServer[server][item]=str(value)
+
+	# ecrire les infos de VMWare 
+	if server in Vm.keys() :
+		for item, value  in Vm[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info Discovery
+	if server in DiscoveryData.keys() :
+		for item, value  in DiscoveryData[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+
+#
+# generateDataTableFile
+#
+def generateDataTableFile():
 	"""
 		génére le fichier qui sera lu par le javascriot dataTable en ajax pour présentation
 		utise les variable Globale
@@ -244,7 +285,6 @@ def generateDateTableFile():
 				# CI : Nom
 				CmdbDataAppli[appli]["Nom"] = CmdbDataAppli[appli]["Nom"] + "," + data[1].replace('"',"").rstrip()
 				
-			#fd.write('\t\t'+data[5].upper()+':{\n')
 			fd.write('\t\t{\n')  #-=- pour dataTable
 			i = 0
 			
@@ -303,6 +343,7 @@ def generateDateTableFile():
 				#pprint(CmdbDataServer[server])
 
 			# ecrire les info CMDB
+			# data = line.split de cmdbSoap
 			for buf in data :
 
 				#bug dans certain champs retourné par le webService
@@ -321,6 +362,44 @@ def generateDateTableFile():
 			lastLine ='\t\t},\n'
 			j += 1
 
+	#
+	# On rajoute les serveurs qui ne sont pas dans la cmdb.
+	#
+	print ("Ajout des serveurs qui ne sont pas dans la cmdb  avec comme application : INCONNUE : ") 
+	# Discovery
+	nb = 0
+	for server in DiscoveryData.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"Discovery")
+			nb = nb +1
+	print "%-4.4d Serveur ont été ajouté par les info de Discovery  " % nb 
+ 	
+ 	# VMWare 
+ 	nb = 0
+	for server in Vm.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"VMWARE")
+			nb = nb +1
+ 	print "%-4.4d Serveur ont été ajouté par les info de VmWare  " % nb 
+
+	# TSM
+	nb = 0
+	for server in Tsm.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"TSM")
+			nb = nb +1
+	print "%-4.4d Serveur ont été ajouté par les info de TSM  " % nb 
+
+	# VEEAM
+	nb = 0
+	for server in Veeam.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"VEEAM")
+			nb = nb +1
+ 	print "%-4.4d Serveur ont été ajouté par les info de VEEAM  " % nb 
+ 	
+ 	# -=- On a ajouté dans la structure mais pas dans l'export 
+ 	# W A R N I N G
 	fd.write('\t\t}\n')
 
 	fd.write('\n\t]\n}') #   -=- pour dataTable
@@ -510,59 +589,59 @@ def generateExcel():
 						ram, os, processor_count, frequence, processeur, modele	])
 
 		options = {
-		           'columns': [{'header': 'Nom serveur',
+		           'columns': [{'header': u'Nom serveur',
 		           				'header_format' :  column_format,
 		           				'format' : firstColumn_format
 		           				},
-		                       {'header': 'Nom Appli',
+		                       {'header': u'Nom Appli',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                       {'header': 'Resp Appli',
+		                       {'header': u'Resp Appli',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                       {'header': 'CLE APP',
+		                       {'header': u'CLE APP',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                       {'header': 'Resp server',
+		                       {'header': u'Resp server',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Vm CPU',
+		                        {'header': u'Vm CPU',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Vm Mémoire (Go)',
+		                        {'header': u'Vm Mémoire (Go)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Vm Disque (Go)',
+		                        {'header': u'Vm Disque (Go)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Vm Banc',
+		                        {'header': u'Vm Banc',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Vm OS',
+		                        {'header': u'Vm OS',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'CICategorie',
+		                        {'header': u'CICategorie',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': '3PAR alloué (Go)',
+		                        {'header': u'3PAR alloué (Go)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': '3PAR utilisé (Go)',
+		                        {'header': u'3PAR utilisé (Go)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': '3PAR Nom Baie',
+		                        {'header': u'3PAR Nom Baie',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
@@ -574,55 +653,55 @@ def generateExcel():
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'HDS Baie',
+		                        {'header': u'HDS Baie',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Veeam durée',
+		                        {'header': u'Veeam durée',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Veeam fin',
+		                        {'header': u'Veeam fin',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Veeam status',
+		                        {'header': u'Veeam status',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'TSM début',
+		                        {'header': u'TSM début',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'TSM fin',
+		                        {'header': u'TSM fin',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'TSM status',
+		                        {'header': u'TSM status',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Discovery RAM',
+		                        {'header': u'Discovery RAM (Mo)',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Discovery OS',
+		                        {'header': u'Discovery OS',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Discovery Nb Proc',
+		                        {'header': u'Discovery Nb Proc',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Discovery Fréquence',
+		                        {'header': u'Discovery Fréquence',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Discovery Processeur',
+		                        {'header': u'Discovery Processeur',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
-		                        {'header': 'Discovery modele',
+		                        {'header': u'Discovery modele',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        }
@@ -895,7 +974,7 @@ def  getDiscoverySoap():
 
 
 #
-#
+# encodeJsonDiscoverySoap
 #
 def encodeJsonDiscoverySoap():
 	
@@ -1077,7 +1156,7 @@ def  encodeJsonVeeam():
 		DateFile[veeamType]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de controle de niveau 1 des sauvegardes "+veeamType+" généré par un script de joaquim le matin a 8H00" }
 		
 		print "traitement fichier : %s " % filename
-		with open(filename) as fdSrc:
+		with open(filename, "r") as fdSrc:
 			for line in fdSrc.readlines():
 		  		if pTrTest.match(line) :
 					# retire le <tr> et tous ce qu'il y a avant
@@ -1121,7 +1200,7 @@ def  encodeJsonTsm():
 	DateFile['TSM']= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de controle de niveau 1 des sauvegardes TSM généré par un script de joaquim le matin a 8H00"  }
 		
 	print "traitement fichier : %s " % filename
-	with open(filename) as fdSrc:
+	with open(filename, "r") as fdSrc:
 		for line in fdSrc.readlines():
 	  		if pTrTest.match(line) :
 				# retire le <tr> et tous ce qu'il y a avant
@@ -1164,7 +1243,7 @@ def  encodeJson3PAR(filenameDest):
 		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par export manuel de l'interface d'admin"  }
 		
 		print "traitement fichier : %s " % filename
-		with open(filename) as fdSrc:
+		with open(filename, "r") as fdSrc:
 			i = 0;
 			for line in fdSrc.readlines():
 				i += 1
@@ -1265,7 +1344,7 @@ def  encodeJsonHDS(filenameDest):
 		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par la concaténation de 2 export manuel a aprtir de l'interface d'admin"  }
 
 		print "traitement fichier : %s " % filename
-		with open(filename) as fdSrc:
+		with open(filename, "r") as fdSrc:
 			i = 0;
 			for line in fdSrc.readlines():
 				i += 1
@@ -1491,7 +1570,7 @@ encodeJsonDiscoverySoap()
 
 
  
-generateDateTableFile()
+generateDataTableFile()
 
 generateExcel()
 
