@@ -1,6 +1,6 @@
 
 
-
+ 
         //
         // dateDiff
         //
@@ -237,8 +237,8 @@
                                     'la date de génération des données est le '+getDataFileDisplay('VmWare', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
-                            '<tr><td class="'+classVirtu+'"> CPU : '+vmCpu+'</td></tr>'+
-                            '<tr><td class="'+classVirtu+'"> MEM : '+vmMem+' Go </td></tr>'+
+                            '<tr><td class="'+classVirtu+'"> VCPU : '+Math.floor(vmCpu)+'</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"> MEM : '+Math.floor(vmMem)+' Go </td></tr>'+
                             '<tr><td class="'+classVirtu+'"> Disk : '+vmDisk+' Go</td></tr>'+
                             '<tr><td class="'+classVirtu+'"> OS :'+vmOs+'</td></tr>'+
                         '</table>'+
