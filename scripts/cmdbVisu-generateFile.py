@@ -1114,13 +1114,17 @@ def dataPath(type):
 	elif type == "V400B" :
 		return rootPathStatBaies+ "Volume-host V400_B94-20170908.csv";
 	elif type == "HDS-PPROD-A" :
-		return rootPathStatBaies+ "HDS_A92_PPROD-20170911.csv";
+		#return rootPathStatBaies+ "HDS_A92_PPROD-20170911.csv";
+		return rootPathStatBaies+ "HDS_A92_PPROD-20170929.csv";
 	elif type == "HDS-PPROD-B" :
-		return rootPathStatBaies+ "HDS_B94_PPROD-20170911.csv";
+		#return rootPathStatBaies+ "HDS_B94_PPROD-20170911.csv";
+		return rootPathStatBaies+ "HDS_B94_PPROD-20170929.csv";
 	elif type == "HDS-PROD-A" :
-		return rootPathStatBaies+ "HDS_A92_PROD-20170911.csv";
+		#return rootPathStatBaies+ "HDS_A92_PROD-20170911.csv";
+		return rootPathStatBaies+ "HDS_A92_PROD-20170929.csv";
 	elif type == "HDS-PROD-B" :
-		return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
+		#return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
+		return rootPathStatBaies+ "HDS_B94_PROD-20170929.csv";
 	elif type == "VmWare" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
@@ -1359,16 +1363,16 @@ def  encodeJsonHDS(filenameDest):
 					ColNameNum = colAllocatedNum = colUseNum =0
 					for j, e in enumerate(col):
 						e = e .replace(" Gb", "").replace(" Go", "")
-						e = e .replace(" GB", "").replace(" GO", "")
+						e = e .replace(" GB", "").replace(" Go", "")
 						e = e .replace(" Mb", "").replace(" Mo", "")
-						e = e .replace(" MB", "").replace(" MO", "")
+						e = e .replace(" MB", "").replace(" Mo", "")
 						e = e .replace(" Tb", "").replace(" To", "")
-						e = e .replace(" TB", "").replace(" TO", "")
-						if e == 'Host Group':
+						e = e .replace(" TB", "").replace(" To", "")
+						if 'Host Group' in e :
 							ColNameNum 			= j
-						elif e == 'Total':
+						elif 'Total' in e :
 							colAllocatedNum 	= j
-						elif e == 'Used' :
+						elif 'Used' in e :
 							colUseNum 			= j
 				#les DATA
 				else :
