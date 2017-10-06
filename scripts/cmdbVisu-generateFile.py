@@ -1115,16 +1115,16 @@ def dataPath(type):
 		return rootPathStatBaies+ "Volume-host V400_B94-20170908.csv";
 	elif type == "HDS-PPROD-A" :
 		#return rootPathStatBaies+ "HDS_A92_PPROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_A92_PPROD-20170929.csv";
+		return rootPathStatBaies+ "HDS_A92_PPROD-20171003.csv";
 	elif type == "HDS-PPROD-B" :
 		#return rootPathStatBaies+ "HDS_B94_PPROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_B94_PPROD-20170929.csv";
+		return rootPathStatBaies+ "HDS_B94_PPROD-20171003.csv";
 	elif type == "HDS-PROD-A" :
 		#return rootPathStatBaies+ "HDS_A92_PROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_A92_PROD-20170929.csv";
+		return rootPathStatBaies+ "HDS_A92_PROD-20171003.csv";
 	elif type == "HDS-PROD-B" :
 		#return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_B94_PROD-20170929.csv";
+		return rootPathStatBaies+ "HDS_B94_PROD-20171003.csv";
 	elif type == "VmWare" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
@@ -1483,7 +1483,7 @@ def encodeJsonVmWare():
 		colOS 		= 17	
 		colCluster	= 3
 		colNomVM	= 0
-
+ 
 
 		noLigne = noLigne + 1
 		if noLigne < 2 :
