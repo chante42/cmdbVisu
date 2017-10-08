@@ -45,7 +45,7 @@ import re
 import json
 import unicodecsv
 from stat import ST_CTIME
-
+from netscaler.netscaler import *
 
 Vm 		 		= {}
 Baie3PAR 		= {}
@@ -57,6 +57,38 @@ Veeam 			= {}
 Tsm 			= {}
 DiscoveryData	= {}
 
+netscalersList = {
+			"vpx1p"  : { "dnsname" : "vpx1p.si2m.tec",  "description" : "Load balancer pour la prod en A92" },
+			"vpx2p"  : { "dnsname" : "vpx2p.si2m.tec",  "description" : "Load balancer pour la preprod en A92" },
+			"vpx3p"  : { "dnsname" : "vpx3p.si2m.tec",  "description" : "Load balancer pour la recette en A92" },
+			"vpx4p"  : { "dnsname" : "vpx4p.si2m.tec",  "description" : "Load balancer de test pour le réseau en A92" },
+			"vpx5p"  : { "dnsname" : "vpx5p.si2m.tec",  "description" : "Load balancer pour la perf en A92" },
+
+		  	"vpx6p"  : { "dnsname" : "vpx6p.si2m.tec",  "description" : "Load balancer pour la prod en B94" },
+		  	"vpx7p"  : { "dnsname" : "vpx7p.si2m.tec",  "description" : "Load balancer pour la preprod en B94" },
+		  	"vpx8p"  : { "dnsname" : "vpx8p.si2m.tec",  "description" : "Load balancer pour la recette en B94" },
+		  	"vpx9p"  : { "dnsname" : "vpx9p.si2m.tec",  "description" : "Load balancer de test pour le réseau en B94" },
+
+		  	"zvpx1p" : { "dnsname" : "zvpx1p.si2m.tec", "description" : "Load balancer pour la prod DMZ en A92" },
+		  	"zvpx2p" : { "dnsname" : "zvpx2p.si2m.tec", "description" : "Load balancer pour la preprod DMZ en A92" },
+		  	"zvpx3p" : { "dnsname" : "zvpx3p.si2m.tec", "description" : "Load balancer pour la recette DMZ en A92" },
+		  	"zvpx4p" : { "dnsname" : "zvpx4p.si2m.tec", "description" : "Load balancer pour le test reseau DMZ en A92" },
+		  	"zvpx5p" : { "dnsname" : "zvpx5p.si2m.tec", "description" : "Load balancer pour la perf DMZ en A92" },
+		  	
+		  	"zvpx6p" : { "dnsname" : "zvpx6p.si2m.tec", "description" : "Load balancer pour la prod DMZ en B94" },
+		  	"zvpx7p" : { "dnsname" : "zvpx7p.si2m.tec", "description" : "Load balancer pour la preprod DMZ en B94" },
+		  	"zvpx8p" : { "dnsname" : "zvpx8p.si2m.tec", "description" : "Load balancer pour le recette reseau DMZ en B94" },
+		  	"zvpx9p" : { "dnsname" : "zvpx9p.si2m.tec", "description" : "Load balancer pour le test DMZ en B94"}
+		  }
+
+#netscalersList = { 
+#			"vpx3p"  : { "dnsname" : "vpx3p.si2m.tec",  "description" : "Load balancer pour la recette en A92" },
+#			"vpx4p"  : { "dnsname" : "vpx4p.si2m.tec",  "description" : "Load balancer de test pour le réseau en A92" },
+#			"vpx1p"  : { "dnsname" : "vpx1p.si2m.tec",  "description" : "Load balancer pour la prod en A92" },
+#			"vpx2p"  : { "dnsname" : "vpx2p.si2m.tec",  "description" : "Load balancer pour la preprod en A92" },
+#		  	"vpx6p"  : { "dnsname" : "vpx6p.si2m.tec",  "description" : "Load balancer pour la prod en B94" },
+#}
+
 def creationDateFile(path_to_file):
 	"""
 	Try to get the date that a file was created, falling back to when it was
@@ -65,6 +97,7 @@ def creationDateFile(path_to_file):
 	"""
 	resultStr = ""
 
+	#print "file : |"+path_to_file+"|"
 	if platform.system() == 'Windows':
 		date = os.path.getctime(path_to_file)
 	else:
@@ -124,7 +157,7 @@ def getLastFilesByDate(directory, name):
 	for f in files:
 		if re.match(name, f):
 			lastfile = f
-	#print "dir :"+directory+"|"+directory[-1]+"|" 
+	#print "dir :"+directory+"|"+lastfile+"|" 
 	if directory[-1] != "/" :
 		directory = directory + "/" 
 	return directory+lastfile
@@ -332,8 +365,6 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
-			# ecrire les infos de NetScaler
-
 			# ecrire les infos de Discovery
 			if server in DiscoveryData.keys() :
 				#print server
@@ -341,6 +372,15 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 				#pprint(CmdbDataServer[server])
+
+			# ecrire les infos de NetScaler
+			if server in Netscaler.keys() :
+				#print server
+				for item, value  in Netscaler[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+				#pprint(CmdbDataServer[server])
+
 
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
@@ -470,7 +510,10 @@ def generateExcel():
 
 	#
 	#  Onglet Info
-	worksheet.write_rich_string('A1', dateTable_format, "Export des information issue de la CMDB et des fichier techniques")
+	worksheet.write_rich_string('A1', dateTable_format, "Export des informations issue de la CMDB et des fichier techniques")
+	worksheet.write_rich_string('A2', dateTable_format, "L'onglet 'par serveur' contient la liste des serveurs récupérés par l'ensemebles de fichier parsés")
+	worksheet.write_rich_string('A3', dateTable_format, "L'onglet 'par application' Par encore complété")
+	worksheet.write_rich_string('A4', dateTable_format, "L'onglet 'Fichier Src' contient la liste des fichiers, URL analysé avec la date de l'information  ")
 
 	#
 	#   Onglet Serveur
@@ -487,7 +530,7 @@ def generateExcel():
 			veeamDure = veeamFin = VeeamScheduleStatus = VeeamVolTransfert = ""
 			tsmDebut = tsmFin = tsmStatus = TsmData = ""
 			ram = frequence = processor_count = os = modele = processeur = ""
-
+			vip = vpx = vserveur = ""
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
 
@@ -581,12 +624,22 @@ def generateExcel():
 			if CmdbDataServer[server].get("Processeur") != None:
 				processeur 	= CmdbDataServer[server]["Processeur"]
 
+			if CmdbDataServer[server].get("VIP") != None:
+				vip 	= CmdbDataServer[server]["VIP"]
+
+			if CmdbDataServer[server].get("Vpx") != None:
+				vpx 	= CmdbDataServer[server]["Vpx"]
+
+			if CmdbDataServer[server].get("Vserveur") != None:
+				vserveur 	= CmdbDataServer[server]["Vserveur"]
+
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
 						 veeamDure, veeamFin,  VeeamScheduleStatus,
 						tsmDebut, tsmFin, tsmStatus,
-						ram, os, processor_count, frequence, processeur, modele	])
+						ram, os, processor_count, frequence, processeur, modele, 
+						vip, vpx, vserveur])
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -704,6 +757,18 @@ def generateExcel():
 		                        {'header': u'Discovery modele',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': u'Netscaler VIP',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Netscaler VPX',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Netscaler Vserveur',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
 		                       ],
 		            'data': data
@@ -732,9 +797,11 @@ def generateExcel():
 		worksheetServer.set_column('V:V', 9)
 		worksheetServer.set_column('V:V', 9)
 		worksheetServer.set_column('V:V', 9)
+		worksheetServer.set_column('W:W', 9)
+		worksheetServer.set_column('AE:AE', 9)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +12, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15, options)
 
 	except :
 		print "Exception in user code:"
@@ -1091,40 +1158,45 @@ def dataPath(type):
 	if  "cmdb-test" in os.getcwd() :
 		rootPathStatBaies ="/home/i14sj00/cmdb/cmdb-test/data/"
 	else : 
-		rootPathStatBaies ="/home/i14sj00/cmdb/data/" 
+		rootPathStatBaies ="/home/i14sj00/cmdb/data/"  
 
 	#rootPathStatBaies ="/home/i14sj00/cmdb/data/";
 	if  type == "VeeamProd" :
 		#return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
-		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Production.html";
+		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Production.html";
+		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Production.html")
 	elif type ==  "VeeamRecette" :
-		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Recette.html";
+		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Recette.html";
 		#return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
-	elif type ==  "Teste" :
-		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/"+moisStr+joursStr
-		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Recette.html";
+			return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Recette.html")
+
 	elif type == "TSM" :
-		return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
+		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
+		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/", ".*TSM_Controle_Niv1.html")
 	elif type == "T400A" :
-		return rootPathStatBaies+"Volume-host T400_A92-20170908.csv"
+		#return rootPathStatBaies+"Volume-host T400_A92-20170908.csv"
+		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_A92")
 	elif type == "T400B" :
-		return rootPathStatBaies+"Volume-host T400_B94-20170908.csv"
+		#return rootPathStatBaies+"Volume-host T400_B94-20170908.csv"
+		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_B94")
 	elif type == "V400A" :
-		return rootPathStatBaies+ "Volume-host V400_A92-20170908.csv";
+		#return rootPathStatBaies+ "Volume-host V400_A92-20170908.csv";
+		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_A92")
 	elif type == "V400B" :
-		return rootPathStatBaies+ "Volume-host V400_B94-20170908.csv";
+		#return rootPathStatBaies+ "Volume-host V400_B94-20170908.csv";
+		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_B94")
 	elif type == "HDS-PPROD-A" :
-		#return rootPathStatBaies+ "HDS_A92_PPROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_A92_PPROD-20171003.csv";
+		#return rootPathStatBaies+ "HDS_A92_PPROD-20171003.csv";
+		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PPROD")
 	elif type == "HDS-PPROD-B" :
-		#return rootPathStatBaies+ "HDS_B94_PPROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_B94_PPROD-20171003.csv";
+		#return rootPathStatBaies+ "HDS_B94_PPROD-20171003.csv";
+		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PPROD")
 	elif type == "HDS-PROD-A" :
-		#return rootPathStatBaies+ "HDS_A92_PROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_A92_PROD-20171003.csv";
+		#return rootPathStatBaies+ "HDS_A92_PROD-20171003.csv";
+		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PROD")
 	elif type == "HDS-PROD-B" :
-		#return rootPathStatBaies+ "HDS_B94_PROD-20170911.csv";
-		return rootPathStatBaies+ "HDS_B94_PROD-20171003.csv";
+		#return rootPathStatBaies+ "HDS_B94_PROD-20171003.csv";
+		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PROD")
 	elif type == "VmWare" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
@@ -1549,6 +1621,25 @@ def encodeJsonDiscoveryFile():
 		i = i +  1
 		
 
+#
+# encodeJsonNetscaler
+#
+def encodeJsonNetscaler():
+	for name in netscalersList.keys():
+		print ('\n==============')
+
+		#print netscalersList[name]["dnsname"]
+		netscalerGetInfo(netscalersList[name]["dnsname"])
+		
+
+		DateFile[name]= { u'file' : netscalersList[name]["dnsname"], 
+							'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+							u'info' : netscalersList[name]["description"] }
+		
+		#pprint (Netscaler)
+
+
+
 # ----------------------------------------------------------------------------
 #
 # M A I N 
@@ -1564,6 +1655,7 @@ sys.setdefaultencoding('utf-8')
 
 print "-----------------------------------------------------------------------------"
 print "-- Début : "+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+
 encodeJson3PAR("result3PAR.json")
 encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
@@ -1572,6 +1664,7 @@ encodeJsonTsm()
 #encodeJsonDiscoveryFile()
 encodeJsonDiscoverySoap()
 
+encodeJsonNetscaler()
 
  
 generateDataTableFile()

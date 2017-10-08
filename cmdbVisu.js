@@ -141,14 +141,43 @@
             }
             return result
         }
+
+        //
+        // formatNetscalerVip
+        // 
+        function formatNetscalerVip(vip) {
+            res ="";
+            tmp = vip.split(',');
+            for (var i = 0; i < tmp.length; i++) {
+                res += '<a href="'+tmp[i]+'" target="_blank">'+tmp[i]+'</a><br>';
+            }
+            return res;
+        }
+
+        //
+        // formatNetscalerVpx
+        // 
+        function formatNetscalerVpx(vpx) {
+            res ="";
+            tmp = vpx.split(',');
+            var tmpHash = {};
+            for (var i = 0; i < tmp.length; i++) {
+                if (!(tmp in tmpHash)) {
+                    res += '<a href="https://'+tmp[i]+'" target="_blank">'+tmp[i]+'</a>,';
+                    tmpHash[tmp] = tmp;
+                }
+            }
+            return res;
+        }
+
         //
         /* Formatting function for row details - modify as you need */
         //
         function format ( d ) {
             var count = {};
             var storageCount = storageHDSCount = "N/A";
-            class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = "normal";
-            classSupervision   = classNetscaler  ="pas-d-info";
+            class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
+            classSupervision   = "pas-d-info";
             if  (d.storage != undefined) {
                 //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
                 storageCount = formatBaie(d.storage);
@@ -185,6 +214,9 @@
                 classDiscovery ="pas-d-info";
             }
 
+            if  (d.VIP == undefined) {
+                classNetscaler ="pas-d-info";
+            }
             vmCpu               = d.vmCpu;
             vmMem               = d.vmMem;
             vmDisk              = d.vmDisk;
@@ -195,14 +227,17 @@
             used_HDS            = d.used_HDS;
             VeeamScheduleStatus = d.VeeamScheduleStatus;
             VeeamFin            = d.VeeamFin;
-            VeeamDure           = d.VeeamDure
-            TSMDebut            = d.TSMDebut
-            TSMStatus           = d.TSMStatus
-            TSMFin              = d.TSMFin 
-            discoveryRAM        = d.RAM 
-            dicoveryNbProc      = d.PROCESSOR_COUNT
-            discoveryProcessor  = d.Processeur
-            discoveryFrequence  = d.Frequence
+            VeeamDure           = d.VeeamDure;
+            TSMDebut            = d.TSMDebut;
+            TSMStatus           = d.TSMStatus;
+            TSMFin              = d.TSMFin; 
+            discoveryRAM        = d.RAM; 
+            dicoveryNbProc      = d.PROCESSOR_COUNT;
+            discoveryProcessor  = d.Processeur;
+            discoveryFrequence  = d.Frequence;
+            
+            vserveur            = d.Vserveur;
+           
 
             if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
             if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
@@ -222,6 +257,17 @@
             if (d.PROCESSOR_COUNT               == undefined) { dicoveryNbProc          = "N/A"}
             if (d.Processeur                    == undefined) { discoveryProcessor      = "N/A"}
             if (d.Frequence                     == undefined) { discoveryFrequence      = "N/A"}
+            if (d.VIP                           == undefined) {
+                 vip                     = "N/A"}
+            else {
+                vip            = formatNetscalerVip(d.VIP);
+                } 
+            if (d.Vserveur                      == undefined) { vserveur                = "N/A"}
+            if (d.Vpx                           == undefined) { 
+                vpx                     = "N/A"}
+            else {
+                 vpx           = formatNetscalerVpx(d.Vpx);     
+            }
 
             VeeamDure           = VeeamDure.replace(':', 'h',1);
             VeeamDure           = VeeamDure.replace(':', 'm',1);
@@ -230,103 +276,97 @@
             // `d` is the original data object for the row
             return '<table class="detail-info" cellspacing="0" border="0" >'+
                 '<tr style="background-color: #adc9f7">'+
-                    '<td width="10%">'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> Virtualisation<span>'+
-                                    'la date de génération des données est le '+getDataFileDisplay('VmWare', 'date')+
+                                    'Date de génération des données : '+getDataFileDisplay('VmWare', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
-                            '<tr><td class="'+classVirtu+'"> VCPU : '+Math.floor(vmCpu)+'</td></tr>'+
-                            '<tr><td class="'+classVirtu+'"> MEM : '+Math.floor(vmMem)+' Go </td></tr>'+
-                            '<tr><td class="'+classVirtu+'"> Disk : '+vmDisk+' Go</td></tr>'+
-                            '<tr><td class="'+classVirtu+'"> OS :'+vmOs+'</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"><span class="titreLigne"> VCPU</span> : '+Math.floor(vmCpu)+'</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  MEM</span> : '+Math.floor(vmMem)+' Go </td></tr>'+
+                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  Disk</span> : '+vmDisk+' Go</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  OS</span> :'+vmOs+'</td></tr>'+
                         '</table>'+
-                    '</td>'+
-                    '<td width="10%">'+
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> SAN 3PAR<span>'+
-                                    'la date de génération des données est le '+getDataFileDisplay('400', 'date')+
+                                    'Date de génération des données : '+getDataFileDisplay('400', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+class3PAR+'">'+storageCount+'</td></tr>'+
-                            '<tr><td class="'+class3PAR+'"> alloué :'+allocated+' Go</td></tr>'+
-                            '<tr><td class="'+class3PAR+'"> utilisé :'+used+' Go</td></tr>'+
-                            '<tr><td class="'+class3PAR+'"> </td></tr>'+
+                            '<tr><td class="'+class3PAR+'"><span class="titreLigne">Alloué</span> :'+allocated+' Go</td></tr>'+
+                            '<tr><td class="'+class3PAR+'"><span class="titreLigne">Utilisé</span> :'+used+' Go</td></tr>'+
                         '</table>'+ 
-                    '</td>'+
-                    '<td width="10%">'+
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> SAN HDS<span>'+
-                                    'la date de génération des données est le '+getDataFileDisplay('HDS', 'date')+
+                                    'Date de génération des données : '+getDataFileDisplay('HDS', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classHDS+'">'+storageHDSCount+'</td></tr>'+
-                            '<tr><td class="'+classHDS+'">alloué :'+allocated_HDS+' Go</td></tr>'+
-                            '<tr><td class="'+classHDS+'">utilisé : '+used_HDS+' Go</td></tr>'+
-                            '<tr><td class="'+classHDS+'"> </td></tr>'+
+                            '<tr><td class="'+classHDS+'"><span class="titreLigne">Alloué</span> :'+allocated_HDS+' Go</td></tr>'+
+                            '<tr><td class="'+classHDS+'"><span class="titreLigne">Utilisé</span> : '+used_HDS+' Go</td></tr>'+
                         '</table>'+
-                    '</td>'+
-                    '<td width="10%">'+
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#">Sauvegarde VEEAM<span>'+
-                                'la date de génération des données est le '+getDataFileDisplay('Veeam', 'date')+
+                                'Date de génération des données  : '+getDataFileDisplay('Veeam', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
-                            '<tr><td class="'+classVeeam+'"> status : '+VeeamScheduleStatus+'</td></tr>'+
-                            '<tr><td class="'+classVeeam+'"> Fin : '+VeeamFin+'</td></tr>'+
-                            '<tr><td class="'+classVeeam+'"> durée : '+VeeamDure+'</td></tr>'+
-                            '<tr><td class="'+classVeeam+'"> </td></tr>'+
-                            '<tr><td class="'+classVeeam+'"> </td></tr>'+
+                            '<tr><td class="'+classVeeam+'"><span class="titreLigne">Status</span> : '+VeeamScheduleStatus+'</td></tr>'+
+                            '<tr><td class="'+classVeeam+'"><span class="titreLigne">Fin</span> : '+VeeamFin+'</td></tr>'+
+                            '<tr><td class="'+classVeeam+'"><span class="titreLigne">Durée</span> : '+VeeamDure+'</td></tr>'+
                         '</table>'+
-                    '</td>'+
-                    '<td width="10%">'+ 
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+ 
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> Sauvegarde TSM<span>'+
                                 'la date de génération des données est le '+getDataFileDisplay('TSM', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
-                            '<tr><td class="'+classTSM+'"> status : '+TSMStatus+'</td></tr>'+
-                            '<tr><td class="'+classTSM+'"> début : '+TSMDebut+'</td></tr>'+
-                            '<tr><td class="'+classTSM+'"> fin : '+TSMFin+'</td></tr>'+
-                            '<tr><td class="'+classTSM+'"> </td></tr>'+
+                            '<tr><td class="'+classTSM+'"><span class="titreLigne">Status</span> : '+TSMStatus+'</td></tr>'+
+                            '<tr><td class="'+classTSM+'"><span class="titreLigne">Début</span> : '+TSMDebut+'</td></tr>'+
+                            '<tr><td class="'+classTSM+'"><span class="titreLigne">Fin</span> : '+TSMFin+'</td></tr>'+
                         '</table>'+
-                    '</td>'+
-                    '<td width="10%">'+
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th><div  class ="bulle"><a href="#">Supervision<span>le fichier source "fic" date du "date"</span></a></div></th></tr>'+
+                            '<tr><th><div  class ="bulle"><a href="#">Supervision<span>Date du fichier source "fic" date du "date"</span></a></div></th></tr>'+
                             '<tr><td class="'+classSupervision+'"> attente Web Service O lachéré</td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
                             '<tr><td class="'+classSupervision+'"> </td></tr>'+
                         '</table>'+
-                    '</td>'+
-                    '<td width="10%">'+
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
-                            '<tr><th><div  class ="bulle"><a href="#">Netscaler<span>le fichier source "fic" date du "date"</span></div></th></tr>'+
-                            '<tr><td class="'+classNetscaler+'"> attente Netscaler</td></tr>'+
-                            '<tr><td class="'+classNetscaler+'"> </td></tr>'+
-                            '<tr><td class="'+classNetscaler+'"> </td></tr>'+
-                            '<tr><td class="'+classNetscaler+'"> </td></tr>'+
+                            '<tr><th><div  class ="bulle"><a href="#">Netscaler<span>Date de génération des données : '+getDataFileDisplay('vpx3p', 'date')+'</span></div></th></tr>'+
+                            '<tr><td class="'+classNetscaler+'"><span class="titreLigne">VIP</span> : '+vip+'</td></tr>'+
+                            '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vserveur</span> : '+vserveur+'</td></tr>'+
+                            '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vpx</span> : '+vpx+'</td></tr>'+
                         '</table>'+
-                    '</td>'+
-                    '<td width="10%">'+
+                    '</div></td>'+
+                    '<td width="10%"><div class="infoPlus">'+
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#">DISCOVERY<span>'+
                                 'la date de génération des données est le '+getDataFileDisplay('Discovery', 'date')+
                                 '<span></a></div>'+
                             '</th></tr>'+
-                            '<tr><td class="'+classDiscovery+'">RAM : '+discoveryRAM+' Mo</td></tr>'+
-                            '<tr><td class="'+classDiscovery+'">NbProc :'+dicoveryNbProc+' </td></tr>'+
-                            '<tr><td class="'+classDiscovery+'">Proc Type :'+discoveryProcessor+' </td></tr>'+
-                            '<tr><td class="'+classDiscovery+'">Proc Freq :'+discoveryFrequence+' Mhz </td></tr>'+
+                            '<tr><td class="'+classDiscovery+'"><span class="titreLigne">RAM</span> : '+discoveryRAM+' Mo</td></tr>'+
+                            '<tr><td class="'+classDiscovery+'"><span class="titreLigne">NbProc</span> :'+dicoveryNbProc+' </td></tr>'+
+                            '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Type</span> :'+discoveryProcessor+' </td></tr>'+
+                            '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Freq</span> :'+discoveryFrequence+' Mhz </td></tr>'+
                         '</table>'+
-                    '</td>'+
+                    '</div></td>'+
                 '</tr>'+
             '</table>';
         }

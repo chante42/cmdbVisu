@@ -26,52 +26,63 @@ table.detail-info thead th {  background-color: #6495ED; color : white ;}
     )
 }
 
+.infoPlus {
+  overflow            : auto;
+  max-height          : 500;
+}
+.infoPlus th {
+  text-align          : center;
+  background-color    :  #4169E1;
+}
+.titreLigne {
+  font-weight         : bold;
+}
 .sauvegarde-OK {
-    background-color: green;
+    background-color  : green;
 }
 
 .sauvegarde-Warning {
-    background-color: orange;
+    background-color  : orange;
 }
 
 .sauvegarde-Alert {
-    background-color: red;
+    background-color  : red;
 }
 
 div#footer {
-  font-size: 6px;
-  text-align:center;
-  padding-left: 40px;
+  font-size           : 6px;
+  text-align          : center;
+  padding-left        : 40px;
 
 }
 div#gauche {
-  float: left;
-  width: 160px;
-  margin-right: 10px;
-  text-align:center; 
+  float               : left;
+  width               : 160px;
+  margin-right        : 10px;
+  text-align          : center; 
 }
 div#droite {
-  float: right;
-  width: 160px;
-  margin-left: 10px; 
-  text-align:center; 
+  float               : right;
+  width               : 160px;
+  margin-left         : 10px; 
+  text-align          : center; 
 }
 div#centre {
-  overflow: hidden;
-  overflow: auto;
+  overflow            : hidden;
+  overflow            : auto;
 }
 div#menu {
-  background-color: #6495ED;
-   color : white;
+  background-color    : #6495ED;
+   color              : white;
 }
 
 div#main {
-  margin : 5px;
+  margin              : 5px;
 }
 
 /* unvisited link */
 div#menu a {
-    color: white;
+    color             : white;
 }
 
 
