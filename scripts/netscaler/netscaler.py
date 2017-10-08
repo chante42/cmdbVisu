@@ -86,6 +86,7 @@ def get_lbvserversFullinfo(client,dnsName):
 		print(dnsName + " : count_lbvserver: "+str(lbvs_count)+"\n")
 	except nitro_exception as e:
 		printExceptionInfo()
+		return "!!!!!! Erreur d'authentification "
 	except Exception as e:
 		printExceptionInfo()
 
@@ -209,7 +210,7 @@ def netscalerGetInfo(dnsName):
 	client.set_credential(username,password)
 	client.timeout = 500
 
-	get_lbvserversFullinfo(client, dnsName)
+	return(get_lbvserversFullinfo(client, dnsName))
 
 # -------------------------------------------------------------
 #

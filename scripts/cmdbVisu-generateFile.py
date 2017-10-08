@@ -1583,7 +1583,7 @@ def encodeJsonVmWare():
 		nomVm = sh1.row_values(rownum)[colNomVM].upper()
 
 		#print nomVm
-		Vm[nomVm]={u'vmMem':sh1.row_values(rownum)[colMEM],u'vmCpu':sh1.row_values(rownum)[colVCPU], u'vmDisk':sh1.row_values(rownum)[colDisk], u'vmOs' : os.encode('utf8'), u'vmBanc' : banc.encode('utf8')}
+		Vm[nomVm]={u'vmMem':str(int(sh1.row_values(rownum)[colMEM])),u'vmCpu':str(int(sh1.row_values(rownum)[colVCPU])), u'vmDisk':str(int(sh1.row_values(rownum)[colDisk])), u'vmOs' : os.encode('utf8'), u'vmBanc' : banc.encode('utf8')}
 
 	print "\n"
 
@@ -1629,11 +1629,14 @@ def encodeJsonNetscaler():
 		print ('\n==============')
 
 		#print netscalersList[name]["dnsname"]
-		netscalerGetInfo(netscalersList[name]["dnsname"])
-		
+		err = netscalerGetInfo(netscalersList[name]["dnsname"])
+		if err == None :
+			mes =""
+		else :
+			mes = str(err)
 
 		DateFile[name]= { u'file' : netscalersList[name]["dnsname"], 
-							'date' :datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+							'date' : mes+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
 							u'info' : netscalersList[name]["description"] }
 		
 		#pprint (Netscaler)
