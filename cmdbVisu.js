@@ -169,7 +169,18 @@
             }
             return res;
         }
-
+        //
+        // datatableAddColumn
+        //
+        function datatableAddColumn() {
+            console.log("DataTable ADD Colonne");
+        }
+        //
+        //   datatableDelColumn
+        //
+        function datatableDelColumn() {
+            console.log("DataTable DEL  Colonne");
+        }
         //
         /* Formatting function for row details - modify as you need */
         //
@@ -249,7 +260,13 @@
             if (d.used_HDS                      == undefined) { used_HDS                = "N/A"}
             if (d.VeeamScheduleStatus           == undefined) { VeeamScheduleStatus     = "N/A"}
             if (d.VeeamFin                      == undefined) { VeeamFin                = "N/A"}
-            if (d.VeeamDure                     == undefined) { VeeamDure               = "N/A"}
+            if (d.VeeamDure                     == undefined) { 
+                VeeamDure               = "N/A"
+            } else {
+                VeeamDure           = VeeamDure.replace(':', 'h',1);
+                VeeamDure           = VeeamDure.replace(':', 'm',1);
+                VeeamDure           = VeeamDure + 's';
+            }
             if (d.TSMDebut                      == undefined) { TSMDebut                = "N/A"}
             if (d.TSMFin                        == undefined) { TSMFin                  = "N/A"}
             if (d.TSMStatus                     == undefined) { TSMStatus               = "N/A"}
@@ -269,10 +286,8 @@
                  vpx           = formatNetscalerVpx(d.Vpx);     
             }
 
-            VeeamDure           = VeeamDure.replace(':', 'h',1);
-            VeeamDure           = VeeamDure.replace(':', 'm',1);
-            VeeamDure           = VeeamDure + 's';
- 
+            
+            codeAffichageAjout = '<span><img src="images/details_open.png" onclick="datatableAddColumn()" ><img src="images/details_close.png" onclick="datatableDelColumn()"></span>'
             // `d` is the original data object for the row
             return '<table class="detail-info" cellspacing="0" border="0" >'+
                 '<tr style="background-color: #adc9f7">'+
@@ -284,8 +299,8 @@
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classVirtu+'"><span class="titreLigne"> VCPU</span> : '+Math.floor(vmCpu)+'</td></tr>'+
-                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  MEM</span> : '+Math.floor(vmMem)+' Go </td></tr>'+
-                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  Disk</span> : '+vmDisk+' Go</td></tr>'+
+                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  MEM</span> : '+Math.floor(vmMem)+'<span class="infoPlusUnite"> Go</span> </td></tr>'+
+                            '<tr><td class="'+classVirtu+'"><span class="titreLigne">  Disk</span> : '+vmDisk+'<span class="infoPlusUnite"> Go</span></td></tr>'+
                             '<tr><td class="'+classVirtu+'"><span class="titreLigne">  OS</span> :'+vmOs+'</td></tr>'+
                         '</table>'+
                     '</div></td>'+
@@ -320,7 +335,7 @@
                                 'Date de génération des données  : '+getDataFileDisplay('Veeam', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
-                            '<tr><td class="'+classVeeam+'"><span class="titreLigne">Status</span> : '+VeeamScheduleStatus+'</td></tr>'+
+                            '<tr><td class="'+classVeeam+'"><div class="titreLigne bulleLigne"><a>Status'+codeAffichageAjout+'</a></div> : '+VeeamScheduleStatus+'</td></tr>'+
                             '<tr><td class="'+classVeeam+'"><span class="titreLigne">Fin</span> : '+VeeamFin+'</td></tr>'+
                             '<tr><td class="'+classVeeam+'"><span class="titreLigne">Durée</span> : '+VeeamDure+'</td></tr>'+
                         '</table>'+
@@ -329,7 +344,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#"> Sauvegarde TSM<span>'+
-                                'la date de génération des données est le '+getDataFileDisplay('TSM', 'date')+
+                                'Date de génération des données : '+getDataFileDisplay('TSM', 'date')+
                                 '</span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classTSM+'"><span class="titreLigne">Status</span> : '+TSMStatus+'</td></tr>'+
@@ -358,7 +373,7 @@
                         '<table cellspacing="0" border="1" >'+
                             '<tr><th>'+
                                 '<div  class ="bulle"><a href="#">DISCOVERY<span>'+
-                                'la date de génération des données est le '+getDataFileDisplay('Discovery', 'date')+
+                                'Date de génération des données : '+getDataFileDisplay('Discovery', 'date')+
                                 '<span></a></div>'+
                             '</th></tr>'+
                             '<tr><td class="'+classDiscovery+'"><span class="titreLigne">RAM</span> : '+discoveryRAM+' Mo</td></tr>'+

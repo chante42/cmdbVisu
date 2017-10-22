@@ -5,9 +5,11 @@ table.dataTable thead th {  background-color: #6495ED; color : white ;}
 td.details-control {
   background: url(images/details_open.png) no-repeat center center;
   cursor: pointer;
+  text-align: center;
 }
 tr.shown td.details-control {
   background: url(images/details_close.png) no-repeat center center;
+  text-align: center;
 } 
 table.detail-info thead th {  background-color: #6495ED; color : white ;}
 .pas-d-info {
@@ -33,6 +35,9 @@ table.detail-info thead th {  background-color: #6495ED; color : white ;}
 .infoPlus th {
   text-align          : center;
   background-color    :  #4169E1;
+}
+.infoPlusUnite {
+  font-style          : italic; 
 }
 .titreLigne {
   font-weight         : bold;
@@ -120,7 +125,7 @@ div#menu a {
 
 
 /* -------------------*/
-/* Pour les bulles */
+/* Pour les bulles titre des colonnes infoPlus */
 /* ------------------- */
 .bulle a {
     color : black;
@@ -143,6 +148,67 @@ div#menu a {
       opacity:0;
 }
 .bulle a:hover span,  .bulle a:focus span .bulle a:active span{
+     transform:scale(1) rotate(0);  
+      opacity:1;      
+}
+
+/* -------------------*/
+/* Pour les bulle2  */
+/* ------------------- */
+.bulle2 a {
+    color : black;
+}
+.bulle2  a:hover,a:focus, a:active{
+     background:rgba(0,0,0,.4);
+     box-shadow:0 1px 0 rgba(255,255,255,.4);
+}
+.bulle2 a span{
+     position:absolute;    
+     margin-top:23px;
+     margin-left:-35px;   
+     color:#09c;
+     border-color: #e1ca82;
+     background:rgba(255,234,166,.9);
+     padding:15px;
+     border-radius:3px;
+     box-shadow:0 0 2px rgba(0,0,0,.5);   
+    transform:scale(0) rotate(-12deg);     
+    transition:all .90s; 
+      opacity:0;
+}
+.bulle2 a:hover span,  .bulle2 a:focus span .bulle2 a:active span{
+     transform:scale(1) rotate(0);  
+      opacity:1;      
+}
+
+/* -------------------*/
+/* Pour les bulles titre des lignes infoPlus */
+/* ------------------- */
+.bulleLigne {
+    display:inline;
+}
+
+.bulleLigne a {
+    color : black;
+}
+.bulleLigne  a:hover,a:focus, a:active{
+     background:rgba(0,0,0,.4);
+     box-shadow:0 1px 0 rgba(255,255,255,.4);
+}
+.bulleLigne a span{
+     position:absolute;    
+     margin-top:0px;
+     margin-left:0px;   
+     color:#09c;
+     background:rgba(0,0,0,.9);
+     padding:3px;
+     border-radius:3px;
+     box-shadow:0 0 2px rgba(0,0,0,.5);   
+    transform:scale(0) rotate(-12deg);     
+    transition:all .25s; 
+      opacity:0;
+}
+.bulleLigne a:hover span,  .bulleLigne a:focus span .bulleLigne a:active span{
      transform:scale(1) rotate(0);  
       opacity:1;      
 }
