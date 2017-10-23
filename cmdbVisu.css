@@ -3,29 +3,30 @@ h1 {  text-align:center; font-size: 30px; }
 table.dataTable thead th {  background-color: #6495ED; color : white ;}
 
 td.details-control {
-  background: url(images/details_open.png) no-repeat center center;
-  cursor: pointer;
-  text-align: center;
+    background        : url(images/details_open.png) no-repeat center center;
+    cursor            : pointer;
+    text-align        : center;
 }
 tr.shown td.details-control {
-  background: url(images/details_close.png) no-repeat center center;
-  text-align: center;
+    background        : url(images/details_close.png) no-repeat center center;
+    text-align        : center;
 } 
 table.detail-info thead th {  background-color: #6495ED; color : white ;}
+
 .pas-d-info {
-    color: black;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      #ccc 10px,
-      #ccc 20px
-    ),
-    linear-gradient(
-      to bottom,
-      #eee,
-      #999
-    )
+    color             : black;
+    background        : repeating-linear-gradient(
+                            45deg,
+                            transparent,
+                            transparent 10px,
+                            #ccc 10px,
+                            #ccc 20px
+                        ),
+                          linear-gradient(
+                            to bottom,
+                            #eee,
+                            #999
+                        )
 }
 
 .infoPlus {
@@ -99,28 +100,28 @@ div#menu a {
     margin: 10px;
 }
 .bouton-deplier {
-    text-decoration: none;
-    color: #fff;
-    background: #000;
-    padding: 5px 10px;
-    cursor: pointer;
+    text-decoration   : none;
+    color             : #fff;
+    background        : #000;
+    padding           : 5px 10px;
+    cursor            : pointer;
 }
 .deplie {
-    margin: 10px;
-    color: #fff;
+    margin            : 10px;
+    color             : #fff;
 }
 .bouton-replier {
-    margin: 10px;
-    display: inline-block;
-    text-decoration: none;
-    color: #fff;
-    background: #000;
-    padding: 5px 10px;
-    cursor: pointer;
+    margin            : 10px;
+    display           : inline-block;
+    text-decoration   : none;
+    color             : #fff;
+    background        : #000;
+    padding           : 5px 10px;
+    cursor            : pointer;
 }
 .montexte {
-    color : black;
-    padding: 10px 10px 20px 10px;
+    color             : black;
+    padding           : 10px 10px 20px 10px;
 }
 
 
@@ -128,87 +129,90 @@ div#menu a {
 /* Pour les bulles titre des colonnes infoPlus */
 /* ------------------- */
 .bulle a {
-    color : black;
+    color             : black;
 }
 .bulle  a:hover,a:focus, a:active{
-     background:rgba(0,0,0,.4);
-     box-shadow:0 1px 0 rgba(255,255,255,.4);
+    background        : rgba(0,0,0,.4);
+    box-shadow        : 0 1px 0 rgba(255,255,255,.4);
 }
 .bulle a span{
-     position:absolute;    
-     margin-top:23px;
-     margin-left:-35px;   
-     color:#09c;
-     background:rgba(0,0,0,.9);
-     padding:15px;
-     border-radius:3px;
-     box-shadow:0 0 2px rgba(0,0,0,.5);   
-    transform:scale(0) rotate(-12deg);     
-    transition:all .25s; 
-      opacity:0;
+    position          : absolute;    
+    margin-top        : -50px;
+    margin-left       : -35px;   
+    color             : #09c;
+    background        : rgba(0,0,0,.9);
+    padding           : 15px;
+    border-radius     : 3px;
+    box-shadow        : 0 0 2px rgba(0,0,0,.5);   
+    transform         : scale(0) rotate(-12deg);     
+    transition        : all .90s; 
+    opacity           : 0;
+    width             : 15%;     
+    display           : table
 }
 .bulle a:hover span,  .bulle a:focus span .bulle a:active span{
-     transform:scale(1) rotate(0);  
-      opacity:1;      
+    transform         : scale(1) rotate(0);  
+    opacity           : 1;      
 }
 
 /* -------------------*/
 /* Pour les bulle2  */
 /* ------------------- */
 .bulle2 a {
-    color : black;
+    color             : black;
 }
 .bulle2  a:hover,a:focus, a:active{
-     background:rgba(0,0,0,.4);
-     box-shadow:0 1px 0 rgba(255,255,255,.4);
+    background        : rgba(0,0,0,.4);
+    box-shadow        : 0 1px 0 rgba(255,255,255,.4);
 }
 .bulle2 a span{
-     position:absolute;    
-     margin-top:23px;
-     margin-left:-35px;   
-     color:#09c;
-     border-color: #e1ca82;
-     background:rgba(255,234,166,.9);
-     padding:15px;
-     border-radius:3px;
-     box-shadow:0 0 2px rgba(0,0,0,.5);   
-    transform:scale(0) rotate(-12deg);     
-    transition:all .90s; 
-      opacity:0;
+    position          : absolute;    
+    margin-top        : 23px;
+    margin-left       : -35px;   
+    color             : #09c;
+    border-color      : #e1ca82;
+    background        : rgba(255,234,166,.9);
+    padding           : 15px;
+    border-radius     : 3px;
+    box-shadow        : 0 0 2px rgba(0,0,0,.5);   
+    transform         : scale(0) rotate(-12deg);     
+    opacity           : 0;
 }
-.bulle2 a:hover span,  .bulle2 a:focus span .bulle2 a:active span{
-     transform:scale(1) rotate(0);  
-      opacity:1;      
+.bulle2 a:hover span,  .bulle2 a:focus span .bulle2 {
+    transform         : scale(1) rotate(0);  
+    opacity           : 1;      
+    transition        : all .90s; 
+    transition-delay  : 700ms;
 }
 
 /* -------------------*/
 /* Pour les bulles titre des lignes infoPlus */
 /* ------------------- */
 .bulleLigne {
-    display:inline;
+    display           : inline;
 }
 
 .bulleLigne a {
-    color : black;
+    color             : black;
 }
 .bulleLigne  a:hover,a:focus, a:active{
-     background:rgba(0,0,0,.4);
-     box-shadow:0 1px 0 rgba(255,255,255,.4);
+    background        : rgba(0,0,0,.4);
+    box-shadow        : 0 1px 0 rgba(255,255,255,.4);
 }
 .bulleLigne a span{
-     position:absolute;    
-     margin-top:0px;
-     margin-left:0px;   
-     color:#09c;
-     background:rgba(0,0,0,.9);
-     padding:3px;
-     border-radius:3px;
-     box-shadow:0 0 2px rgba(0,0,0,.5);   
-    transform:scale(0) rotate(-12deg);     
-    transition:all .25s; 
-      opacity:0;
+    position          : absolute;    
+    margin-top        : 0px;
+    margin-left       : 0px;   
+    color             : #09c;
+    background        : rgba(0,0,0,.9);
+    padding           : 3px;
+    border-radius     : 3px;
+    box-shadow        : 0 0 2px rgba(0,0,0,.5);   
+    transform         : scale(0) rotate(-12deg);     
+    transition        : all .25s; 
+    opacity           : 0;
 }
 .bulleLigne a:hover span,  .bulleLigne a:focus span .bulleLigne a:active span{
-     transform:scale(1) rotate(0);  
-      opacity:1;      
+    transform         : scale(1) rotate(0);  
+    opacity           : 1;      
 }
