@@ -23,7 +23,7 @@ import argparse
 
 import requests
 import simplejson
-import codecs
+import codecs 
 from pprint import pprint
 import sys
 from unidecode import unidecode
@@ -57,6 +57,9 @@ Veeam 			= {}
 Tsm 			= {}
 DiscoveryData	= {}
 
+#
+# si VPX1P est en A92 VPX1S est en B94 , reciproquement
+#
 netscalersList = {
 			"vpx1p"  : { "dnsname" : "vpx1p.si2m.tec",  "description" : "Load balancer pour la prod en A92" },
 			"vpx2p"  : { "dnsname" : "vpx2p.si2m.tec",  "description" : "Load balancer pour la preprod en A92" },
@@ -75,10 +78,10 @@ netscalersList = {
 		  	"zvpx4p" : { "dnsname" : "zvpx4p.si2m.tec", "description" : "Load balancer pour le test reseau DMZ en A92" },
 		  	"zvpx5p" : { "dnsname" : "zvpx5p.si2m.tec", "description" : "Load balancer pour la perf DMZ en A92" },
 		  	
-		  	"zvpx6p" : { "dnsname" : "zvpx6p.si2m.tec", "description" : "Load balancer pour la prod DMZ en B94" },
-		  	"zvpx7p" : { "dnsname" : "zvpx7p.si2m.tec", "description" : "Load balancer pour la preprod DMZ en B94" },
-		  	"zvpx8p" : { "dnsname" : "zvpx8p.si2m.tec", "description" : "Load balancer pour le recette reseau DMZ en B94" },
-		  	"zvpx9p" : { "dnsname" : "zvpx9p.si2m.tec", "description" : "Load balancer pour le test DMZ en B94"}
+		  	"zvpx6p" : { "dnsname" : "zvpx6p.si2m.tec", "description" : "Load balancer pour la prod DMZ en A92" },
+		  	"zvpx7p" : { "dnsname" : "zvpx7p.si2m.tec", "description" : "Load balancer pour la preprod DMZ en A92" },
+		  	"zvpx8p" : { "dnsname" : "zvpx8p.si2m.tec", "description" : "Load balancer pour le recette reseau DMZ en A92" },
+		  	"zvpx9p" : { "dnsname" : "zvpx9p.si2m.tec", "description" : "Load balancer pour le test DMZ en A92"}
 		  }
 
 #netscalersList = { 

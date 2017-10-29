@@ -4,12 +4,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script> 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.css"/>
- 
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.js"></script>
-
+    
+    <!--<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script> 
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/pdfmake-0.1.27/dt-1.10.15/b-1.4.0/b-html5-1.4.0/b-print-1.4.0/cr-1.3.3/fc-3.2.2/fh-3.1.2/kt-2.3.0/datatables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.1/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
@@ -17,37 +17,94 @@
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.1/js/buttons.html5.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.4.1/js/buttons.print.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="cmdbVisu.css"/>
-  
+     -->
+    <script type = "text/javascript" src = "js/jquery-1.12.3.js"></script> 
+    <script type="text/javascript" src="js/datatables.min.js"></script>
+    
+    <script type = "text/javascript" src = "js/dataTables.buttons.min.js"></script>
+    <script type = "text/javascript" src = "js/jszip.min.js"></script>
+    <script type = "text/javascript" src = "js/pdfmake.min.js"></script>
+    <script type = "text/javascript" src = "js/vfs_fonts.js"></script>
+    <script type = "text/javascript" src = "js/buttons.html5.min.js"></script>
+    <script type = "text/javascript" src = "js/buttons.print.min.js"></script>
+    <script type = "text/javascript" src = "js/bootstrap.min.js"></script>
+
+    <! -- gestion des URL pour etre appeler par l'extérieur -- !>
+    <script type = "text/javascript" src = "js/math.min.js"></script>
+    <script type = "text/javascript" src = "js/history.js"></script>
+    <script type = "text/javascript" src = "js/history.adapter.jquery.js"></script>
+    <script type = "text/javascript" src = "js/jquery-ui.js"></script>
+        
+    <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
+    <link rel = "stylesheet" type = "text/css" href = "css/datatables.min.css">
+    <link rel = "stylesheet" type = "text/css" href = "cmdbVisu.css"/>
+
     <script type="text/javascript" src="cmdbVisu.js"></script> 
+  
     <script>
         var DateFile = null;
         var DataJson = null;
         // permet de faire une recherche dans les DataJson et non seulement dans les colonnes affichées
         var ExtendSearch = false;
         ExtendSearch = true;
+        initialiseDataTableColonne();
 
+    </script>
+
+
+</head> 
+<body>
+    <div id="menu">
+        <div class="gauche"><div class ="bulleHelp"><a href ="cmdbVisu-info.html" target="_blank"><img src="images/info.png" height="37" width="37"><span>information sur la liste des fichiers traités et le fonctionnement du programme</span></a></div></div>
+
+        <div class="gauche">
+            <select id="typeOfTable" onchange="location = this.value;">
+                <option value="?type=0">Responsable</option>
+                <option value="?type=1">Sauvegarde</option>
+                <option value="?type=2">Ressource </option>
+                <option value="?type=3">Stockage</option>
+            </select>
+        </div>
+
+        <div class="droite"><div class ="bulleHelp bulleHelp-left"><a href="data/cmdbVisu.xlsx"><img src="images/excel.png">export full<span> Export le contenu de la base au format excel</span></a></div></div>
+        
+        <div class="centre"><h1>CMDB : Liste des assets et des serveurs (assynchrone) </h1></div>
+        
+    </div>  
+
+   <div id="main"> 
+        <table id="example" class="row-border cell-border hover display compact" cellspacing="0" width="100%">
+
+           <thead>
+                <tr>
+                    <script>document.write(getDataTableColonneData("tableHead"))</script>        
+          
+                </tr>
+            </thead>
+            <tfoot>
+               <tr>
+                    <script>document.write(getDataTableColonneData("tableHead"))</script>        
+                </tr>
+            </tfoot>
+        </table>
+
+        
+    </div>
+    <div id="footer" >@Olivier Chanteloup 30/10/2017</div>
+
+        <script>
+        // recupere les parametre sur url pour selectionner le type d'affichage
+    
         $(document).ready(function() {
             var printCounter = 0;
 
+       
            // Append a caption to the table before the DataTables initialisation
            //$('#example').append('<caption style="caption-side: bottom">DSI/DPI/CSI/ Socle Infra : O chanteloup 11/09/2017.</caption>');
  
             var table = $('#example').DataTable( {
                 "ajax": "data/dataTable.json",
-                "columns": [
-                    {
-                        "className"         : 'details-control',
-                        "orderable"         : false,
-                        "data"              : null,
-                        "defaultContent"    : '<div class ="bulle2"><a href="#">___<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
-                    },
-                    { "data"                : "Nom" },
-                    { "data"                : "CINom" },
-                    { "data"                : "CIResponsable" },
-                    { "data"                : "CIImpactantResponsable" }
-                    //,{ "data"                : "vmCpu"}
-                ],
+                "columns": getDataTableColonneData("javascript"),
                  "order": [[1, 'asc']],
                 lengthMenu: [[17, 25, 50, -1], [17, 25, 50, "All"]],
                 keys : true,
@@ -135,82 +192,56 @@
 
             // fin de lecture du json
             table.on( 'xhr', function () {
-    			DataJson = table.ajax.json();
-    			
-			} );
+                DataJson = table.ajax.json();
+                
+            } );
 
+            // supression des warning quand une colonne afficher n'est pas définie dans la bdd
+            $.fn.dataTable.ext.errMode = 'none'
+//  
 
-			//$(function () {
-			//    $('.dataTables_wrapper table').dataTable().fnFilterOnReturn();
-			//});
+            //$(function () {
+            //    $('.dataTables_wrapper table').dataTable().fnFilterOnReturn();
+            //});
 
-			// tentative de recherche sur le json complet et pas seulement sur les info affiché directement par datatable
+            // tentative de recherche sur le json complet et pas seulement sur les info affiché directement par datatable
 //         $.fn.dataTable.ext.search.push(
-//         	
-//		    function( settings, data, dataIndex, rowData, counter ) {
-//		    	if (ExtendSearch != true) {
-//		    		return true;
-//		    	}
+//          
+//          function( settings, data, dataIndex, rowData, counter ) {
+//              if (ExtendSearch != true) {
+//                  return true;
+//              }
 
 
-//		    	var searchData = $('.dataTables_filter input').val().toLowerCase();
-//		        console.log(searchData);
-//		        //console.log(DataJson.data[dataIndex].CIResponsable);
-//		        if (getValues(DataJson.data[dataIndex], searchData) == []) {
-//		        	console.log(searchData+"not Found");
-//		        	return false;
-//         		} else {
-//         			//console.log(searchData+"Found !!!!");
-//         			return true;
-//         		}
-//		    }
-//		);
+//              var searchData = $('.dataTables_filter input').val().toLowerCase();
+//              console.log(searchData);
+//              //console.log(DataJson.data[dataIndex].CIResponsable);
+//              if (getValues(DataJson.data[dataIndex], searchData) == []) {
+//                  console.log(searchData+"not Found");
+//                  return false;
+//              } else {
+//                  //console.log(searchData+"Found !!!!");
+//                  return true;
+//              }
+//          }
+//      );
             // récupère les date de fichier pour les info Bulle
             $.getJSON("data/fileDate.json", function(data) {
                 DateFile = data;
-                console.log(data)
+                //console.log(data)
             });
-        
+       
+             //-=- OCH -=-
+            var temp = "?type="+TypeColonneNo;
+            var obj= document.getElementById("typeOfTable")
+            for(var i, j = 0; i = obj.options[j]; j++) {
+                if(i.value == temp) {
+                    obj.selectedIndex = j;
+                    break;
+                }
+            } // FIN for 
         } ); // FIN Document Ready
     </script>
-</head> 
-<body>
-    <div id="menu">
-        <div id="gauche"><a href ="cmdbVisu-info.html" target="_blank"><img src="images/info.png" height="37" width="37"></a></div>
-        <div id="droite"><a href="data/cmdbVisu.xlsx"><img src="images/excel.png">export full</a></div>
-        <div id="centre"><h1>CMDB : Liste des assets et des serveurs (assynchrone) </h1></div>
-    </div>  
-   <div id="main"> 
-        
-
-    
-        <table id="example" class="row-border cell-border hover display compact" cellspacing="0" width="100%">
-
-           <thead>
-             <tr>
-                    <th></th>
-                    <th>Serveur (Nom) </th>
-                    <th>Application(CINom)</th>
-                    <th>Responsable Appli (CIResponsable)</th>
-                    <th>Responsable serveur (CIImpactantResponsable)</th>
-          <!--          <th>VCPU</th> -->
-             </tr>
-            </thead>
-            <tfoot>
-               <tr>
-                    <th></th>
-                    <th>Serveur (Nom) </th>
-                    <th>Application(CINom)</th>
-                    <th>Responsable Appli (CIResponsable)</th>
-                    <th>Responsable serveur (CIImpactantResponsable)</th>
-           <!--          <th>VCPU</th> -->
-                </tr>
-            </tfoot>
-        </table>
-
-        
-    </div>
-    <div id="footer" >@Olivier Chanteloup 09/10/2017</div>
 
 </body>
 </html>

@@ -61,19 +61,19 @@ div#footer {
   padding-left        : 40px;
 
 }
-div#gauche {
+div.gauche {
   float               : left;
-  width               : 160px;
   margin-right        : 10px;
+  margin-left         : 10px;
   text-align          : center; 
 }
-div#droite {
+div.droite {
   float               : right;
-  width               : 160px;
-  margin-left         : 10px; 
+  width               : 140px;
+  margin-right        : 10px; 
   text-align          : center; 
 }
-div#centre {
+div.centre {
   overflow            : hidden;
   overflow            : auto;
 }
@@ -138,7 +138,7 @@ div#menu a {
 .bulle a span{
     position          : absolute;    
     margin-top        : -50px;
-    margin-left       : -35px;   
+    margin-left       : 120px;   
     color             : #09c;
     background        : rgba(0,0,0,.9);
     padding           : 15px;
@@ -156,19 +156,20 @@ div#menu a {
 }
 
 /* -------------------*/
-/* Pour les bulle2  */
+/* Pour les bulleHelp  */
 /* ------------------- */
-.bulle2 a {
+.bulleHelp a {
     color             : black;
+
 }
-.bulle2  a:hover,a:focus, a:active{
+.bulleHelp  a:hover,a:focus, a:active{
     background        : rgba(0,0,0,.4);
     box-shadow        : 0 1px 0 rgba(255,255,255,.4);
 }
-.bulle2 a span{
+.bulleHelp a span{
     position          : absolute;    
     margin-top        : 23px;
-    margin-left       : -35px;   
+    margin-left       : -37px;   
     color             : #09c;
     border-color      : #e1ca82;
     background        : rgba(255,234,166,.9);
@@ -177,8 +178,12 @@ div#menu a {
     box-shadow        : 0 0 2px rgba(0,0,0,.5);   
     transform         : scale(0) rotate(-12deg);     
     opacity           : 0;
+    z-index           : 2500;
 }
-.bulle2 a:hover span,  .bulle2 a:focus span .bulle2 {
+.bulleHelp-left a span {
+    margin-left       : -90px; 
+}
+.bulleHelp a:hover span,  .bulleHelp a:focus span .bulleHelp {
     transform         : scale(1) rotate(0);  
     opacity           : 1;      
     transition        : all .90s; 
@@ -186,7 +191,7 @@ div#menu a {
 }
 
 /* -------------------*/
-/* Pour les bulles titre des lignes infoPlus */
+/* Pour les option supplémentaires dans une des colonne des lignes du tableau 
 /* ------------------- */
 .bulleLigne {
     display           : inline;

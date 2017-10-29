@@ -30,11 +30,9 @@ traceback_template = '''Traceback (most recent call last):
   File "%(filename)s", line %(lineno)s, in %(name)s
 %(type)s: %(message)s\n''' # Skipping the "actual line" item
 
-username = "chanteloup"
-password = "chanteloup"
 
-username = "i14sj00"
-password = ""
+username = "S0E901"
+password = "3Y7P7H8B"
 
 Netscaler 	= {}
 
