@@ -1159,9 +1159,9 @@ def dataPath(type):
 
 	rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
 	if  "cmdb-test" in os.getcwd() :
-		rootPathStatBaies ="/home/i14sj00/cmdb/cmdb-test/data/"
+		rootPathStatBaies ="/home/i14sj00/cmdbVisu/cmdb-test/data/"
 	else : 
-		rootPathStatBaies ="/home/i14sj00/cmdb/data/"  
+		rootPathStatBaies ="/home/i14sj00/cmdbVisu/data/"  
 
 	#rootPathStatBaies ="/home/i14sj00/cmdb/data/";
 	if  type == "VeeamProd" :
