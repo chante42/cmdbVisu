@@ -431,14 +431,22 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
-                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">___<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
                     { "data"                : "Nom" },
                     { "data"                : "CINom" },
-                    { "data"                : "VeeamScheduleStatus"},
-                    { "data"                : "VeeamFin"},
-                    { "data"                : "TSMStatus"},
-                    { "data"                : "TSMDebut"}
+                    { "data"                : "VeeamScheduleStatus",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "VeeamFin",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "TSMStatus",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "TSMDebut",
+                        "className"           : "dt-center"
+                    }
                 ];
     
     TypeColonneDataHead[1] = `
@@ -461,10 +469,18 @@ function getDataTableColonneData(type) {
                     },
                     { "data"                : "Nom" },
                     { "data"                : "CINom" },
-                    { "data"                : "vmCpu"},
-                    { "data"                : "vmMem"},
-                    { "data"                : "PROCESSOR_COUNT"},
-                    { "data"                : "RAM"}
+                    { "data"                : "vmCpu",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "vmMem",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "PROCESSOR_COUNT",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "RAM",
+                        "className"           : "dt-center"
+                    }
                 ];
     
     TypeColonneDataHead[2] = `
@@ -475,6 +491,36 @@ function getDataTableColonneData(type) {
                     <th>VM RAM (Go)</th>
                     <th>Discovery Proc</th>
                     <th>Discovery RAM(Mo)</th>
+                    `;
+
+    //   *********************** 3 eme TYPE Stockage **********************
+    TypeColonneDataJS [3]= [
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">___<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "Nom" },
+                    {   "data"                : "CINom" },
+                    {   "data"                : "allocated",
+                        "className"           : "dt-center"
+                    },
+                    {   "data"                : "vmDisk",
+                        "className"           : "dt-center"
+                    },
+                    {   "data"                : "allocated_HDS",
+                        "className"           : "dt-center"
+                    }
+                ];
+    
+    TypeColonneDataHead[3] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>3PAR Alloué (Go)</th>
+                    <th>Virtu Alloué (Go)</th>
+                    <th>HDS Alloué (Go)</th>
                     `;
 
     console.log("TypeColonneNo = "+TypeColonneNo);

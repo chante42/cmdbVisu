@@ -29,12 +29,13 @@
     <script type = "text/javascript" src = "js/buttons.print.min.js"></script>
     <script type = "text/javascript" src = "js/bootstrap.min.js"></script>
 
-    <! -- gestion des URL pour etre appeler par l'extérieur -- !>
+    <! -- gestion des URL pour gestion de bookmark -- !>
     <script type = "text/javascript" src = "js/math.min.js"></script>
     <script type = "text/javascript" src = "js/history.js"></script>
     <script type = "text/javascript" src = "js/history.adapter.jquery.js"></script>
     <script type = "text/javascript" src = "js/jquery-ui.js"></script>
         
+    <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
     <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
     <link rel = "stylesheet" type = "text/css" href = "css/datatables.min.css">
     <link rel = "stylesheet" type = "text/css" href = "cmdbVisu.css"/>
@@ -57,18 +58,21 @@
     <div id="menu">
         <div class="gauche"><div class ="bulleHelp"><a href ="cmdbVisu-info.html" target="_blank"><img src="images/info.png" height="37" width="37"><span>information sur la liste des fichiers traités et le fonctionnement du programme</span></a></div></div>
 
-        <div class="gauche" class="selectpicker" data-style="btn-primary">
-            <select id="typeOfTable" onchange="location = this.value;">
-                <option value="?type=0">Responsable</option>
-                <option value="?type=1">Sauvegarde</option>
-                <option value="?type=2">Ressource </option>
-                <option value="?type=3">Stockage</option>
-            </select>
+        <div class="gauche">
+            <div class="border-group">       
+                <select id="typeOfTable" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
+                    <option value="?type=0">Responsable</option>
+                    <option value="?type=1">Sauvegarde</option>
+                    <option value="?type=2">Ressource </option>
+                    <option value="?type=3">Stockage</option>
+                </select>
+                <span class="glyphicon glyphicon-eye-open"></span>
+            </div>
         </div>
 
         <div class="droite"><div class ="bulleHelp bulleHelp-left"><a href="data/cmdbVisu.xlsx"><img src="images/excel.png">export full<span> Export le contenu de la base au format excel</span></a></div></div>
         
-        <div class="centre"><h1>CMDB : Liste des assets et des serveurs (assynchrone) </h1></div>
+        <div class="centre"><h1>CMDB : Liste des assets et des serveurs <small>(assynchrone)</small> </h1></div>
         
     </div>  
 
@@ -90,7 +94,7 @@
 
         
     </div>
-    <div id="footer" >@Olivier Chanteloup 30/10/2017</div>
+    <div id="footer" >@Olivier Chanteloup 30/10/2017  <span class="glyphicon glyphicon-eye-open"></span></div>
 
         <script>
         // recupere les parametre sur url pour selectionner le type d'affichage
@@ -106,14 +110,14 @@
                 "ajax": "data/dataTable.json",
                 "columns": getDataTableColonneData("javascript"),
                  "order": [[1, 'asc']],
-                lengthMenu: [[17, 25, 50, -1], [17, 25, 50, "All"]],
+                lengthMenu: [[19, 25, 50, -1], [19, 25, 50, "All"]],
                 keys : true,
                 colReorder: true,
                 dom: 'Blfrtip',
 
                 "search": {
-                     "regex": true,
-                     "smart": false
+                     "regex"        : true,
+                     "smart"        : false
                 },
                 buttons: [
                     {
@@ -231,7 +235,7 @@
                 //console.log(data)
             });
        
-             //-=- OCH -=-
+             // possition le nom de la vue en focntion du paramètre passé sur l'URL
             var temp = "?type="+TypeColonneNo;
             var obj= document.getElementById("typeOfTable")
             for(var i, j = 0; i = obj.options[j]; j++) {

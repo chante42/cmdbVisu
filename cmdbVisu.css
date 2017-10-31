@@ -1,7 +1,38 @@
-h1 {  text-align:center; font-size: 30px; }
-      
+h1 {  text-align  :center; 
+      font-size   : 30px;
+      margin-top  : 1px; }
+
+body {background-color: #D8E4FA;}      
 table.dataTable thead th {  background-color: #6495ED; color : white ;}
 
+.datatables_wrapper{
+  background-color    :  #D8E4FA;
+}
+
+
+
+#example_filter input{
+  background-color    : #6495ED;
+  border-radius       : 10px; 
+}
+#typeOfTable {
+  margin-top          : 4px;
+  background-color    : #6495ED; 
+  border: thin solid blue;
+  border-radius: 4px;
+  display: inline-block;
+  font: inherit;
+  line-height: 1.5em;
+  padding: 0.3em 3.5em 0.3em 1em;
+
+  /* reset */
+
+  margin: 0;      
+}
+.border-group {
+  border-radius: 4px
+  border: thin solid black;
+}
 td.details-control {
     background        : url(images/details_open.png) no-repeat center center;
     cursor            : pointer;
@@ -59,13 +90,15 @@ div#footer {
   font-size           : 6px;
   text-align          : center;
   padding-left        : 40px;
+  background-color    : #6495ED;
+  margin-bottom       : 0px; 
 
 }
 div.gauche {
   float               : left;
   margin-right        : 10px;
   margin-left         : 10px;
-  margin-top  		  : 5px;
+  margin-top  		    : 5px;
   text-align          : center; 
 }
 div.droite {
@@ -80,7 +113,8 @@ div.centre {
 }
 div#menu {
   background-color    : #6495ED;
-   color              : white;
+  color               : white;
+
 }
 
 div#main {
