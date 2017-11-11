@@ -1010,6 +1010,7 @@ def  getDiscoverySoap():
 
 	#url="https://malakoffmederic.easyvista.com:443/WebService/SmoBridge.php"
 	url="https://malakoffmederic-qualif.easyvista.com:443/WebService/SmoBridge.php"
+	url="https://malakoffmederic.easyvista.com:443/WebService/SmoBridge.php"
 	#headers = {'content-type': 'application/soap+xml'}
 	headers = {'content-type': 'text/xml', 'accept-encoding': 'gzip;q=0,deflate,sdch'}
 	body = """<?xml version="1.0" encoding="UTF-8"?>
