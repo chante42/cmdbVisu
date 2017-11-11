@@ -258,10 +258,10 @@ function format ( d ) {
     hostname            = d.Nom;
     vserveur            = d.Vserveur;
     
-    console.log(d);   
-    console.log(d.Nom);
-    console.log(hostname);
-    console.log(d.Ram);
+    //console.log(d);   
+    //console.log(d.Nom);
+    //console.log(hostname);
+    //console.log(d.Ram);
     if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
     if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
     if (d.vmDisk                        == undefined) { vmDisk                  = "N/A"}
