@@ -196,6 +196,7 @@ function format ( d ) {
     var count = {};
     var storageCount = storageHDSCount = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
+    classDBA = "normal";
     classSupervision   = "pas-d-info";
     if  (d.storage != undefined) {
         //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
@@ -254,10 +255,13 @@ function format ( d ) {
     dicoveryNbProc      = d.PROCESSOR_COUNT;
     discoveryProcessor  = d.Processeur;
     discoveryFrequence  = d.Frequence;
-    
+    hostname            = d.Nom;
     vserveur            = d.Vserveur;
-   
-
+    
+    console.log(d);   
+    console.log(d.Nom);
+    console.log(hostname);
+    console.log(d.Ram);
     if (d.vmCpu                         == undefined) { vmCpu                   = "N/A"} 
     if (d.vmMem                         == undefined) { vmMem                   = "N/A"}
     if (d.vmDisk                        == undefined) { vmDisk                  = "N/A"}
@@ -362,11 +366,13 @@ function format ( d ) {
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
                 '<table cellspacing="0" border="1" >'+
-                    '<tr><th><div  class ="bulle"><a href="#">Supervision<span>Date du fichier source "fic" date du "date"</span></a></div></th></tr>'+
-                    '<tr><td class="'+classSupervision+'"> attente Web Service O lachéré</td></tr>'+
-                    '<tr><td class="'+classSupervision+'"> </td></tr>'+
-                    '<tr><td class="'+classSupervision+'"> </td></tr>'+
-                    '<tr><td class="'+classSupervision+'"> </td></tr>'+
+                    '<tr><th><div  class ="bulle"><a href="#">DBA<span>'+
+                    'Date de génération des données : '+getDataFileDisplay('DBA', 'date')+
+                    '</span></a></div></th></tr>'+
+                    '<tr><td class="'+classDBA+'"> lien sur l\'outil des DBA</td></tr>'+
+                    '<tr><td class="'+classDBA+'">'+ 
+                    '<a href="http://vwi0bdd003/dbainfo/listeDatabases.php?SELECT=Actualiser&CD_SERVEUR='+hostname+'" target="_blank">'+
+                    'bdd</a></td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
