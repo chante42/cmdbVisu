@@ -19,7 +19,7 @@
 
      -->
     <script type = "text/javascript" src = "js/jquery-1.12.3.js"></script> 
-    <script type="text/javascript" src="js/datatables.min.js"></script>
+    <script type = "text/javascript" src = "js/datatables.min.js"></script>
     
     <script type = "text/javascript" src = "js/dataTables.buttons.min.js"></script>
     <script type = "text/javascript" src = "js/jszip.min.js"></script>
@@ -35,7 +35,6 @@
     <script type = "text/javascript" src = "js/history.adapter.jquery.js"></script>
     <script type = "text/javascript" src = "js/jquery-ui.js"></script>
         
-    <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
     <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
     <link rel = "stylesheet" type = "text/css" href = "css/datatables.min.css">
     <link rel = "stylesheet" type = "text/css" href = "cmdbVisu.css"/>
@@ -94,11 +93,17 @@
 
         
     </div>
-    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 30/10/2017  <i class="glyphicon glyphicon-eye-open"></i><span>Le batch de récupération des infos a été lancé le : <script>document.write(getDataFileDisplay('CMDB', 'date'))</script></span></a></div>
+    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 11/11/2017  <i class="glyphicon glyphicon-eye-open"></i><span>Le batch de récupération des infos a été lancé le : <script>document.write(getDataFileDisplay('CMDB', 'date'))</script></span></a></div>
 
         <script>
         // recupere les parametre sur url pour selectionner le type d'affichage
     
+        console.log(navigator);
+        if(navigator.userAgent.indexOf('MSIE')!==-1
+            || navigator.appVersion.indexOf('Trident/') > 0){
+            alert('Ce site ne fonctionne pas sous IE, utilisez un "browser respectueux des standarts" : Chrome ou Firefox');
+        }
+
         $(document).ready(function() {
             var printCounter = 0;
 

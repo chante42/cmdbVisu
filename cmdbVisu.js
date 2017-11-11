@@ -414,7 +414,7 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
-                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">___<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
                     { "data"                : "Nom" },
                     { "data"                : "CINom" },
@@ -471,7 +471,7 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
-                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">___<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
                     { "data"                : "Nom" },
                     { "data"                : "CINom" },
@@ -505,7 +505,7 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
-                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">___<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
                     {   "data"                : "Nom" },
                     {   "data"                : "CINom" },
