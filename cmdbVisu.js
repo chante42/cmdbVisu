@@ -276,7 +276,7 @@ function format ( d ) {
     if (d.VeeamScheduleStatus           == undefined) { VeeamScheduleStatus     = "N/A"}
     if (d.VeeamFin                      == undefined) { VeeamFin                = "N/A"}
     if (d.VeeamDure                     == undefined) { 
-        VeeamDure               = "N/A"
+        VeeamDure           = "N/A"
     } else {
         VeeamDure           = VeeamDure.replace(':', 'h',1);
         VeeamDure           = VeeamDure.replace(':', 'm',1);
@@ -290,13 +290,13 @@ function format ( d ) {
     if (d.Processeur                    == undefined) { discoveryProcessor      = "N/A"}
     if (d.Frequence                     == undefined) { discoveryFrequence      = "N/A"}
     if (d.VIP                           == undefined) {
-         vip                     = "N/A"}
+         vip                = "N/A"}
     else {
         vip            = formatNetscalerVip(d.VIP);
         } 
     if (d.Vserveur                      == undefined) { vserveur                = "N/A"}
     if (d.Vpx                           == undefined) { 
-        vpx                     = "N/A"}
+        vpx                 = "N/A"}
     else {
          vpx           = formatNetscalerVpx(d.Vpx);     
     }
@@ -382,11 +382,11 @@ function format ( d ) {
                     '<a href="http://vwi0bdd003/dbainfo/listeDatabases.php?SELECT=Actualiser&CD_SERVEUR='+hostname+'" target="_blank">'+
                     'outil dba</a></td></tr>'+
                     '<tr><td class="'+classDBA+'">'+ 
-                    'infoDba : '+dbaInfo+'</td></tr>'+
+                    '<span class="titreLigne">infoDba :</span> '+dbaInfo+'</td></tr>'+
                     '<tr><td class="'+classDBA+'">'+ 
-                    'type DB : '+typeBd+'</td></tr>'+
+                    '<span class="titreLigne">type DB :</span> '+typeBd+'</td></tr>'+
                     '<tr><td class="'+classDBA+'">'+ 
-                    'nb Instance : '+nbInstance+'</td></tr>'+
+                    '<span class="titreLigne">nb Instance :</span> '+nbInstance+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+

@@ -93,7 +93,7 @@
 
         
     </div>
-    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 11/11/2017  <i class="glyphicon glyphicon-eye-open"></i><span>Le batch de récupération des infos a été lancé le : <script>document.write(getDataFileDisplay('CMDB', 'date'))</script></span></a></div>
+    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 18/11/2017  <i class="glyphicon glyphicon-eye-open"></i><span id="dateFileDataTable"></span></a></div>
 
         <script>
         // recupere les parametre sur url pour selectionner le type d'affichage
@@ -239,6 +239,9 @@
             $.getJSON("data/fileDate.json", function(data) {
                 DateFile = data;
                 //console.log(data)
+
+                // affiche la date du fichier Datatable
+                $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
             });
        
              // possition le nom de la vue en focntion du paramètre passé sur l'URL
@@ -250,6 +253,7 @@
                     break;
                 }
             } // FIN for 
+
         } ); // FIN Document Ready
     </script>
 
