@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pip install simplejson
+# pip install SI2Mplejson
 # pip install unidecode
 #
 # a lire sur les HASH : http://sametmax.com/aller-plus-loin-avec-les-hash-maps-en-python/
@@ -47,6 +47,8 @@ import unicodecsv
 from stat import ST_CTIME
 from netscaler.netscaler import *
 
+import MySQLdb
+
 Vm 		 		= {}
 Baie3PAR 		= {}
 CmdbDataServer 	= {}
@@ -56,6 +58,7 @@ DateFile        = {}
 Veeam 			= {}
 Tsm 			= {}
 DiscoveryData	= {}
+Dba     		= {}
 
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
@@ -384,6 +387,11 @@ def generateDataTableFile():
 					CmdbDataServer[server][item]=str(value)
 				#pprint(CmdbDataServer[server])
 
+			# ecrire les info DBA
+			if server in Dba.keys() :
+				for item, value  in Dba[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
 
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
@@ -533,7 +541,7 @@ def generateExcel():
 			veeamDure = veeamFin = VeeamScheduleStatus = VeeamVolTransfert = ""
 			tsmDebut = tsmFin = tsmStatus = TsmData = ""
 			ram = frequence = processor_count = os = modele = processeur = ""
-			vip = vpx = vserveur = ""
+			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
 
@@ -636,13 +644,24 @@ def generateExcel():
 			if CmdbDataServer[server].get("Vserveur") != None:
 				vserveur 	= CmdbDataServer[server]["Vserveur"]
 
+			# DBA  KeyError
+			if  Dba.get(server) != None :
+				if Dba[server].get("dbaInfo") != None:
+					dbaInfo = Dba[server]["dbaInfo"]
+
+				if Dba[server].get("typeBd") != None:
+					dbaType = Dba[server]["typeBd"]
+
+				if Dba[server].get("nbInstance") != None:
+					dbaNbInstance = Dba[server]["nbInstance"]
+
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
 						 veeamDure, veeamFin,  VeeamScheduleStatus,
 						tsmDebut, tsmFin, tsmStatus,
 						ram, os, processor_count, frequence, processeur, modele, 
-						vip, vpx, vserveur])
+						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance])
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -772,6 +791,18 @@ def generateExcel():
 		                        {'header': u'Netscaler Vserveur',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': u'DBA description',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'DBA Type de base',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'DBA Nb instance',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
 		                       ],
 		            'data': data
@@ -804,7 +835,7 @@ def generateExcel():
 		worksheetServer.set_column('AE:AE', 9)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3, options)
 
 	except :
 		print "Exception in user code:"
@@ -1207,16 +1238,15 @@ def dataPath(type):
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-17.xlsx";
 		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-24.xlsx";
 	elif type == "fileDate":
-		return rootPathStatBaies+ "fileDate.json";
+		return rootPathStatBaies+ "fileDate.json"
 	elif type == "DataTableFile":
-		return rootPathStatBaies+ "dataTable.json";
+		return rootPathStatBaies+ "dataTable.json"
 	elif type == "DataTableExcel":
-		return rootPathStatBaies+ "cmdbVisu.xlsx";
+		return rootPathStatBaies+ "cmdbVisu.xlsx"
 	elif type == "Discovery":
-		return rootPathStatBaies+ "discovery-easyvista-20170918.csv";
-
+		return rootPathStatBaies+ "discovery-easyvista-20170918.csv"
 	else :
-		return "le chemin pour accéder a "+type+" est inconnue";
+		return "le chemin pour accéder a "+type+" est inconnue"
 
 
 
@@ -1640,12 +1670,69 @@ def encodeJsonNetscaler():
 			mes = str(err)
 
 		DateFile[name]= { u'file' : netscalersList[name]["dnsname"], 
-							'date' : mes+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
-							u'info' : netscalersList[name]["description"] }
+						  u'date' : mes+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+						  u'info' : netscalersList[name]["description"] }
 		
 		#pprint (Netscaler)
 
+#
+# getDbaSQL
+#
+def encodeJsonDbaSQL():
+	"""
+    mysql -u Z3BRBR -h linpatient -P 3306 -D z3br_b_gestiondba  -p
 
+	SELECT A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD, COUNT(*) AS NB_INSTANCE
+FROM SERVEUR A, INSTANCE B                                              
+WHERE A.CD_SERVEUR=B.CD_SERVEUR AND A.CD_SERVEUR NOT LIKE 'MVS%'        
+GROUP BY A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD                       
+                                                                        
+Voici les infos de connexion à la base : 
+Serveur 
+•	LINPATIENT
+Port 
+•	3306
+Base
+•	z3br_b_gestiondba
+User
+•	Z3BRBR / Z3BRBR25
+	"""
+	try : 
+		print "traitement des infos dba : "
+		db = MySQLdb.connect(host="linpatient",    # your host, usually localhost
+	                     user="Z3BRBR",         # your username
+	                     passwd="Z3BRBR25",  # your password
+	                     db="z3br_b_gestiondba")        # name of the data base
+
+		# you must create a Cursor object. It will let    
+		#  you execute all the queries you need
+		cur = db.cursor()
+
+		# Use all the SQL you like
+		cur.execute("""SELECT A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD, COUNT(*) AS NB_INSTANCE
+						FROM SERVEUR A, INSTANCE B                                              
+						WHERE A.CD_SERVEUR=B.CD_SERVEUR AND A.CD_SERVEUR NOT LIKE 'MVS%'        
+							GROUP BY A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD """)
+
+		# print all 
+		for row in cur.fetchall():
+			
+			Dba[row[0]]	= {	u'dbaInfo'		:	row[1].decode('latin-1').encode('utf-8'),
+							u'typeBd'		:	row[2].decode('latin-1').encode('utf-8'),
+							u'nbInstance'	:	str(row[3])
+			}
+			
+
+		db.close()
+		
+		DateFile['DBA']= { u'file' : "mysql://Z3BRBR@linpatient/z3br_b_gestiondba",
+						   u'date' : datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+						   u'info' : "description de la chaine de connection au référentiel des DBA" }
+
+	# par défaut on continue le script
+	except Exception as e:
+		print("encodeJsonDba : Erreur")
+		print("args: ", e.args)
 
 # ----------------------------------------------------------------------------
 #
@@ -1658,6 +1745,7 @@ sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
 #print "|"+getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")+"|"
+#encodeJsonDbaSQL()
 #sys.exit(-1)
 
 print "-----------------------------------------------------------------------------"
@@ -1668,11 +1756,9 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
-#encodeJsonDiscoveryFile()
-encodeJsonDiscoverySoap()
-
-encodeJsonNetscaler()
-
+encodeJsonDiscoverySoap() 
+encodeJsonNetscaler() 
+encodeJsonDbaSQL()
  
 generateDataTableFile()
 

@@ -257,6 +257,9 @@ function format ( d ) {
     discoveryFrequence  = d.Frequence;
     hostname            = d.Nom;
     vserveur            = d.Vserveur;
+    dbaInfo             = d.dbaInfo;
+    nbInstance          = d.nbInstance;
+    typeBd              = d.typeBd;
     
     //console.log(d);   
     //console.log(d.Nom);
@@ -296,6 +299,12 @@ function format ( d ) {
         vpx                     = "N/A"}
     else {
          vpx           = formatNetscalerVpx(d.Vpx);     
+    }
+    if (d.typeBd                        == undefined) {
+        nbInstance          = "N/A";
+        typeBd              = "N/A";
+        dbaInfo             = "N/A";
+        classDBA            = "pas-d-info";
     }
 
     
@@ -369,10 +378,15 @@ function format ( d ) {
                     '<tr><th><div  class ="bulle"><a href="#">DBA<span>'+
                     'Date de génération des données : '+getDataFileDisplay('DBA', 'date')+
                     '</span></a></div></th></tr>'+
-                    '<tr><td class="'+classDBA+'"> lien sur l\'outil des DBA</td></tr>'+
                     '<tr><td class="'+classDBA+'">'+ 
                     '<a href="http://vwi0bdd003/dbainfo/listeDatabases.php?SELECT=Actualiser&CD_SERVEUR='+hostname+'" target="_blank">'+
-                    'bdd</a></td></tr>'+
+                    'outil dba</a></td></tr>'+
+                    '<tr><td class="'+classDBA+'">'+ 
+                    'infoDba : '+dbaInfo+'</td></tr>'+
+                    '<tr><td class="'+classDBA+'">'+ 
+                    'type DB : '+typeBd+'</td></tr>'+
+                    '<tr><td class="'+classDBA+'">'+ 
+                    'nb Instance : '+nbInstance+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
