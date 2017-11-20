@@ -1,3 +1,7 @@
+table {
+  table-layout: fixed; // ***********add this
+  word-wrap:break-word; // ***********and this
+}
 h1 {  text-align  :center; 
       font-size   : 30px;
       margin-top  : 1px; }
@@ -10,12 +14,11 @@ table.dataTable thead th {  background-color: #6495ED; color : white ;}
 }
 
 
-
 #example_filter input{
   background-color    : #6495ED;
   border-radius       : 10px; 
 }
-#typeOfTable {
+#typeOfTable, #typeOfBdd {
   margin-top          : 4px;
   background-color    : #6495ED; 
   border              : thin solid blue;
@@ -26,11 +29,11 @@ table.dataTable thead th {  background-color: #6495ED; color : white ;}
   padding             : 0.3em 3.5em 0.3em 1em;
   margin              : 0;      
 }
-#typeOfTable option {
-  border              : 10px solid #ABB6C0;
+#typeOfTable, #typeOfBdd {
+  border              : 3px solid grey;
 }
 
-#typeOfTable option:hover{
+#typeOfTablen, #typeOfBdd option:hover{
   color               : red;
 }
 .border-group {

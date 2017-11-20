@@ -413,6 +413,15 @@ def generateDataTableFile():
 			lastLine ='\t\t},\n'
 			j += 1
 
+	# -=- On a ajouté dans la structure mais pas dans l'export 
+ 	# W A R N I N G
+	fd.write('\t\t}\n')
+
+	fd.write('\n\t]\n}') #   -=- pour dataTable
+	fd.close()
+
+
+
 	#
 	# On rajoute les serveurs qui ne sont pas dans la cmdb.
 	#
@@ -449,13 +458,37 @@ def generateDataTableFile():
 			nb = nb +1
  	print "%-4.4d Serveur ont été ajouté par les info de VEEAM  " % nb 
  	
- 	# -=- On a ajouté dans la structure mais pas dans l'export 
- 	# W A R N I N G
-	fd.write('\t\t}\n')
+ 	#
+ 	# Création du fichier full serveur
+ 	#  
+ 	filename = dataPath("DataTableServerFile")	
+ 	try:
+		print "sauvegarde dans le fichier %s" % filename
+		fd = codecs.open(filename, 'w', 'utf-8')
 
-	fd.write('\n\t]\n}') #   -=- pour dataTable
-	#fd.write('\n\t}\n}')
-	fd.close()
+		fd.write('{\n\t"data" : [\n') #-=- pour dataTable
+
+		lineFinServeur=""
+		for server in CmdbDataServer.keys() :
+			fd.write(lineFinServeur)			
+			fd.write('{')			
+			lineFin=""
+			for item in CmdbDataServer[server]:
+				fd.write(lineFin)
+				fd.write('"'+item + '":"' +  CmdbDataServer[server][item]+'"')
+				lineFin=","
+
+			fd.write('}\n')
+			lineFinServeur=","
+		
+		fd.write('\n\t]\n}') #   -=- pour dataTable
+		fd.close()
+	except :
+		print "Exception in user code:"
+		print '-'*60
+		traceback.print_exc(file=sys.stdout)
+		print '-'*60
+		pass
 
 #
 # generateFileDate
@@ -1241,6 +1274,8 @@ def dataPath(type):
 		return rootPathStatBaies+ "fileDate.json"
 	elif type == "DataTableFile":
 		return rootPathStatBaies+ "dataTable.json"
+	elif type == "DataTableServerFile":
+		return rootPathStatBaies+ "dataTableServer.json"
 	elif type == "DataTableExcel":
 		return rootPathStatBaies+ "cmdbVisu.xlsx"
 	elif type == "Discovery":
@@ -1683,19 +1718,19 @@ def encodeJsonDbaSQL():
     mysql -u Z3BRBR -h linpatient -P 3306 -D z3br_b_gestiondba  -p
 
 	SELECT A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD, COUNT(*) AS NB_INSTANCE
-FROM SERVEUR A, INSTANCE B                                              
-WHERE A.CD_SERVEUR=B.CD_SERVEUR AND A.CD_SERVEUR NOT LIKE 'MVS%'        
-GROUP BY A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD                       
-                                                                        
-Voici les infos de connexion à la base : 
-Serveur 
-•	LINPATIENT
-Port 
-•	3306
-Base
-•	z3br_b_gestiondba
-User
-•	Z3BRBR / Z3BRBR25
+	FROM SERVEUR A, INSTANCE B                                              
+	WHERE A.CD_SERVEUR=B.CD_SERVEUR AND A.CD_SERVEUR NOT LIKE 'MVS%'        
+	GROUP BY A.CD_SERVEUR, A.LB_SERVEUR , B.TYPE_SGBD                       
+	                                                                        
+	Voici les infos de connexion à la base : 
+	Serveur 
+	•	LINPATIENT
+	Port 
+	•	3306
+	Base
+	•	z3br_b_gestiondba
+	User
+	•	Z3BRBR / Z3BRBR25
 	"""
 	try : 
 		print "traitement des infos dba : "
@@ -1756,8 +1791,8 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
-encodeJsonDiscoverySoap() 
-encodeJsonNetscaler() 
+#encodeJsonDiscoverySoap() -=- OCH
+#encodeJsonNetscaler() 
 encodeJsonDbaSQL()
  
 generateDataTableFile()

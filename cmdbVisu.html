@@ -69,6 +69,15 @@
             </div>
         </div>
 
+        <div class="gauche">
+            <div class="border-group">       
+                <select id="typeOfBdd" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
+                    <option value="?bdd=0">CMDB</option>
+                    <option value="?bdd=1">Serveurs</option>
+                </select>
+                <span class="glyphicon glyphicon-eye-open"></span>
+            </div>
+        </div>
         <div class="droite"><div class ="bulleHelp bulleHelp-left"><a href="data/cmdbVisu.xlsx"><img src="images/excel.png">export full<span> Export le contenu de la base au format excel</span></a></div></div>
         
         <div class="centre"><h1>CMDB : Liste des assets et des serveurs <small>(assynchrone)</small> </h1></div>
@@ -80,13 +89,13 @@
 
            <thead>
                 <tr>
-                    <script>document.write(getDataTableColonneData("tableHead"))</script>        
+                    <script>document.write(getDataTableColonneData("tableHead",TypeColonneNo))</script>        
           
                 </tr>
             </thead>
             <tfoot>
                <tr>
-                    <script>document.write(getDataTableColonneData("tableHead"))</script>        
+                    <script>document.write(getDataTableColonneData("tableHead", TypeColonneNo))</script>        
                 </tr>
             </tfoot>
         </table>
@@ -112,8 +121,9 @@
            //$('#example').append('<caption style="caption-side: bottom">DSI/DPI/CSI/ Socle Infra : O chanteloup 11/09/2017.</caption>');
  
             var table = $('#example').DataTable( {
-                "ajax": "data/dataTable.json",
-                "columns": getDataTableColonneData("javascript"),
+                "ajax" : getDataTableFileData(BddNo),
+                "columns": getDataTableColonneData("javascript", TypeColonneNo),
+                //AutoWidth: false, 
                 "order": [[1, 'asc']],
                 lengthMenu: [[15,16,17,18,19, 25, 50, -1], [15,16,17,18,19, 25, 50, "All"]],
                 "iDisplayLength" : 19,
@@ -208,33 +218,7 @@
 
             // supression des warning quand une colonne afficher n'est pas définie dans la bdd
             $.fn.dataTable.ext.errMode = 'none'
-//  
 
-            //$(function () {
-            //    $('.dataTables_wrapper table').dataTable().fnFilterOnReturn();
-            //});
-
-            // tentative de recherche sur le json complet et pas seulement sur les info affiché directement par datatable
-//         $.fn.dataTable.ext.search.push(
-//          
-//          function( settings, data, dataIndex, rowData, counter ) {
-//              if (ExtendSearch != true) {
-//                  return true;
-//              }
-
-
-//              var searchData = $('.dataTables_filter input').val().toLowerCase();
-//              console.log(searchData);
-//              //console.log(DataJson.data[dataIndex].CIResponsable);
-//              if (getValues(DataJson.data[dataIndex], searchData) == []) {
-//                  console.log(searchData+"not Found");
-//                  return false;
-//              } else {
-//                  //console.log(searchData+"Found !!!!");
-//                  return true;
-//              }
-//          }
-//      );
             // récupère les date de fichier pour les info Bulle
             $.getJSON("data/fileDate.json", function(data) {
                 DateFile = data;
@@ -244,7 +228,7 @@
                 $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
             });
        
-             // possition le nom de la vue en focntion du paramètre passé sur l'URL
+             // position le nom de la vue en focntion du paramètre passé sur l'URL
             var temp = "?type="+TypeColonneNo;
             var obj= document.getElementById("typeOfTable")
             for(var i, j = 0; i = obj.options[j]; j++) {
@@ -253,6 +237,17 @@
                     break;
                 }
             } // FIN for 
+
+            // position le nom de la vue en focntion du paramètre passé sur l'URL
+            var temp = "?bdd="+BddNo;
+            var obj= document.getElementById("typeOfBdd")
+            for(var i, j = 0; i = obj.options[j]; j++) {
+                if(i.value == temp) {
+                    obj.selectedIndex = j;
+                    break;
+                }
+            } // FIN for 
+
 
         } ); // FIN Document Ready
     </script>

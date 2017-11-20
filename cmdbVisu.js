@@ -4,8 +4,9 @@
 //
 
 // Variable Globale 
-var TypeColonneNo = 0;
-var TypeColonneDataJS = [];
+var TypeColonneNo       = 0;
+var BddNo               = 0;
+var TypeColonneDataJS   = [];
 var TypeColonneDataHead = [];
 
  
@@ -416,11 +417,23 @@ function format ( d ) {
 
 
 //
+// getDataTableFileData
+//
+function getDataTableFileData(bddNo) {
+    if (bddNo == 1) {
+        return("data/dataTableServer.json");
+    }
+    else {
+        return("data/dataTable.json"); 
+    }
+    
+}
+//
 // getDataTableColonneData
 //
 // type == javascript
 // type == tableHead
-function getDataTableColonneData(type) {
+function getDataTableColonneData(type, typeColonneNo) {
    //   *********************** 1 eme TYPE RESPONSABLE **********************
     console.log("getDataTableColonneData : "+type);
     TypeColonneDataJS [0] = [
@@ -428,12 +441,14 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
+                        "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                        
                     },
-                    { "data"                : "Nom" },
-                    { "data"                : "CINom" },
-                    { "data"                : "CIResponsable" },
-                    { "data"                : "CIImpactantResponsable" }
+                    { "data"                : "Nom", "width" : "17%"},
+                    { "data"                : "CINom", "width" : "40%"},
+                    { "data"                : "CIResponsable", "width" : "20%"},
+                    { "data"                : "CIImpactantResponsable", "width" : "20%"}
                     //,{ "data"                : "vmCpu"}
                 ];
     
@@ -451,10 +466,11 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
+                        "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    { "data"                : "Nom" },
-                    { "data"                : "CINom" },
+                    { "data"                : "Nom", "width" : "17%" },
+                    { "data"                : "CINom", "width" : "40%" },
                     { "data"                : "VeeamScheduleStatus",
                         "className"           : "dt-center"
                     },
@@ -485,10 +501,11 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
+                        "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    { "data"                : "Nom" },
-                    { "data"                : "CINom" },
+                    { "data"                : "Nom" , "width" : "17%"},
+                    { "data"                : "CINom", "width" : "40%" },
                     { "data"                : "vmCpu",
                         "className"           : "dt-center"
                     },
@@ -519,10 +536,11 @@ function getDataTableColonneData(type) {
                         "className"         : 'details-control',
                         "orderable"         : false,
                         "data"              : null,
+                        "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    {   "data"                : "Nom" },
-                    {   "data"                : "CINom" },
+                    {   "data"                : "Nom" , "width" : "17%"},
+                    {   "data"                : "CINom", "width" : "40%" },
                     {   "data"                : "allocated",
                         "className"           : "dt-center"
                     },
@@ -543,11 +561,11 @@ function getDataTableColonneData(type) {
                     <th>HDS Alloué (Go)</th>
                     `;
 
-    console.log("TypeColonneNo = "+TypeColonneNo);
+    console.log("TypeColonneNo = "+typeColonneNo);
     if (type == "javascript")
-        return(TypeColonneDataJS[TypeColonneNo]);
+        return(TypeColonneDataJS[typeColonneNo]);
     else if ( type == "tableHead")
-        return(TypeColonneDataHead[TypeColonneNo]);
+        return(TypeColonneDataHead[typeColonneNo]);
 }
 //
 // Gestion de history pour bookmarker une URL
@@ -600,5 +618,10 @@ function initialiseDataTableColonne() {
     if (typeof(QueryString["type"]) != "undefined") {
         TypeColonneNo = Number(QueryString["type"]);      
         console.log("******** initialiseDataTableColonne : "+TypeColonneNo); //logs t1                
+    }
+
+    if (typeof(QueryString["bdd"]) != "undefined") {
+        BddNo = Number(QueryString["bdd"]);      
+        console.log("******** initialise BDD : "+BddNo); //logs t1                
     }
 }
