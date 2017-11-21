@@ -60,6 +60,9 @@
         <div class="gauche">
             <div class="border-group">       
                 <select id="typeOfTable" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
+                    <optgroup label="Vue sur les données">
+                    </optgroup>
+
                 </select>
                 <span class="glyphicon glyphicon-eye-open"></span>
             </div>
@@ -68,14 +71,16 @@
         <div class="gauche">
             <div class="border-group">       
                 <select id="typeOfBdd" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
+                    <optgroup label="Source de donnée">
+                    </optgroup>
                     
                 </select>
-                <span class="glyphicon glyphicon-eye-open"></span>
+                <span class="glyphicon glyphicon-hdd"></span>
             </div>
         </div>
         <div class="droite"><div class ="bulleHelp bulleHelp-left"><a href="data/cmdbVisu.xlsx"><img src="images/excel.png">export full<span> Export le contenu de la base au format excel</span></a></div></div>
         
-        <div class="centre"><h1>cmdbVisu <small>(assynchrone)</small> </h1></div>
+        <div class="centre"><h1>CMDBVisu <small>(assynchrone)</small> </h1></div>
         
     </div>  
 
@@ -104,7 +109,7 @@
 
         // recupere les parametre sur url pour selectionner le type d'affichage
     
-        console.log(navigator);
+        //console.log(navigator);
         if(navigator.userAgent.indexOf('MSIE')!==-1
             || navigator.appVersion.indexOf('Trident/') > 0){
             alert('Ce site ne fonctionne pas sous IE, utilisez un "browser respectueux des standarts" : Chrome ou Firefox');
@@ -228,16 +233,16 @@
             // Ajoute les options qui represente les differente vue
             select[0]=select[1]=select[2]=select[3]="";
             select[TypeColonneNo] = ' selected="selected"';
-            $('#typeOfTable').append('<option value="?type=0&bdd='+BddNo+' "'+select[0]+'>Responsable</option>');
-            $('#typeOfTable').append('<option value="?type=1&bdd='+BddNo+' "'+select[1]+'>Sauvegarde</option>');
-            $('#typeOfTable').append('<option value="?type=2&bdd='+BddNo+' "'+select[2]+'>Ressource</option>');
-            $('#typeOfTable').append('<option value="?type=3&bdd='+BddNo+' "'+select[3]+'>Stockage</option>');
-            
+            $('#typeOfTable > optgroup').append('<option value="?type=0&bdd='+BddNo+' "'+select[0]+'>Responsable</option>');
+            $('#typeOfTable > optgroup').append('<option value="?type=1&bdd='+BddNo+' "'+select[1]+'>Sauvegarde</option>');
+            $('#typeOfTable > optgroup').append('<option value="?type=2&bdd='+BddNo+' "'+select[2]+'>Ressource</option>');
+            $('#typeOfTable > optgroup').append('<option value="?type=3&bdd='+BddNo+' "'+select[3]+'>Stockage</option>');
+
             //  Ajoute les options represente les différente source de donnée
             select[0]=select[1]=select[2]=select[3]="";
             select[BddNo] = ' selected="selected"';
-            $('#typeOfBdd').append('<option value="?type='+TypeColonneNo+'&bdd=0" '+select[0]+'>CMDB</option>');
-            $('#typeOfBdd').append('<option value="?type='+TypeColonneNo+'&bdd=1" '+select[1]+'>Serveurs</option>');
+            $('#typeOfBdd > optgroup').append('<option value="?type='+TypeColonneNo+'&bdd=0" '+select[0]+'>CMDB</option>');
+            $('#typeOfBdd > optgroup').append('<option value="?type='+TypeColonneNo+'&bdd=1" '+select[1]+'>Serveurs</option>');
             
 
 

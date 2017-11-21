@@ -20,17 +20,14 @@ table.dataTable thead th {  background-color: #6495ED; color : white ;}
 }
 #typeOfTable, #typeOfBdd {
   margin-top          : 4px;
-  background-color    : #6495ED; 
-  border              : thin solid blue;
+  background-color    : #4668a5; 
+  border              : 0px;
   border-radius       : 4px;
   display             : inline-block;
   font                : inherit;
   line-height         : 1.5em;
   padding             : 0.3em 3.5em 0.3em 1em;
   margin              : 0;      
-}
-#typeOfTable, #typeOfBdd {
-  border              : 3px solid grey;
 }
 
 #typeOfTablen, #typeOfBdd option:hover{
