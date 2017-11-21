@@ -60,10 +60,6 @@
         <div class="gauche">
             <div class="border-group">       
                 <select id="typeOfTable" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
-                    <option value="?type=0">Responsable</option>
-                    <option value="?type=1">Sauvegarde</option>
-                    <option value="?type=2">Ressource </option>
-                    <option value="?type=3">Stockage</option>
                 </select>
                 <span class="glyphicon glyphicon-eye-open"></span>
             </div>
@@ -72,15 +68,14 @@
         <div class="gauche">
             <div class="border-group">       
                 <select id="typeOfBdd" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
-                    <option value="?bdd=0">CMDB</option>
-                    <option value="?bdd=1">Serveurs</option>
+                    
                 </select>
                 <span class="glyphicon glyphicon-eye-open"></span>
             </div>
         </div>
         <div class="droite"><div class ="bulleHelp bulleHelp-left"><a href="data/cmdbVisu.xlsx"><img src="images/excel.png">export full<span> Export le contenu de la base au format excel</span></a></div></div>
         
-        <div class="centre"><h1>CMDB : Liste des assets et des serveurs <small>(assynchrone)</small> </h1></div>
+        <div class="centre"><h1>cmdbVisu <small>(assynchrone)</small> </h1></div>
         
     </div>  
 
@@ -102,9 +97,11 @@
 
         
     </div>
-    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 18/11/2017  <i class="glyphicon glyphicon-eye-open"></i><span id="dateFileDataTable"></span></a></div>
+    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 22/11/2017  <i class="glyphicon glyphicon-eye-open"></i><span id="dateFileDataTable"></span></a></div>
 
         <script>
+        var select =  new Array();
+
         // recupere les parametre sur url pour selectionner le type d'affichage
     
         console.log(navigator);
@@ -228,29 +225,24 @@
                 $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
             });
        
-             // position le nom de la vue en focntion du paramètre passé sur l'URL
-            var temp = "?type="+TypeColonneNo;
-            var obj= document.getElementById("typeOfTable")
-            for(var i, j = 0; i = obj.options[j]; j++) {
-                if(i.value == temp) {
-                    obj.selectedIndex = j;
-                    break;
-                }
-            } // FIN for 
-
-            // position le nom de la vue en focntion du paramètre passé sur l'URL
-            var temp = "?bdd="+BddNo;
-            var obj= document.getElementById("typeOfBdd")
-            for(var i, j = 0; i = obj.options[j]; j++) {
-                if(i.value == temp) {
-                    obj.selectedIndex = j;
-                    break;
-                }
-            } // FIN for 
+            // Ajoute les options qui represente les differente vue
+            select[0]=select[1]=select[2]=select[3]="";
+            select[TypeColonneNo] = ' selected="selected"';
+            $('#typeOfTable').append('<option value="?type=0&bdd='+BddNo+' "'+select[0]+'>Responsable</option>');
+            $('#typeOfTable').append('<option value="?type=1&bdd='+BddNo+' "'+select[1]+'>Sauvegarde</option>');
+            $('#typeOfTable').append('<option value="?type=2&bdd='+BddNo+' "'+select[2]+'>Ressource</option>');
+            $('#typeOfTable').append('<option value="?type=3&bdd='+BddNo+' "'+select[3]+'>Stockage</option>');
+            
+            //  Ajoute les options represente les différente source de donnée
+            select[0]=select[1]=select[2]=select[3]="";
+            select[BddNo] = ' selected="selected"';
+            $('#typeOfBdd').append('<option value="?type='+TypeColonneNo+'&bdd=0" '+select[0]+'>CMDB</option>');
+            $('#typeOfBdd').append('<option value="?type='+TypeColonneNo+'&bdd=1" '+select[1]+'>Serveurs</option>');
+            
 
 
         } ); // FIN Document Ready
     </script>
 
 </body>
-</html>
+</html>  
