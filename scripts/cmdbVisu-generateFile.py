@@ -207,6 +207,15 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 		for item, value  in DiscoveryData[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
+	# Ajoute info Netscaller
+	if server in Netscaler.keys() :
+		for item, value  in Netscaler[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info DBA
+	if server in Dba.keys() :
+		for item, value  in Dba[server].items() :
+			CmdbDataServer[server][item]=str(value)
 
 #
 # generateDataTableFile
@@ -1791,8 +1800,8 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
-#encodeJsonDiscoverySoap() -=- OCH
-#encodeJsonNetscaler() 
+encodeJsonDiscoverySoap() 
+encodeJsonNetscaler() 
 encodeJsonDbaSQL()
  
 generateDataTableFile()
