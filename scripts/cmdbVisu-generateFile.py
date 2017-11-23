@@ -723,7 +723,7 @@ def generateExcel():
 				if Supervision[server].get("supOK") != None:
 					supOk = 1
 				if Supervision[server].get("supInfo") != None:
-					supinfo = Supervision[server].get("supInfo")
+					supInfo = Supervision[server].get("supInfo")
 
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
@@ -1876,7 +1876,7 @@ Tu peux aussi passer par la table `centreon_storage`.`hosts` qui présente un pe
 		
 		DateFile['Supervision']= { u'file' : "mysql://centreonbr@centdb.si2m.tec/centreon",
 						   u'date' : datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
-						   u'info' : 'description de la chaine de connection a la base de donnée de la supervision :  select host_name, host_address, host_alias  from host where host_address != ""  ;' }
+						   u'info' : "description de la chaine de connection a la base de donnée de la supervision :  select host_name, host_address, host_alias  from host where host_address != ''  ;" }
 
 	# par défaut on continue le script
 	except Exception as e:

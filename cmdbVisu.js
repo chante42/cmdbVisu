@@ -198,7 +198,7 @@ function format ( d ) {
     var storageCount = storageHDSCount = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
     classDBA = "normal";
-    classSupervision   = "pas-d-info";
+    classSupervision   = "normal";
     if  (d.storage != undefined) {
         //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
         storageCount = formatBaie(d.storage);
@@ -238,6 +238,8 @@ function format ( d ) {
     if  (d.VIP == undefined) {
         classNetscaler ="pas-d-info";
     }
+
+    
     vmCpu               = d.vmCpu;
     vmMem               = d.vmMem;
     vmDisk              = d.vmDisk;
@@ -261,6 +263,7 @@ function format ( d ) {
     dbaInfo             = d.dbaInfo;
     nbInstance          = d.nbInstance;
     typeBd              = d.typeBd;
+    supInfo             = d.supInfo;
     
     //console.log(d);   
     //console.log(d.Nom);
@@ -307,7 +310,17 @@ function format ( d ) {
         dbaInfo             = "N/A";
         classDBA            = "pas-d-info";
     }
-
+    if  (d.supOK                        == undefined) {
+        classSupervision    = "pas-d-info";
+        supInfo             = "N/A";
+        supOK               = "NON";
+    }
+    else {
+        supOK               = "OUI";
+        if (d.supInfo                  == undefined){
+            supInfo             = "N/A";
+        }
+    }
     
     codeAffichageAjout = '<span><img src="images/details_open.png" onclick="datatableAddColumn()" ><img src="images/details_close.png" onclick="datatableDelColumn()"></span>'
     // `d` is the original data object for the row
@@ -409,6 +422,17 @@ function format ( d ) {
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">NbProc</span> :'+dicoveryNbProc+' </td></tr>'+
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Type</span> :'+discoveryProcessor+' </td></tr>'+
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Freq</span> :'+discoveryFrequence+' Mhz </td></tr>'+
+                '</table>'+
+            '</div></td>'+
+            '<td width="10%"><div class="infoPlus">'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th>'+
+                        '<div  class ="bulle"><a href="#">SUPERVISION<span>'+
+                        'Date de génération des données : '+getDataFileDisplay('Supervision', 'date')+
+                        '<span></a></div>'+
+                    '</th></tr>'+
+                    '<tr><td class="'+classSupervision+'"><span class="titreLigne">Supervisé</span> : '+supOK+'</td></tr>'+
+                    '<tr><td class="'+classSupervision+'"><span class="titreLigne">Info</span> : '+supInfo+' </td></tr>'+
                 '</table>'+
             '</div></td>'+
         '</tr>'+
@@ -559,6 +583,33 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>3PAR Alloué (Go)</th>
                     <th>Virtu Alloué (Go)</th>
                     <th>HDS Alloué (Go)</th>
+                    `;
+
+    //   *********************** 4 eme TYPE Supervision **********************
+    TypeColonneDataJS [4]= [
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "width"             : "2%",
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "Nom" , "width" : "17%"},
+                    {   "data"                : "CINom", "width" : "40%" },
+                    {   "data"                : "supOK",
+                        "className"           : "dt-center"
+                    },
+                    {   "data"                : "supInfo",
+                        "className"           : "dt-center"
+                    }
+                ];
+    
+    TypeColonneDataHead[4] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>Supervisé ?</th>
+                    <th>SupervisionInfo</th>
                     `;
 
     console.log("TypeColonneNo = "+typeColonneNo);
