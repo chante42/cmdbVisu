@@ -59,6 +59,7 @@ Veeam 			= {}
 Tsm 			= {}
 DiscoveryData	= {}
 Dba     		= {}
+Supervision 	= {}
 
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
@@ -215,6 +216,11 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 	# Ajoute info DBA
 	if server in Dba.keys() :
 		for item, value  in Dba[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info Supervision
+	if server in Supervision.keys() :
+		for item, value  in Supervision[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
 #
@@ -402,6 +408,13 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
+			# ecrire les info Supervision
+			if server in Supervision.keys() :
+				for item, value  in Supervision[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+
+
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
 			for buf in data :
@@ -466,6 +479,14 @@ def generateDataTableFile():
 			insertInfoServerNotInCMDB(server,"VEEAM")
 			nb = nb +1
  	print "%-4.4d Serveur ont été ajouté par les info de VEEAM  " % nb 
+ 	
+ 	# Supervision
+ 	nb = 0
+	for server in Supervision.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"SUPERVISION")
+			nb = nb +1
+ 	print "%-4.4d Serveur ont été ajouté par les info de Supervision  " % nb 
  	
  	#
  	# Création du fichier full serveur
@@ -584,6 +605,7 @@ def generateExcel():
 			tsmDebut = tsmFin = tsmStatus = TsmData = ""
 			ram = frequence = processor_count = os = modele = processeur = ""
 			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
+			supOk = supInfo = ""
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
 
@@ -697,13 +719,19 @@ def generateExcel():
 				if Dba[server].get("nbInstance") != None:
 					dbaNbInstance = Dba[server]["nbInstance"]
 
+			if Supervision.get(server) != None:
+				if Supervision[server].get("supOK") != None:
+					supOk = 1
+				if Supervision[server].get("supInfo") != None:
+					supinfo = Supervision[server].get("supInfo")
+
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
 						 veeamDure, veeamFin,  VeeamScheduleStatus,
 						tsmDebut, tsmFin, tsmStatus,
 						ram, os, processor_count, frequence, processeur, modele, 
-						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance])
+						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo])
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -845,6 +873,14 @@ def generateExcel():
 		                        {'header': u'DBA Nb instance',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': u'Supervision OK',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Supervision Info',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
 		                       ],
 		            'data': data
@@ -877,7 +913,7 @@ def generateExcel():
 		worksheetServer.set_column('AE:AE', 9)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2, options)
 
 	except :
 		print "Exception in user code:"
@@ -1720,7 +1756,7 @@ def encodeJsonNetscaler():
 		#pprint (Netscaler)
 
 #
-# getDbaSQL
+# encodeJsonDbaSQL
 #
 def encodeJsonDbaSQL():
 	"""
@@ -1771,11 +1807,80 @@ def encodeJsonDbaSQL():
 		
 		DateFile['DBA']= { u'file' : "mysql://Z3BRBR@linpatient/z3br_b_gestiondba",
 						   u'date' : datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
-						   u'info' : "description de la chaine de connection au référentiel des DBA" }
+						   u'info' : "description de la chaine de connection au référentiel des DBA : select host_name, host_address, host_alias  from host where host_address != ''  ;" }
 
 	# par défaut on continue le script
 	except Exception as e:
 		print("encodeJsonDba : Erreur")
+		print("args: ", e.args)
+
+#
+# encodeJsonSupervisionSQL
+#
+def encodeJsonSupervisionSQL():
+	"""
+	  mysql -u centreonbr -h centdb.si2m.tec -P 3306 -D centreon   -p -e 'select host_name, host_address, host_alias  from host where host_address != ""'
+
+
+
+
+	Voici les infos pour interroger Centreon.
+•	Host : centdb.si2m.tec (port 3306 par défaut)
+•	User : centreonbr
+•	Pass : centreon
+
+Les infos sont sur des bases différentes, la partie conf est dans la base « centreon », et la partie vivante est dans la base « centreon_storage ».
+
+
+Pour les tables/champs pertinents voici ce que j’ai identifié.
+
+Liste des Hosts supervisés :
+•	Table : `centreon`.`host`
+•	Champs :
+o	host_name : Nom utilize dans Centreon
+o	host_address : Adress IP si renseigné (normalement toujours renseignée pour les CI serveurs pour le check host)
+
+Tu peux aussi passer par la table `centreon_storage`.`hosts` qui présente un peu plus d’infos (attention champs différents).
+ """
+	try : 
+		print "traitement des infos De la Supervision : "
+		db = MySQLdb.connect(host="centdb.si2m.tec",    # your host, usually localhost
+	                     user="centreonbr",         # your username
+	                     passwd="centreon",  # your password
+	                     db="centreon")        # name of the data base
+
+		# you must create a Cursor object. It will let    
+		#  you execute all the queries you need
+		cur = db.cursor()
+
+		# Use all the SQL you like
+		cur.execute('select host_name, host_address, host_alias  from host where host_address != ""')
+
+		# print all 
+		for row in cur.fetchall(): #-=- OCH 20171123
+			#print 'row[2]="'+row[2]+"'"
+			# Mise en conformité du nom du serveur
+			serveur = row[0].decode('latin-1').encode('utf-8').upper().rstrip()
+
+			# je ne filtre pas les équipement tel et réseau fait rien sur les switch réseau : ex A92-48-SR3-L2.
+
+			if row[2] == "" or row[2] == "NULL"  or row[2] == None:
+				Supervision[serveur] = {	u'supOK'		:	1}
+			else:
+				info = row[2].decode('latin-1').encode('utf-8')
+				Supervision[serveur] = {	u'supOK'		:	1,
+											u'supInfo'		:	info
+									}
+			
+		db.close()
+		
+		DateFile['Supervision']= { u'file' : "mysql://centreonbr@centdb.si2m.tec/centreon",
+						   u'date' : datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+						   u'info' : 'description de la chaine de connection a la base de donnée de la supervision :  select host_name, host_address, host_alias  from host where host_address != ""  ;' }
+
+	# par défaut on continue le script
+	except Exception as e:
+		print("encodeJsonSupervisionSQL : Erreur")
 		print("args: ", e.args)
 
 # ----------------------------------------------------------------------------
@@ -1803,6 +1908,7 @@ encodeJsonTsm()
 encodeJsonDiscoverySoap() 
 encodeJsonNetscaler() 
 encodeJsonDbaSQL()
+encodeJsonSupervisionSQL()
  
 generateDataTableFile()
 
