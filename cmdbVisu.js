@@ -231,9 +231,6 @@ function format ( d ) {
         classTSM = colorSauvegardeDate(d.TSMFin);
     }
 
-    if  (d.RAM == undefined) {
-        classDiscovery ="pas-d-info";
-    }
 
     if  (d.VIP == undefined) {
         classNetscaler ="pas-d-info";
@@ -264,7 +261,10 @@ function format ( d ) {
     nbInstance          = d.nbInstance;
     typeBd              = d.typeBd;
     supInfo             = d.supInfo;
-    
+    esxvCenter          = d.ESXvCenter;
+    esxCluster          = d.ESXCluster;
+    esxModele           = d.ESXModele;
+
     //console.log(d);   
     //console.log(d.Nom);
     //console.log(hostname);
@@ -321,6 +321,46 @@ function format ( d ) {
             supInfo             = "N/A";
         }
     }
+
+    if  (d.RAM == undefined) {
+        classDiscovery ="pas-d-info";
+    }
+
+
+    //
+    // Cas particulier ou je remplace discovery par des infos VMWare pour les serveur qui heberges les hyperviseurs
+    //
+    discoveryTable =  '<td width="10%"><div class="infoPlus">'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th>'+
+                        '<div  class ="bulle"><a href="#">DISCOVERY<span>'+
+                        'Date de génération des données : '+getDataFileDisplay('Discovery', 'date')+
+                        '<span></a></div>'+
+                    '</th></tr>'+
+                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">RAM</span> : '+discoveryRAM+' Mo</td></tr>'+
+                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">NbProc</span> :'+dicoveryNbProc+' </td></tr>'+
+                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Type</span> :'+discoveryProcessor+' </td></tr>'+
+                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Freq</span> :'+discoveryFrequence+' Mhz </td></tr>'+
+                '</table>'+
+            '</div></td>';
+    
+    
+    if (d.ESXCluster != undefined) {
+        classDiscovery ="normal";
+        discoveryTable =  '<td width="10%"><div class="infoPlus">'+
+            '<table cellspacing="0" border="1" >'+
+                '<tr><th>'+
+                    '<div  class ="bulle"><a href="#">ESX HOST<span>'+
+                    'Date de génération des données : '+getDataFileDisplay('VmWare', 'date')+
+                    '<span></a></div>'+
+                '</th></tr>'+
+                '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Cluster</span> : '+esxCluster+' </td></tr>'+
+                '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Vcenter</span> : '+esxvCenter+' </td></tr>'+
+                '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Modèle</span> :' + esxModele+' </td></tr>'+
+            '</table>'+
+        '</div></td>';
+    }
+    
     
     codeAffichageAjout = '<span><img src="images/details_open.png" onclick="datatableAddColumn()" ><img src="images/details_close.png" onclick="datatableDelColumn()"></span>'
     // `d` is the original data object for the row
@@ -411,19 +451,7 @@ function format ( d ) {
                     '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vpx</span> : '+vpx+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
-            '<td width="10%"><div class="infoPlus">'+
-                '<table cellspacing="0" border="1" >'+
-                    '<tr><th>'+
-                        '<div  class ="bulle"><a href="#">DISCOVERY<span>'+
-                        'Date de génération des données : '+getDataFileDisplay('Discovery', 'date')+
-                        '<span></a></div>'+
-                    '</th></tr>'+
-                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">RAM</span> : '+discoveryRAM+' Mo</td></tr>'+
-                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">NbProc</span> :'+dicoveryNbProc+' </td></tr>'+
-                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Type</span> :'+discoveryProcessor+' </td></tr>'+
-                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Freq</span> :'+discoveryFrequence+' Mhz </td></tr>'+
-                '</table>'+
-            '</div></td>'+
+            discoveryTable+
             '<td width="10%"><div class="infoPlus">'+
                 '<table cellspacing="0" border="1" >'+
                     '<tr><th>'+

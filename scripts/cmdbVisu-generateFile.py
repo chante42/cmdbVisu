@@ -60,6 +60,7 @@ Tsm 			= {}
 DiscoveryData	= {}
 Dba     		= {}
 Supervision 	= {}
+Esx 			= {}
 
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
@@ -88,13 +89,6 @@ netscalersList = {
 		  	"zvpx9p" : { "dnsname" : "zvpx9p.si2m.tec", "description" : "Load balancer pour le test DMZ en A92"}
 		  }
 
-#netscalersList = { 
-#			"vpx3p"  : { "dnsname" : "vpx3p.si2m.tec",  "description" : "Load balancer pour la recette en A92" },
-#			"vpx4p"  : { "dnsname" : "vpx4p.si2m.tec",  "description" : "Load balancer de test pour le réseau en A92" },
-#			"vpx1p"  : { "dnsname" : "vpx1p.si2m.tec",  "description" : "Load balancer pour la prod en A92" },
-#			"vpx2p"  : { "dnsname" : "vpx2p.si2m.tec",  "description" : "Load balancer pour la preprod en A92" },
-#		  	"vpx6p"  : { "dnsname" : "vpx6p.si2m.tec",  "description" : "Load balancer pour la prod en B94" },
-#}
 
 def creationDateFile(path_to_file):
 	"""
@@ -201,6 +195,10 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 	# ecrire les infos de VMWare 
 	if server in Vm.keys() :
 		for item, value  in Vm[server].items() :
+			CmdbDataServer[server][item]=str(value)
+		# Onglet Host	
+	if server in Esx.keys() :
+		for item, value  in Esx[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
 	# Ajoute info Discovery
@@ -375,6 +373,11 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
+			if server in Esx.keys() :
+				for item, value  in Esx[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+
 			# ecrire les infos de TSM
 			if server in Tsm.keys() :
 				#if server == "VWI0CTD001":
@@ -462,7 +465,14 @@ def generateDataTableFile():
 		if server not in CmdbDataServer.keys():
 			insertInfoServerNotInCMDB(server,"VMWARE")
 			nb = nb +1
- 	print "%-4.4d Serveur ont été ajouté par les info de VmWare  " % nb 
+ 	print "%-4.4d VM ont été ajouté par les info de VmWare  " % nb 
+
+ 	nb = 0
+	for server in Esx.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"VMWARE")
+			nb = nb +1
+ 	print "%-4.4d ESX Host ont été ajouté par les info de VmWare  " % nb 
 
 	# TSM
 	nb = 0
@@ -1697,10 +1707,34 @@ def encodeJsonVmWare():
 		nomVm = sh1.row_values(rownum)[colNomVM].upper()
 
 		#print nomVm
-		Vm[nomVm]={u'vmMem':str(int(sh1.row_values(rownum)[colMEM])),u'vmCpu':str(int(sh1.row_values(rownum)[colVCPU])), u'vmDisk':str(int(sh1.row_values(rownum)[colDisk])), u'vmOs' : os.encode('utf8'), u'vmBanc' : banc.encode('utf8')}
+		Vm[nomVm] =	{	u'vmMem'	: str(int(sh1.row_values(rownum)[colMEM])),
+						u'vmCpu'	: str(int(sh1.row_values(rownum)[colVCPU])),
+						u'vmDisk'	: str(int(sh1.row_values(rownum)[colDisk])), 
+						u'vmOs' 	: os.encode('utf8'),
+						u'vmBanc' 	: banc.encode('utf8')
+					}
 
+	#recuperation des serveurs ESX
+	# feuilles dans le classeur
+	shname2=wb1.sheet_names()[1]
+	sh2 = wb1.sheet_by_name(shname2)
+
+	noLigne = 0
+	for rownum in range(sh2.nrows):
+		
+		
+		noLigne = noLigne + 1
+		if noLigne < 2 :
+			continue
+
+		nomESX = sh2.row_values(rownum)[0].replace(".si2m.tec","").upper()
+		Esx[nomESX] = 	{	u'ESXvCenter' 	: sh2.row_values(rownum)[1].encode('utf8'),
+							u'ESXCluster' 	: sh2.row_values(rownum)[2].encode('utf8'),
+							u'ESXModele'	: sh2.row_values(rownum)[3].encode('utf8')
+						}
 	print "\n"
-
+	wb1.release_resources()
+	del wb1
 #
 # encodeJsonDiscoveryFile
 #
@@ -1906,7 +1940,7 @@ encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
 encodeJsonDiscoverySoap() 
-encodeJsonNetscaler() 
+#encodeJsonNetscaler() 
 encodeJsonDbaSQL()
 encodeJsonSupervisionSQL()
  
