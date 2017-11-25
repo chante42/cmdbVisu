@@ -123,7 +123,10 @@
            //$('#example').append('<caption style="caption-side: bottom">DSI/DPI/CSI/ Socle Infra : O chanteloup 11/09/2017.</caption>');
  
             var table = $('#example').DataTable( {
-                "ajax" : getDataTableFileData(BddNo),
+                "ajax" : {
+                            "type"  : "POST",
+                            "url"   : getDataTableFileData(BddNo)
+                        },
                 "columns": getDataTableColonneData("javascript", TypeColonneNo),
                 //AutoWidth: false, 
                 "order": [[1, 'asc']],

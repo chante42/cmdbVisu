@@ -9,6 +9,8 @@ var BddNo               = 0;
 var TypeColonneDataJS   = [];
 var TypeColonneDataHead = [];
 
+// constance de lien vers des appli externe
+var LienCentreon = "http://supervision.si2m.tec/centreon/main.php?p=204&mode=0&svc_id=";
  
 //
 // dateDiff
@@ -316,7 +318,7 @@ function format ( d ) {
         lienCentreon        = "NON";
     }
     else {
-        lienCentreon='<a target="_blank" href="http://supervision.si2m.tec/centreon/main.php?p=204&mode=0&svc_id='+d.Nom+'" >OUI</a>';
+        lienCentreon='<a target="_blank" href="'+LienCentreon+d.Nom+'" >OUI</a>';
         if (d.supInfo                  == undefined){
             supInfo             = "N/A";
         }
@@ -628,7 +630,15 @@ function getDataTableColonneData(type, typeColonneNo) {
                     {   "data"                : "Nom" , "width" : "17%"},
                     {   "data"                : "CINom", "width" : "40%" },
                     {   "data"                : "supOK",
-                        "className"           : "dt-center"
+                        "className"           : "dt-center",
+                        render                : function( data, type, row){
+                            if (data == "1") {
+                                return('<a target="_blanc" href ='+LienCentreon+row.Nom+'>OUI</a>');
+                            }
+                            else {
+                                return("NON");
+                            }
+                        }
                     },
                     {   "data"                : "supInfo",
                         "className"           : "dt-center"
