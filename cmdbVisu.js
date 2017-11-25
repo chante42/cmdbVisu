@@ -313,10 +313,10 @@ function format ( d ) {
     if  (d.supOK                        == undefined) {
         classSupervision    = "pas-d-info";
         supInfo             = "N/A";
-        supOK               = "NON";
+        lienCentreon        = "NON";
     }
     else {
-        supOK               = "OUI";
+        lienCentreon='<a target="_blank" href="http://supervision.si2m.tec/centreon/main.php?p=204&mode=0&svc_id='+d.Nom+'" >OUI</a>';
         if (d.supInfo                  == undefined){
             supInfo             = "N/A";
         }
@@ -459,7 +459,10 @@ function format ( d ) {
                         'Date de génération des données : '+getDataFileDisplay('Supervision', 'date')+
                         '<span></a></div>'+
                     '</th></tr>'+
-                    '<tr><td class="'+classSupervision+'"><span class="titreLigne">Supervisé</span> : '+supOK+'</td></tr>'+
+                    '<tr><td class="'+classSupervision+'">'+
+                        '<span class="titreLigne">Supervisé : </span>'+
+                        lienCentreon+
+                    '</td></tr>'+
                     '<tr><td class="'+classSupervision+'"><span class="titreLigne">Info</span> : '+supInfo+' </td></tr>'+
                 '</table>'+
             '</div></td>'+
