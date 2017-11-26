@@ -4,10 +4,13 @@
 //
 
 // Variable Globale 
-var TypeColonneNo       = 0;
+var TypeColonneNo       = 0;  
 var BddNo               = 0;
+var Search              = "";
+var MapOption           = 0;
 var TypeColonneDataJS   = [];
 var TypeColonneDataHead = [];
+var Table               = null;
 
 // constance de lien vers des appli externe
 var LienCentreon = "http://supervision.si2m.tec/centreon/main.php?p=204&mode=0&svc_id=";
@@ -710,10 +713,145 @@ function initialiseDataTableColonne() {
     if (typeof(QueryString["type"]) != "undefined") {
         TypeColonneNo = Number(QueryString["type"]);      
         console.log("******** initialiseDataTableColonne : "+TypeColonneNo); //logs t1                
-    }
+    }  
 
     if (typeof(QueryString["bdd"]) != "undefined") {
         BddNo = Number(QueryString["bdd"]);      
         console.log("******** initialise BDD : "+BddNo); //logs t1                
     }
+    if (typeof(QueryString["search"]) != "undefined") {
+        Search = QueryString["search"];      
+        console.log("******** initialise search : "+Search); //logs t1                
+    }
+    if (typeof(QueryString["map"]) != "undefined") {
+        MapOption = QueryString["map"];      
+        console.log("******** initialise MAP : "+MapOption); //logs t1                
+    }
+}
+
+//
+//    readyCreateDataTable
+//
+function readyCreateDataTable() {
+    var printCounter = 0; 
+
+
+   // Append a caption to the table before the DataTables initialisation
+   //$('#example').append('<caption style="caption-side: bottom">DSI/DPI/CSI/ Socle Infra : O chanteloup 11/09/2017.</caption>');
+
+    Table = $('#dataTable').DataTable( {
+        "ajax" : {
+                    "type"  : "POST",
+                    "url"   : getDataTableFileData(BddNo)
+                },
+        "columns": getDataTableColonneData("javascript", TypeColonneNo),
+        //AutoWidth: false, 
+        "order": [[1, 'asc']],
+        lengthMenu: [[15,16,17,18,19, 25, 50, -1], [15,16,17,18,19, 25, 50, "All"]],
+        "iDisplayLength" : 19,
+        keys : true,
+        colReorder: true,
+        dom: 'Blfrtip',
+
+        "oSearch": {
+            "sSearch": Search
+            },
+    
+        "search": {
+             "regex"        : true,
+             "smart"        : false
+        },
+        buttons: [
+            {
+                extend: 'copy',
+                text: '<u>C</u>opy',
+                key: {
+                    key: 'c',
+                    altKey: true
+                }
+            },              
+            {
+                extend: 'excel',
+                messageTop: 'information extraite de http://vli5res01/cmdb'
+            },
+            {
+                extend: 'pdf',
+                messageBottom: null
+            },
+            {
+                extend: 'print',
+                messageTop: function () {
+                    printCounter++;
+ 
+                    if ( printCounter === 1 ) {
+                        return 'This is the first time you have printed this document.';
+                    }
+                    else {
+                        return 'You have printed this document '+printCounter+' times';
+                    }
+                },
+                messageBottom: null
+            }  // fin PRINT
+        ], // fin BUTTON
+        initComplete: function () {  
+            this.api().columns().every( function () {  
+                var column = this;  
+                var select = $('<select><option value=""></option></select>')  
+                    .appendTo( $(column.footer()).empty() )  
+                    .on( 'change', function () {  
+                        var val = $.fn.dataTable.util.escapeRegex(  
+                            $(this).val()  
+                        );  
+                //to select and search from grid  
+                        column  
+                            .search( val ? '^'+val+'$' : '', true, false )  
+                            .draw();  
+                    } );  
+   
+                column.data().unique().sort().each( function ( d, j ) {  
+                    select.append( '<option value="'+d+'">'+d+'</option>' )  
+                } );  
+            } );
+
+        } // fin de initcomplete 
+    } ); // fin table variable 
+
+    Table.buttons().container()
+        .appendTo( $('.col-sm-6:eq(0)', Table.table().container() ) );
+     
+    // Add event listener for opening and closing details
+    $('#example tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = Table.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } ); // FIN Add event listener for opening and closing details
+
+    // fin de lecture du json
+    Table.on( 'xhr', function () {
+        DataJson = Table.ajax.json();
+        
+    } );
+
+    // supression des warning quand une colonne afficher n'est pas définie dans la bdd
+    $.fn.dataTable.ext.errMode = 'none'
+
+    // récupère les date de fichier pour les info Bulle
+    $.getJSON("data/fileDate.json", function(data) {
+        DateFile = data;
+        //console.log(data)
+
+        // affiche la date du fichier Datatable
+        $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
+    });
+
 }

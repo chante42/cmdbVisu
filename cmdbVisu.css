@@ -267,3 +267,42 @@ div#menu a {
     transform         : scale(1) rotate(0);  
     opacity           : 1;      
 }
+
+#log {
+  background-color    : black;
+  color               : white;
+}
+
+.displayNone {
+  display: none;
+}
+
+#mapButton {
+  border            : 1px solid black;
+  background-color  : #4668a5;
+  margin-top        : 0px;  
+}
+#mapButton p{
+  margin          : -1px 1px -1px 1px;
+  border          : 0px;
+  border-radius   : 3px;
+}
+
+#displayInfo_DIV {
+    position          : absolute;    
+    margin-top        : 0px;
+    margin-left       : 0px;   
+    color             : #09c;
+    background        : rgba(0,0,0,.9);
+    padding           : 3px;
+    border-radius     : 3px;
+    box-shadow        : 0 0 2px rgba(0,0,0,.5);  
+    width             : 1000px;
+    height            : 400px;
+
+    }
+
+#titreDataTable{
+  text-align          : center;
+  margin              : 1px;
+}
