@@ -820,7 +820,7 @@ function readyCreateDataTable() {
         .appendTo( $('.col-sm-6:eq(0)', Table.table().container() ) );
      
     // Add event listener for opening and closing details
-    $('#example tbody').on('click', 'td.details-control', function () {
+    $('#dataTable tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = Table.row( tr );
  
