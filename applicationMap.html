@@ -1,227 +1,175 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <title>ApplicationMap</title>
     <link rel="stylesheet" type="text/css" href="cmdbVisu.css"/>
     <link rel = "stylesheet" type = "text/css" href = "css/datatables.min.css">
-</head>
-<body style="padding:0px; margin:0px;"> 
-    <!-- http://image-map.weebly.com/ -->
-    <img src="images/Application MAP.PNG" id="map-image" style="max-width: 100%; height: auto;" alt="" usemap="#application map 20171125" />
-    <map name="application map 20171125">
-        <area shape="rect" coords="572, 61, 617, 96" title="WEBCET" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="518, 64, 565, 92" title="SEL" onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="465, 64, 516, 93" title="I2E" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="164, 66, 216, 93" title="PRPE" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="112, 65, 162, 93" title="WCLI" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="649, 110, 700, 137" title="COMTOO" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="648, 76, 700, 105" title="TEKAPI" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="582, 390, 629, 414" title="VNET" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="581, 358, 628, 384" title="CAPSANTE" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="993, 128, 1045, 153" title="KIAMO" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="993, 96, 1044, 124" title="GENSYS" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="996, 64, 1045, 92" title="ODIGO" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="888, 64, 934, 93" title="COMTO" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="1416, 69, 1416, 69" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="1405, 58, 1450, 90" title="CESAM" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="1349, 61, 1400, 90" title="CMS" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="1252, 70, 1296, 101" title="CESAM" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="1194, 70, 1244, 101" title="CMS" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="1222, 132, 1270, 162" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="860, 205, 908, 232" title="SIP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="704, 226, 752, 256" title="SIP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="837, 64, 880, 93" title="TEKAPI" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="788, 62, 830, 93" title="PULSE" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="732, 64, 782, 93" title="FOP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="57, 66, 106, 93" title="RP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="60, 65, 60, 65" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="280, 354, 330, 382" title="SIP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="668, 356, 718, 385" title="SIP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="380, 126, 429, 152" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="333, 125, 376, 154" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="277, 126, 328, 152" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="382, 96, 430, 122" title="EXTRANET AFIL" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="332, 96, 376, 125" title="EXTRANET LBP" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="280, 92, 328, 122" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="381, 64, 432, 90" title="BOL" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'_&map=1'"
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="332, 64, 378, 90" title="TOUTM Mobile" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'&map=1'"  
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-        <area shape="rect" coords="280, 64, 328, 93" title="TOUTM" 
-            onclick="location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'&map=1'"  
-            onmouseover = "displayInfo(event,this)" 
-            onmouseout  = "displayInfo(event,this)" />
-    </map>
-    <script src     = "js/jquery.min.js"></script>
-    <script src     = "js/imageMapResizer.min.js"></script>
-    <script type    = "text/javascript" src = "js/datatables.min.js"></script>
-    <script type    = "text/javascript" src="cmdbVisu.js"></script> 
+    <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1" />
 
-    <script>
-        function displayInfo(e, obj){
-            $('#displayInfo_DIV').toggle();
-            x =  (window.innerWidth -  1000 )/2;
-            y =  (window.innerHeight - 400  ) /2;
-            $('#displayInfo_DIV').css({left:x,top:y});
-            $('#titreDataTable').html(obj.title);
-            
-            Table.search(obj.title).draw();
+    <style>
+        img[usemap] {
+        border: none;
+        height: auto;
+        max-width: 100%;
+        width: auto;
         }
+    div {   
+        width: 100%;
+    }
+    </style>
+</head>
+<body> 
+    <div>
+    	<div id="loading"></div>
+        <!-- http://image-map.weebly.com/ -->
+        <img src="images/Application MAP.PNG" id="map-image" width="1600"  alt="" usemap="#applicationMap20171127" />
+		<map name="applicationMap20171127">
+		    <area shape="rect" coords="142, 665, 198, 696" title="BUS" />
+		    <area shape="rect" coords="86, 665, 138, 696" title="CFT" />
+		    <area shape="rect" coords="86, 660, 86, 660" />
+		    <area shape="rect" coords="557, 644, 609, 678" />
+		    <area shape="rect" coords="1151, 215, 1203, 245" title="WEMP" />
+		    <area shape="rect" coords="1097, 215, 1149, 245" title="GESTARD" />
+		    <area shape="rect" coords="1014, 215, 1066, 245" title="BOSS EGERIE" />
+		    <area shape="rect" coords="959, 215, 1011, 245" title="DSN" />
+		    <area shape="rect" coords="851, 216, 903, 246" title="GERD" />
+		    <area shape="rect" coords="610, 217, 662, 247" title="CTX ACCESS" />
+		    <area shape="rect" coords="555, 217, 607, 247" title="BASE GESTION DELEGUE" />
+		    <area shape="rect" coords="497, 216, 549, 246" title="O2" />
+		    <area shape="rect" coords="443, 216, 495, 246" title="ADINI/CHOM" />
+		    <area shape="rect" coords="388, 216, 440, 246" title="G2A" />
+		    <area shape="rect" coords="333, 215, 385, 245" title="G3C" />
+		    <area shape="rect" coords="56, 164, 108, 194" title="WINT" />
+		    <area shape="rect" coords="206, 164, 258, 194" title="VNET" />
+		    <area shape="rect" coords="153, 164, 205, 194" title="FDM" />
+		    <area shape="rect" coords="491, 134, 543, 164" />
+		    <area shape="rect" coords="546, 132, 598, 162" />
+		    <area shape="rect" coords="545, 102, 597, 132" />
+		    <area shape="rect" coords="491, 102, 543, 132" />
+		    <area shape="rect" coords="294, 133, 346, 163" title="QUATREM.FR" />
+		    <area shape="rect" coords="347, 132, 399, 162" title="MM.COM" />
+		    <area shape="rect" coords="401, 131, 453, 161" title="MONEPARGNE.COM" />
+		    <area shape="rect" coords="401, 102, 453, 132" title="EXTRANET AFFIL" />
+		    <area shape="rect" coords="347, 102, 399, 132" title="EXTRANET LBP" />
+		    <area shape="rect" coords="295, 101, 347, 131" title="ESPACE CLIENT EP " />
+		    <area shape="rect" coords="297, 374, 349, 404" title="SIP" />
+		    <area shape="rect" coords="611, 375, 663, 405" title="CAP_SANTE" />
+		    <area shape="rect" coords="703, 375, 755, 405" />
+		    <area shape="rect" coords="743, 237, 795, 267" title="SIP" />
+		    <area shape="rect" coords="905, 214, 957, 244" title="SIP" />
+		    <area shape="rect" coords="879, 135, 931, 165" />
+		    <area shape="rect" coords="825, 134, 877, 164" />
+		    <area shape="rect" coords="772, 132, 824, 162" />
+		    <area shape="rect" coords="772, 102, 824, 132" />
+		    <area shape="rect" coords="827, 103, 879, 133" />
+		    <area shape="rect" coords="882, 103, 934, 133" />
+		    <area shape="rect" coords="934, 104, 986, 134" />
+		    <area shape="rect" coords="1285, 142, 1337, 172" title="ALTO" />
+		    <area shape="rect" coords="1397, 143, 1449, 173" title="BDDM" />
+		    <area shape="rect" coords="1452, 143, 1504, 173" title="SAS DMI" />
+		    <area shape="rect" coords="1505, 140, 1557, 170" title="SAS DMC" />
+		    <area shape="rect" coords="1478, 66, 1530, 96" title="CESAM" />
+		    <area shape="rect" coords="1421, 66, 1473, 96" title="CMS" />
+		    <area shape="rect" coords="1314, 74, 1366, 104" title="CESAM" />
+		    <area shape="rect" coords="1258, 74, 1310, 104" title="CMS" />
+		    <area shape="rect" coords="1049, 131, 1101, 161" title="KIAMO" />
+		    <area shape="rect" coords="1049, 99, 1101, 129" title="GENESYS" />
+		    <area shape="rect" coords="1049, 69, 1101, 99" title="ODIGO" />
+		    <area shape="rect" coords="934, 68, 986, 98" title="COMTOO" />
+		    <area shape="rect" coords="880, 69, 932, 99" title="TEKAPI" />
+		    <area shape="rect" coords="826, 70, 878, 100" title="PULSE" />
+		    <area shape="rect" coords="772, 70, 824, 100" title="POP" />
+		    <area shape="rect" coords="685, 112, 737, 142" title="COMTOO" />
+		    <area shape="rect" coords="683, 80, 735, 110" title="TEKAPI" />
+		    <area shape="rect" coords="598, 70, 650, 100" title="WEBCET" />
+		    <area shape="rect" coords="544, 69, 596, 99" title="SEL" />
+		    <area shape="rect" coords="489, 69, 541, 99" title="I2E" />
+		    <area shape="rect" coords="116, 102, 168, 132" title="SELLIGENT" />
+		    <area shape="rect" coords="64, 102, 116, 132" title="TEMPO" />
+		    <area shape="rect" coords="63, 70, 115, 100" title="RP" />
+		    <area shape="rect" coords="120, 72, 172, 102" title="WCLI" />
+		    <area shape="rect" coords="175, 70, 227, 100" title="RPE" />
+		    <area shape="rect" coords="401, 70, 453, 100" title="BOL" />
+		    <area shape="rect" coords="350, 69, 402, 99" title="TOUTM" />
+		    <area shape="rect" coords="295, 68, 347, 98" title="TOUTM" />
+		    <area shape="rect" coords="1253, 247, 1305, 277" title="TEMPO" />
+		</map>
 
-        $(document).ready(function() {
-             
-             $("map").imageMapResize();
+        <script src  = "js/jquery.min.js"></script>
+        <script type  = "text/javascript" src = "js/datatables.min.js"></script>
+        <script type  = "text/javascript" src="cmdbVisu.js"></script> 
+        <script type  = "text/javascript" src="js/jquery.rwdImageMaps.min.js"></script>
 
-             Table = $('#dataTable').DataTable( {
-                "ajax" : {
-                            "type"  : "POST",
-                            "url"   : getDataTableFileData(BddNo)
+         <div id="displayInfo_DIV" class="displayNone">
+            <div id="titreDataTable"></div>
+            <table id="dataTable" class="row-border cell-border hover display compact" cellspacing="0" width="100%">
+               <thead>
+                    <tr>
+                        <script>document.write(getDataTableColonneData("tableHead",TypeColonneNo))</script>        
+                    </tr>
+                </thead>
+                <tfoot>
+                   <tr>
+                        <script>document.write(getDataTableColonneData("tableHead", TypeColonneNo))</script>        
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <script>
+            function displayInfo(e, obj){
+            	if (obj.title != "") {
+	                $('#displayInfo_DIV').toggle();
+	                x =  (window.innerWidth -  1000 )/2;
+	                y =  (window.innerHeight - 400  ) /2;
+	                $('#displayInfo_DIV').css({left:x,top:y});
+	                $('#titreDataTable').html(obj.title);
+	                $('#dataTable').css('min-height','300');
+	                Table.search(obj.title).draw();
+	            }
+            }
+
+           
+
+            $(document).ready(function() {
+                console.log("READY");            
+                 $('img[usemap]').rwdImageMaps();
+                 
+                $('area').on('click', function() {
+                    location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'&map=1'  
+                });
+                $('area').on('mouseover',function () 
+                    {displayInfo(event,this)
+                }); 
+                $('area').on('mouseout', function() { 
+                    displayInfo(event,this)
+                });
+
+                 Table = $('#dataTable').DataTable( {
+                    "ajax" : {
+                                "type"  : "POST",
+                                "url"   : getDataTableFileData(BddNo)
+                            },
+                    "columns": getDataTableColonneData("javascript", TypeColonneNo),
+                    //AutoWidth: false, 
+                    lengthMenu: [[4,5,6,7,8,9], [4,5,6,7,8,9]],
+                    keys : true,                
+                    "iDisplayLength" : 6,
+                    
+                    "oSearch": {
+                        "sSearch": Search
                         },
-                "columns": getDataTableColonneData("javascript", TypeColonneNo),
-                //AutoWidth: false, 
-                "order": [[1, 'asc']],
-                lengthMenu: [[4,5,6,7,8,9], [4,5,6,7,8,9]],
-                keys : true,                
-                "iDisplayLength" : 6,
                 
-                "oSearch": {
-                    "sSearch": Search
+                    "search": {
+                         "regex"        : true,
+                         "smart"        : false
                     },
-            
-                "search": {
-                     "regex"        : true,
-                     "smart"        : false
-                },
-                } ); // fin table variable 
+                    } ); // fin table variable 
 
-            
-        }); // FIN de Document READY
+				$('#loading').hide();                
+            }); // FIN de Document READY
 
-    </script>
-    <div id="displayInfo_DIV" class="displayNone">
-        <div id="titreDataTable"></div>
-        <table id="dataTable" class="row-border cell-border hover display compact" cellspacing="0" width="100%">
-           <thead>
-                <tr>
-                    <script>document.write(getDataTableColonneData("tableHead",TypeColonneNo))</script>        
-                </tr>
-            </thead>
-            <tfoot>
-               <tr>
-                    <script>document.write(getDataTableColonneData("tableHead", TypeColonneNo))</script>        
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+        </script>
+   </div>
 </body>
 </html>
