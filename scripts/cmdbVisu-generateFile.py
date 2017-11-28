@@ -57,6 +57,7 @@ BaieHDS  		= {}
 DateFile        = {}
 Veeam 			= {}
 Tsm 			= {}
+TsmRetension 	= {}
 DiscoveryData	= {}
 Dba     		= {}
 Supervision 	= {}
@@ -615,7 +616,7 @@ def generateExcel():
 			tsmDebut = tsmFin = tsmStatus = TsmData = ""
 			ram = frequence = processor_count = os = modele = processeur = ""
 			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
-			supOk = supInfo = ""
+			supOk = supInfo = veeamRetention = tsmRetention = ""
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
 
@@ -680,6 +681,9 @@ def generateExcel():
 			if CmdbDataServer[server].get("VeeamScheduleStatus") != None:
 				VeeamScheduleStatus = CmdbDataServer[server]["VeeamScheduleStatus"]
 			
+			if CmdbDataServer[server].get("Vr") != None:
+				veeamRetention = CmdbDataServer[server]["Vr"]
+			
 			# TMS
 			if CmdbDataServer[server].get("TSMDebut") != None:
 				tsmDebut = CmdbDataServer[server]["TSMDebut"]
@@ -689,6 +693,9 @@ def generateExcel():
 
 			if CmdbDataServer[server].get("TSMStatus") != None:
 				tsmStatus = CmdbDataServer[server]["TSMStatus"]
+
+			if CmdbDataServer[server].get("Tr") != None:
+				tsmRetention = CmdbDataServer[server]["Tr"]
 
 			# DISCOVERY
 			if CmdbDataServer[server].get("RAM") != None:
@@ -738,8 +745,8 @@ def generateExcel():
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
-						 veeamDure, veeamFin,  VeeamScheduleStatus,
-						tsmDebut, tsmFin, tsmStatus,
+						 veeamDure, veeamFin,  VeeamScheduleStatus, veeamRetention,
+						tsmDebut, tsmFin, tsmStatus, tsmRetention,
 						ram, os, processor_count, frequence, processeur, modele, 
 						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo])
 
@@ -824,6 +831,10 @@ def generateExcel():
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
+   		                        {'header': u'Veeam retention',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
 		                        {'header': u'TSM début',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
@@ -833,6 +844,10 @@ def generateExcel():
 		                        'format' : column_format
 		                        },
 		                        {'header': u'TSM status',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+								{'header': u'TSM retention',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
@@ -923,7 +938,7 @@ def generateExcel():
 		worksheetServer.set_column('AE:AE', 9)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 , options)
 
 	except :
 		print "Exception in user code:"
@@ -1296,6 +1311,9 @@ def dataPath(type):
 	elif type == "TSM" :
 		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
 		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/", ".*TSM_Controle_Niv1.html")
+	elif type == "TSMRETENTION" :
+		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
+		return getLastFilesByDate(rootPathStatBaies+".*TSM-Retention.txt")
 	elif type == "T400A" :
 		#return rootPathStatBaies+"Volume-host T400_A92-20170908.csv"
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_A92")
@@ -1351,14 +1369,17 @@ def  encodeJsonVeeam():
 	ptr     = re.compile('[^<]*<tr[^>]*>')
 	ptd     = re.compile('<td[^>]*>([^<]*)</td>')
 	ptr1    = re.compile('</tr>')
+	
 	for veeamType in ("VeeamProd","VeeamRecette"):
 		filename=dataPath(veeamType)
 		DateFile[veeamType]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de controle de niveau 1 des sauvegardes "+veeamType+" généré par un script de joaquim le matin a 8H00" }
 		
+
 		print "traitement fichier : %s " % filename
 		with open(filename, "r") as fdSrc:
 			for line in fdSrc.readlines():
 		  		if pTrTest.match(line) :
+		  			retention = 0
 					# retire le <tr> et tous ce qu'il y a avant
 					line = ptr.sub('', line) 
 					#//$line = eregi_replace('[^<]*<tr[^>]*>', '', $line);
@@ -1378,10 +1399,16 @@ def  encodeJsonVeeam():
 					a[2] = a[2].upper()
 					#print a[2]
 
+					# positionnne la retention PROD=36j PProd et Recette... = 15h
+					# On repere prod par P dans le veeamDossier
+					if "_P_BCK_" in a[0]:
+						retention = 36
+					else :
+						retention = 15
 					#Veeam[a[2]] = {"VeeamDossier" : a[0], "VeeamDure" : a[1], "VeeamDebut" : a[3], "VeeamFin" : a[4],
 					#						"VeeamVolTransfert" : a[5],
 					#						"VeeamScheduleType" : a[6], "VeeamBackupType" : a[7], "VeeamScheduleStatus" : a[8]}
-					Veeam[a[2]] = {"VeeamDure" : a[1], "VeeamFin" : a[4], "VeeamScheduleStatus" : a[8]}
+					Veeam[a[2]] = {"VeeamDure" : a[1], "VeeamFin" : a[4], "VeeamScheduleStatus" : a[8], "Vr" : retention}
 	print "\n"				
 
 #
@@ -1916,6 +1943,16 @@ Tu peux aussi passer par la table `centreon_storage`.`hosts` qui présente un pe
 	except Exception as e:
 		print("encodeJsonSupervisionSQL : Erreur")
 		print("args: ", e.args)
+
+#
+# encodeJsonSupervisionSQL
+#
+def encodeJsonTsmRetention() :
+	filename=dataPath("TsmRetention")
+	DateFile[veeamType]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de recupération de la rétention des fichier TSM" }
+		
+	print "traitement fichier : %s " % filename
+	
 
 # ----------------------------------------------------------------------------
 #
