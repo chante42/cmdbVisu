@@ -253,9 +253,11 @@ function format ( d ) {
     VeeamScheduleStatus = d.VeeamScheduleStatus;
     VeeamFin            = d.VeeamFin;
     VeeamDure           = d.VeeamDure;
+    VeeamRetention      = d.Vr;
     TSMDebut            = d.TSMDebut;
     TSMStatus           = d.TSMStatus;
     TSMFin              = d.TSMFin; 
+    TSMRetention        = d.Tr;
     discoveryRAM        = d.RAM; 
     dicoveryNbProc      = d.PROCESSOR_COUNT;
     discoveryProcessor  = d.Processeur;
@@ -284,6 +286,7 @@ function format ( d ) {
     if (d.used_HDS                      == undefined) { used_HDS                = "N/A"}
     if (d.VeeamScheduleStatus           == undefined) { VeeamScheduleStatus     = "N/A"}
     if (d.VeeamFin                      == undefined) { VeeamFin                = "N/A"}
+    if (d.Vr                            == undefined) { VeeamRetention          = "N/A"}
     if (d.VeeamDure                     == undefined) { 
         VeeamDure           = "N/A"
     } else {
@@ -294,6 +297,7 @@ function format ( d ) {
     if (d.TSMDebut                      == undefined) { TSMDebut                = "N/A"}
     if (d.TSMFin                        == undefined) { TSMFin                  = "N/A"}
     if (d.TSMStatus                     == undefined) { TSMStatus               = "N/A"}
+    if (d.Tr                            == undefined) { TSMRetention            = "N/A"}
     if (d.RAM                           == undefined) { discoveryRAM            = "N/A"}
     if (d.PROCESSOR_COUNT               == undefined) { dicoveryNbProc          = "N/A"}
     if (d.Processeur                    == undefined) { discoveryProcessor      = "N/A"}
@@ -418,6 +422,7 @@ function format ( d ) {
                     '<tr><td class="'+classVeeam+'"><div class="titreLigne bulleLigne"><a>Status'+codeAffichageAjout+'</a></div> : '+VeeamScheduleStatus+'</td></tr>'+
                     '<tr><td class="'+classVeeam+'"><span class="titreLigne">Fin</span> : '+VeeamFin+'</td></tr>'+
                     '<tr><td class="'+classVeeam+'"><span class="titreLigne">Durée</span> : '+VeeamDure+'</td></tr>'+
+                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Rétention</span> : '+VeeamRetention+' jours</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+ 
@@ -430,6 +435,7 @@ function format ( d ) {
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Status</span> : '+TSMStatus+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Début</span> : '+TSMDebut+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Fin</span> : '+TSMFin+'</td></tr>'+
+                    '<tr><td class="'+classTSM+'"><span class="titreLigne">Retention</span> : '+TSMRetention+' jours</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
@@ -537,10 +543,17 @@ function getDataTableColonneData(type, typeColonneNo) {
                     { "data"                : "VeeamFin",
                         "className"           : "dt-center"
                     },
+                    { "data"                : "Vr",
+                        "className"           : "dt-center"
+                    },
+ 
                     { "data"                : "TSMStatus",
                         "className"           : "dt-center"
                     },
                     { "data"                : "TSMDebut",
+                        "className"           : "dt-center"
+                    },
+                    { "data"                : "Tr",
                         "className"           : "dt-center"
                     }
                 ];
@@ -551,8 +564,10 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>Application(CINom)</th>
                     <th>Sauvegarde VEEAM</th>
                     <th>VEEAM Fin</th>
+                    <th>VEEAM rétention</th>
                     <th>Sauvegarde TSM</th>
                     <th>TSM Début</th>
+                    <th>TSM rétention</th>
                     `;
 
     //   *********************** 2 eme TYPE TAILLE VM **********************
