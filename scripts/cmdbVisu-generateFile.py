@@ -1581,7 +1581,6 @@ def  encodeJsonHDS(filenameDest):
 				#Parse les entête pour connaitre la position des colonnes
 				if line.startswith("Volume;") :
 					col = line.split(";")
-					#print "\n HDS : %s : %s\n" % (baie, line)
 
 					ColNameNum = colAllocatedNum = colUseNum =0
 					for j, e in enumerate(col):
@@ -1593,19 +1592,24 @@ def  encodeJsonHDS(filenameDest):
 						e = e .replace(" TB", "").replace(" To", "")
 						if 'Host Group' in e :
 							ColNameNum 			= j
+						elif 'Label' in e :
+							colLabelNum 		= j	
 						elif 'Total' in e :
 							colAllocatedNum 	= j
 						elif 'Used' in e :
 							colUseNum 			= j
 				#les DATA
-				else :
+				else : 
 					col = line.split(";")
 					if len(col) >= 4 :
 						# ne garde que le nom du serveur (pas le  pt de montage C, D, Data, ...)
 						# Mais garde l'info replication : "repli" en fin de nom
 						# Attention 
 						server = col[ColNameNum].rstrip()
-						#print "server: %s" % server
+						if server == "" :
+							tmp = col[colLabelNum].rstrip().split('_')
+							server = tmp[0]
+						#print "line |%s| server: %s" % (line, server)
 
 						# je retire  l'unité et les 3 chiffre avant
 						a = col[colAllocatedNum]
@@ -1977,7 +1981,7 @@ encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
 encodeJsonDiscoverySoap() 
-#encodeJsonNetscaler() 
+encodeJsonNetscaler() 
 encodeJsonDbaSQL()
 encodeJsonSupervisionSQL()
  
