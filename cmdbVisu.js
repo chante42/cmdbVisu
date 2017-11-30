@@ -398,20 +398,17 @@ function format ( d ) {
                     '<tr><td class="'+class3PAR+'">'+storageCount+'</td></tr>'+
                     '<tr><td class="'+class3PAR+'"><span class="titreLigne">Alloué</span> :'+allocated+' Go</td></tr>'+
                     '<tr><td class="'+class3PAR+'"><span class="titreLigne">Utilisé</span> :'+used+' Go</td></tr>'+
-                '</table>'+ 
-            '</div></td>'+
-            '<td width="10%"><div class="infoPlus">'+
-                '<table cellspacing="0" border="1" >'+
-                    '<tr><th>'+
-                        '<div  class ="bulle"><a href="#"> SAN HDS<span>'+
+
+                    '<tr><th><div  class ="bulle"><a href="#"> SAN HDS<span>'+
                             '<p>Date de génération des données :</p> '+getDataFileDisplay('HDS', 'date')+
-                        '</span></a></div>'+
-                    '</th></tr>'+
+                     '</span></a></div></th></tr>'+
                     '<tr><td class="'+classHDS+'">'+storageHDSCount+'</td></tr>'+
                     '<tr><td class="'+classHDS+'"><span class="titreLigne">Alloué</span> :'+allocated_HDS+' Go</td></tr>'+
                     '<tr><td class="'+classHDS+'"><span class="titreLigne">Utilisé</span> : '+used_HDS+' Go</td></tr>'+
-                '</table>'+
+
+                '</table>'+ 
             '</div></td>'+
+            
             '<td width="10%"><div class="infoPlus">'+
                 '<table cellspacing="0" border="1" >'+
                     '<tr><th>'+
