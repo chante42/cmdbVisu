@@ -120,8 +120,8 @@
             function displayInfo(e, obj){
             	if (obj.title != "") {
 	                $('#displayInfo_DIV').toggle();
-	                x =  (window.innerWidth -  1000 )/2;
-	                y =  (window.innerHeight - 400  ) /2;
+	                x =  (window.innerWidth -  1000 ) / 2;
+	                y =  (window.innerHeight - 400  ) / 2;
 	                $('#displayInfo_DIV').css({left:x,top:y});
 	                $('#titreDataTable').html(obj.title);
 	                $('#dataTable').css('min-height','300');
@@ -138,10 +138,10 @@
                 $('area').on('click', function() {
                     location.href='cmdbVisu.html?type=4&bdd=0&search='+this.title+'&map=1'  
                 });
-                $('area').on('mouseover',function () 
+                $('area').on('mouseenter',function (event) 
                     {displayInfo(event,this)
                 }); 
-                $('area').on('mouseout', function() { 
+                $('area').on('mouseout', function(event) { 
                     displayInfo(event,this)
                 });
 
