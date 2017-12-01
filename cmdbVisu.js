@@ -93,16 +93,18 @@ function getDataFileDisplay(type, field) {
     var tab_jour=new Array("Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam");
     rep = ""
     match = 0
-    for (item in DateFile['data']) {
-        //console.log(DateFile['data'][item]['type']);
-        if (DateFile['data'][item]['type'].search(type) != -1) {
-            var tmp = DateFile['data'][item][field];
-            tmp = tmp.substr(0,10);
-            d = new Date(tmp);
-            rep = rep + "<p>"+tab_jour[d.getDay()] +" "+tmp[8]+tmp[9]+"/"+tmp[5]+tmp[6]+"/"+tmp.substr(0,4)+"</p>";
-            match ++;
-        }
-    }
+    if (DateFile != null ) {
+        for (item in DateFile['data']) {
+            //console.log(DateFile['data'][item]['type']);
+            if (DateFile['data'][item]['type'].search(type) != -1) {
+                var tmp = DateFile['data'][item][field];
+                tmp = tmp.substr(0,10);
+                d = new Date(tmp);
+                rep = rep + "<p>"+tab_jour[d.getDay()] +" "+tmp[8]+tmp[9]+"/"+tmp[5]+tmp[6]+"/"+tmp.substr(0,4)+"</p>";
+                match ++;
+            }
+        } //fin FOR
+    } // fin IF
     if (rep == "") {
         rep = "N/A";
     }
@@ -202,8 +204,8 @@ function format ( d ) {
     var count = {};
     var storageCount = storageHDSCount = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
-    classDBA = "normal";
-    classSupervision   = "normal";
+    classDBA = classSupervision =classIlmt = "normal";
+     
     if  (d.storage != undefined) {
         //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
         storageCount = formatBaie(d.storage);
@@ -238,9 +240,12 @@ function format ( d ) {
 
 
     if  (d.VIP == undefined) {
-        classNetscaler ="pas-d-info";
+        classNetscaler = "pas-d-info";
     }
 
+    if (d.Ios == undefined) {
+    	classIlmt = "pas-d-info";
+    }
     
     vmCpu               = d.vmCpu;
     vmMem               = d.vmMem;
@@ -271,7 +276,12 @@ function format ( d ) {
     esxvCenter          = d.ESXvCenter;
     esxCluster          = d.ESXCluster;
     esxModele           = d.ESXModele;
-
+    ilmtOs				= d.Ios;
+    ilmtIp				= d.Iip;
+    ilmtCoeur			= d.Icoeur;
+    ilmtType			= d.Itype;
+    ilmtModele			= d.Imodele;
+    ilmtPvu				= d.Ipvu;
     //console.log(d);   
     //console.log(d.Nom);
     //console.log(hostname);
@@ -335,7 +345,7 @@ function format ( d ) {
         classDiscovery ="pas-d-info";
     }
 
-
+    if (d.Imodele == undefined) { ilmtModele ="N/A";}
     //
     // Cas particulier ou je remplace discovery par des infos VMWare pour les serveur qui heberges les hyperviseurs
     //
@@ -405,7 +415,6 @@ function format ( d ) {
                     '<tr><td class="'+classHDS+'">'+storageHDSCount+'</td></tr>'+
                     '<tr><td class="'+classHDS+'"><span class="titreLigne">Alloué</span> :'+allocated_HDS+' Go</td></tr>'+
                     '<tr><td class="'+classHDS+'"><span class="titreLigne">Utilisé</span> : '+used_HDS+' Go</td></tr>'+
-
                 '</table>'+ 
             '</div></td>'+
             
@@ -472,6 +481,27 @@ function format ( d ) {
                         lienCentreon+
                     '</td></tr>'+
                     '<tr><td class="'+classSupervision+'"><span class="titreLigne">Info</span> : '+supInfo+' </td></tr>'+
+                '</table>'+
+            '</div></td>'+
+            '<td width="10%"><div class="infoPlus">'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th>'+
+                        '<div  class ="bulle"><a href="#">ILMT<span>'+
+                        'Date de génération des données : '+getDataFileDisplay('ILMT', 'date')+
+                        '<span></a></div>'+
+                    '</th></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                    	'<span class="titreLigne">Os :</span> '+ilmtOs+'</td></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                    	'<span class="titreLigne">IP :</span> '+ilmtIp+'</td></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                    	'<span class="titreLigne">Coeur :</span> '+ilmtCoeur+'</td></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                    	'<span class="titreLigne">Type :</span> '+ilmtType+'</td></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                    	'<span class="titreLigne">Modèle :</span> '+ilmtModele+'</td></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                    	'<span class="titreLigne">PVU :</span> '+ilmtPvu+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
         '</tr>'+
@@ -668,6 +698,34 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>SupervisionInfo</th>
                     `;
 
+       //   *********************** 4 eme TYPE Supervision **********************
+    TypeColonneDataJS [5]= [
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "width"             : "2%",
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "Nom" 		, "width" 		: "17%"},
+                    {   "data"                : "CINom"		, "width" 		: "30%" },
+                    {   "data"                : "Ios"		, "className" 	: "dt-center"},
+                    {   "data"                : "Iip"		, "className" 	: "dt-center"},
+                    {   "data"                : "Icoeur"	, "className" 	: "dt-center"},
+                    {   "data"                : "Imodele"	, "className" 	: "dt-center"},
+                    {   "data"                : "Ipvu"		, "className" 	: "dt-center"},
+                ];
+    
+    TypeColonneDataHead[5] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>OS</th>
+                    <th>Ip</th>
+                    <th>Coeur</th>
+                    <th>Modèle</th>
+                    <th>PVU</th>
+                    `;
     console.log("TypeColonneNo = "+typeColonneNo);
     if (type == "javascript")
         return(TypeColonneDataJS[typeColonneNo]);
@@ -860,7 +918,7 @@ function readyCreateDataTable() {
     // récupère les date de fichier pour les info Bulle
     $.getJSON("data/fileDate.json", function(data) {
         DateFile = data;
-        //console.log(data)
+        console.log(data)
 
         // affiche la date du fichier Datatable
         $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));

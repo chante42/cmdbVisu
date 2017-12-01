@@ -62,7 +62,7 @@ DiscoveryData	= {}
 Dba     		= {}
 Supervision 	= {}
 Esx 			= {}
-
+Ilmt 			= {}
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
 #
@@ -186,6 +186,11 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 				value = value[3]+value[4]+'/'+value[0]+value[1]+'/'+value[6:]
 			CmdbDataServer[server][item]=str(value)
 
+	# Ajoute info TSM retention
+	if server in TsmRetension.keys() :
+		for item, value  in TsmRetension[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
 	# Ajoute info VEEAM
 	if server in Veeam.keys() :
 		for item, value  in Veeam[server].items() :
@@ -220,6 +225,11 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 	# Ajoute info Supervision
 	if server in Supervision.keys() :
 		for item, value  in Supervision[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info ILMT
+	if server in Ilmt.keys() :
+		for item, value  in Ilmt[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
 #
@@ -418,6 +428,17 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
+			# ecrire les info Supervision
+			if server in Ilmt.keys() :
+				for item, value  in Ilmt[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+
+			# ecrire les info de rétention TSM
+			if server in TsmRetension.keys() :
+				for item, value  in TsmRetension[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
 
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
@@ -458,7 +479,7 @@ def generateDataTableFile():
 		if server not in CmdbDataServer.keys():
 			insertInfoServerNotInCMDB(server,"Discovery")
 			nb = nb +1
-	print "%-4.4d Serveur ont été ajouté par les info de Discovery  " % nb 
+	print "%-4.4d Serveurs ont été ajoutés par les info de Discovery  " % nb 
  	
  	# VMWare 
  	nb = 0
@@ -466,14 +487,22 @@ def generateDataTableFile():
 		if server not in CmdbDataServer.keys():
 			insertInfoServerNotInCMDB(server,"VMWARE")
 			nb = nb +1
- 	print "%-4.4d VM ont été ajouté par les info de VmWare  " % nb 
+ 	print "%-4.4d VM ont été ajoutés par les info de VmWare  " % nb 
 
  	nb = 0
 	for server in Esx.keys():
 		if server not in CmdbDataServer.keys():
 			insertInfoServerNotInCMDB(server,"VMWARE")
 			nb = nb +1
- 	print "%-4.4d ESX Host ont été ajouté par les info de VmWare  " % nb 
+ 	print "%-4.4d ESX Host ont été ajoutés par les info de VmWare  " % nb 
+
+ 	# ILMT
+	nb = 0
+	for server in Ilmt.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"ILMT")
+			nb = nb +1
+ 	print "%-4.4d serveurs ont été ajoutés par les info de ILMT  " % nb 
 
 	# TSM
 	nb = 0
@@ -481,7 +510,7 @@ def generateDataTableFile():
 		if server not in CmdbDataServer.keys():
 			insertInfoServerNotInCMDB(server,"TSM")
 			nb = nb +1
-	print "%-4.4d Serveur ont été ajouté par les info de TSM  " % nb 
+	print "%-4.4d Serveurs ont été ajoutés par les info de TSM  " % nb 
 
 	# VEEAM
 	nb = 0
@@ -489,7 +518,7 @@ def generateDataTableFile():
 		if server not in CmdbDataServer.keys():
 			insertInfoServerNotInCMDB(server,"VEEAM")
 			nb = nb +1
- 	print "%-4.4d Serveur ont été ajouté par les info de VEEAM  " % nb 
+ 	print "%-4.4d Serveurs ont été ajoutés par les info de VEEAM  " % nb 
  	
  	# Supervision
  	nb = 0
@@ -617,6 +646,7 @@ def generateExcel():
 			ram = frequence = processor_count = os = modele = processeur = ""
 			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
 			supOk = supInfo = veeamRetention = tsmRetention = ""
+			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ""
 			if CmdbDataServer[server].get("Nom") != None :
 				NomServer = CmdbDataServer[server]["Nom"]
 
@@ -742,13 +772,22 @@ def generateExcel():
 				if Supervision[server].get("supInfo") != None:
 					supInfo = Supervision[server].get("supInfo")
 
+			if Ilmt.get(server) != None:
+				ilmtOs 		= Ilmt[server].get("Ios")
+				ilmtIp		= Ilmt[server].get("Iip")
+				ilmtCoeur	= Ilmt[server].get("Icoeur")
+				ilmtType	= Ilmt[server].get("Itype")
+				ilmtModele	= Ilmt[server].get("Imodele")
+				ilmtPvu		= Ilmt[server].get("Ipvu")
+
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
 						 veeamDure, veeamFin,  VeeamScheduleStatus, veeamRetention,
 						tsmDebut, tsmFin, tsmStatus, tsmRetention,
 						ram, os, processor_count, frequence, processeur, modele, 
-						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo])
+						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo,
+						ilmtOs, ilmtIp, ilmtCoeur, ilmtType, ilmtModele, ilmtPvu])
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -906,6 +945,30 @@ def generateExcel():
 		                        {'header': u'Supervision Info',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT OS',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT IP',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT Coeur',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT Type',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT Modèle',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT PVU',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
 		                       ],
 		            'data': data
@@ -936,9 +999,12 @@ def generateExcel():
 		worksheetServer.set_column('V:V', 9)
 		worksheetServer.set_column('W:W', 9)
 		worksheetServer.set_column('AE:AE', 9)
+		worksheetServer.set_column('AF:AF', 13)
+		worksheetServer.set_column('AO:AO', 13)
+		worksheetServer.set_column('AP:AP', 13)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 , options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 + 6, options)
 
 	except :
 		print "Exception in user code:"
@@ -1274,9 +1340,6 @@ def encodeJsonDiscoverySoap():
 					 	u'os' : os}
 
 
-				
-			
-
 #
 # dataPAth
 #
@@ -1298,51 +1361,33 @@ def dataPath(type):
 	else : 
 		rootPathStatBaies ="/home/i14sj00/cmdbVisu/data/"  
 
-	#rootPathStatBaies ="/home/i14sj00/cmdb/data/";
 	if  type == "VeeamProd" :
-		#return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170906-Rapport-sauvegarde-VEEAM_Production.html";
-		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Production.html";
 		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Production.html")
 	elif type ==  "VeeamRecette" :
-		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/"+anneeStr+moisStr+joursStr+"-Rapport-sauvegarde-VEEAM_Recette.html";
-		#return rootPathCtrlN1+"2017/septembre/Rapport Sauvegarde VEEAM/20170908-Rapport-sauvegarde-VEEAM_Recette.html";
 			return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Recette.html")
-
+	elif type == "TSMRetention" :
+		return getLastFilesByDate(rootPathStatBaies, "TSM-retention-")
 	elif type == "TSM" :
-		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
 		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/", ".*TSM_Controle_Niv1.html")
-	elif type == "TSMRETENTION" :
-		#return rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/"+anneeStr+moisStr+joursStr+"-TSM_Controle_Niv1.html"
-		return getLastFilesByDate(rootPathStatBaies+".*TSM-Retention.txt")
+	
 	elif type == "T400A" :
-		#return rootPathStatBaies+"Volume-host T400_A92-20170908.csv"
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_A92")
 	elif type == "T400B" :
-		#return rootPathStatBaies+"Volume-host T400_B94-20170908.csv"
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_B94")
 	elif type == "V400A" :
-		#return rootPathStatBaies+ "Volume-host V400_A92-20170908.csv";
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_A92")
 	elif type == "V400B" :
-		#return rootPathStatBaies+ "Volume-host V400_B94-20170908.csv";
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_B94")
 	elif type == "HDS-PPROD-A" :
-		#return rootPathStatBaies+ "HDS_A92_PPROD-20171003.csv";
 		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PPROD")
 	elif type == "HDS-PPROD-B" :
-		#return rootPathStatBaies+ "HDS_B94_PPROD-20171003.csv";
 		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PPROD")
 	elif type == "HDS-PROD-A" :
-		#return rootPathStatBaies+ "HDS_A92_PROD-20171003.csv";
 		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PROD")
 	elif type == "HDS-PROD-B" :
-		#return rootPathStatBaies+ "HDS_B94_PROD-20171003.csv";
 		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PROD")
 	elif type == "VmWare" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")
-		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-04.xlsx";
-		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-17.xlsx";
-		#return "/var/www/virtu/exportWindows/InfraVMware-2017-09-24.xlsx";
 	elif type == "fileDate":
 		return rootPathStatBaies+ "fileDate.json"
 	elif type == "DataTableFile":
@@ -1353,6 +1398,8 @@ def dataPath(type):
 		return rootPathStatBaies+ "cmdbVisu.xlsx"
 	elif type == "Discovery":
 		return rootPathStatBaies+ "discovery-easyvista-20170918.csv"
+	elif type == "ILMT" :
+		return getLastFilesByDate("/var/www/virtu/exportWindows/", "Inventaire_ILMT-")
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue"
 
@@ -1952,10 +1999,95 @@ Tu peux aussi passer par la table `centreon_storage`.`hosts` qui présente un pe
 # encodeJsonSupervisionSQL
 #
 def encodeJsonTsmRetention() :
-	filename=dataPath("TsmRetention")
-	DateFile[veeamType]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de recupération de la rétention des fichier TSM" }
+	refFile = "TSMRetention"
+	filename=dataPath(refFile)
+	DateFile[refFile]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de recupération de la rétention des fichier TSM:dsmadmc -id=J15D401 -password=XXXX -DATAONLY=YES \"TSMA:SELECT nodes.node_name, nodes.domain_name, bu_copygroups.verexists, bu_copygroups.verdeleted, bu_copygroups.retextra, bu_copygroups.retonly, bu_copygroups.destination FROM nodes, mgmtclasses mgmtclasses, bu_copygroups bu_copygroups WHERE mgmtclasses.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name = bu_copygroups.set_name AND mgmtclasses.class_name = bu_copygroups.class_name AND nodes.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name='ACTIVE' AND mgmtclasses.defaultmc='Yes' ORDER BY nodes.node_name, nodes.domain_name\""  }
 		
 	print "traitement fichier : %s " % filename
+	with open(filename, "r") as fdSrc:
+		i = 0;
+		for line in fdSrc.readlines():
+			i += 1
+			line = line.rstrip()
+
+			# je passe le nom des colone et la ligne avec des '-------------'
+			# et les lignes incompletes du a la colonne 1 sur 2 lignes 
+			if i > 2 and re.search(r'\S+ +(\S+)', line) != None:
+				col = line.split()
+				server = col[0].rstrip().upper()
+				#print "line |%s| server: %s domaine : %s " % (line, server,col[1])
+
+				TsmRetension[server] = {'Tr' : col[2]+'-'+col[4]+'/'+col[3]+'-'+col[5]}
+				#print server,TsmRetension[server]
+
+					
+	print "\n"
+
+#
+#   encodeJsonILMT
+#	
+def encodeJsonILMT():
+	"""
+		Lecture du fichier ILMT géné par Joel Gloanec
+	"""
+	filename = dataPath("ILMT")
+	DateFile["ILMT"]= { u'file' : filename, 'date' :creationDateFile(filename), 'info' : 'Fichier généré par un script d\'export des informations ILMT de Joel Gloanec' }
+	
+	print "traitement fichier : %s " % filename
+	# ouverture du fichier Excel 
+	try: 
+		wb1=xlrd.open_workbook(filename)
+	except Exception  as e:
+		print "\nERREUR:\n  Impossible d'ouvrir le 1er fichier : \n\t\t'%s' \n" % filename
+		print "I/O error({0}): {1}".format(e.errno, e.strerror)
+		sys.exit(-1)
+
+	# feuilles dans le classeur
+	shname1=wb1.sheet_names()[0]
+	sh1 = wb1.sheet_by_name(shname1)
+
+	noLigne = 0
+	for rownum in range(sh1.nrows):
+		
+		# Positionnement des colonne 
+		#-=- Crade a refaire en utilisant les noms de colonnes
+		colNomServer= 1
+		colOS		= 2
+		colIP		= 4
+		colCoeur	= 6
+		colType 	= 5	
+		colModele	= 14
+		colPvu 		= 15
+ 
+
+		noLigne = noLigne + 1
+		if noLigne < 2 :
+			continue
+		nomServer = sh1.row_values(rownum)[colNomServer].encode('utf8').upper()
+
+		#print nomVm
+		if (sh1.row_values(rownum)[colType].encode('utf8') == u"Physique" or
+			 u'AIX' in sh1.row_values(rownum)[colOS].encode('utf8') ) 	:
+			Ilmt[nomServer] = {
+						u'Ios'		: sh1.row_values(rownum)[colOS].encode('utf8'),
+						u'Iip'		: sh1.row_values(rownum)[colIP].encode('utf8'),
+						u'Icoeur'	: str(float(sh1.row_values(rownum)[colCoeur])), 
+						u'Itype' 	: sh1.row_values(rownum)[colType].encode('utf8'),
+						u'Imodele' 	: sh1.row_values(rownum)[colModele].encode('utf8'),
+						u'Ipvu'		: str(int(sh1.row_values(rownum)[colPvu])), 		
+					}
+		else : 
+			Ilmt[nomServer] = {
+						u'Ios'		: sh1.row_values(rownum)[colOS].encode('utf8'),
+						u'Iip'		: sh1.row_values(rownum)[colIP].encode('utf8'),
+						u'Icoeur'	: str(float(sh1.row_values(rownum)[colCoeur])), 
+						u'Itype' 	: sh1.row_values(rownum)[colType].encode('utf8'),
+						u'Ipvu'		: str(int(sh1.row_values(rownum)[colPvu])), 		
+					}
+
+	print "\n"
+	wb1.release_resources()
+	del wb1
 	
 
 # ----------------------------------------------------------------------------
@@ -1980,11 +2112,12 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
+encodeJsonTsmRetention()
 encodeJsonDiscoverySoap() 
 encodeJsonNetscaler() 
 encodeJsonDbaSQL()
 encodeJsonSupervisionSQL()
- 
+encodeJsonILMT()
 generateDataTableFile()
 
 generateExcel()

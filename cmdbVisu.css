@@ -267,8 +267,8 @@ div#menu a {
     transform         : scale(1) rotate(0);  
     opacity           : 1;      
 }
-
-#log {
+ 
+#log,#changeLog {
   background-color    : black;
   color               : white;
 }
@@ -319,4 +319,19 @@ div#menu a {
  position             : absolute;
  left                 : 0;
  top                  : 0;
+}
+
+#listeFile tbody td {
+    word-break: break-word;
+    vertical-align: top;
+}
+
+#dataTable  tbody td {
+    word-break: break-word;
+    vertical-align: top;
+}
+
+#dataTable  tbody td.details-control {
+    word-break: normal;
+    vertical-align: top;
 }

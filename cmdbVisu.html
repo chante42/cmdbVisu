@@ -109,7 +109,7 @@
 
         
     </div>
-    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 22/11/2017  <i class="glyphicon glyphicon-eye-open"></i><span id="dateFileDataTable"></span></a></div>
+    <div id="footer" ><div class ="bulleHelp bulleHelpAuDessus"><a>@Olivier Chanteloup 03/12/2017  <i class="glyphicon glyphicon-eye-open"></i><span id="dateFileDataTable"></span></a></div>
 
         <script>
         var select =  new Array();
@@ -127,13 +127,14 @@
             readyCreateDataTable();
 
             // Ajoute les options qui represente les differente vue
-            select[0]=select[1]=select[2]=select[3]=select[4]="";
+            select[0]=select[1]=select[2]=select[3]=select[4]=select[5]="";
             select[TypeColonneNo] = ' selected="selected"';
             $('#typeOfTable > optgroup').append('<option value="?type=0&bdd='+BddNo+' "'+select[0]+'>Responsable</option>');
             $('#typeOfTable > optgroup').append('<option value="?type=1&bdd='+BddNo+' "'+select[1]+'>Sauvegarde</option>');
             $('#typeOfTable > optgroup').append('<option value="?type=2&bdd='+BddNo+' "'+select[2]+'>Ressource</option>');
             $('#typeOfTable > optgroup').append('<option value="?type=3&bdd='+BddNo+' "'+select[3]+'>Stockage</option>');
             $('#typeOfTable > optgroup').append('<option value="?type=4&bdd='+BddNo+' "'+select[4]+'>Supervision</option>');
+            $('#typeOfTable > optgroup').append('<option value="?type=5&bdd='+BddNo+' "'+select[5]+'>ILMT</option>');
 
             //  Ajoute les options represente les différente source de donnée
             select[0]=select[1]=select[2]=select[3]="";
