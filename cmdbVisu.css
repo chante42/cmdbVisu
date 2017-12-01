@@ -333,5 +333,6 @@ div#menu a {
 
 #dataTable  tbody td.details-control {
     word-break: normal;
-    vertical-align: top;
+    flex-direction: column; /* direction d'affichage verticale */
+    justify-content: center; /* alignement vertical */
 }

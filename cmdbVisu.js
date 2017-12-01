@@ -246,6 +246,10 @@ function format ( d ) {
     if (d.Ios == undefined) {
     	classIlmt = "pas-d-info";
     }
+ 
+    if (d.RAM == undefined) {
+        classDiscovery ="pas-d-info";
+    }
     
     vmCpu               = d.vmCpu;
     vmMem               = d.vmMem;
@@ -341,11 +345,23 @@ function format ( d ) {
         }
     }
 
-    if  (d.RAM == undefined) {
-        classDiscovery ="pas-d-info";
-    }
+    if ( TSMRetention != 'N/A') {
+        TSMRetention = '<div class ="bulleHelp bulleHelpAuDessus"><a>'+TSMRetention[0]+
+        ' versions sur '+TSMRetention[2]+TSMRetention[3]+' jours'+
+        '<span>La sauvegarde TSM a une rétention de '+TSMRetention[2]+TSMRetention[3]+' Jours, '+
+        'sauf si les fichiers sont modifiés souvent, dans ce cas la rétension sera donc de '+TSMRetention[0]+' version<br>'+
+        'Si le fichier a été effacé, alors la rétention est de '+TSMRetention[7]+TSMRetention[8]+
+        'jours, avec un maximum de '+TSMRetention[5]+' versions du fichiers</span></a></div>';
 
-    if (d.Imodele == undefined) { ilmtModele ="N/A";}
+    }
+    
+    if (d.Imodele   == undefined) { ilmtModele  = "N/A";}
+    if (ilmtOs      == undefined) { ilmtOs      = "N/A";}
+    if (ilmtIp      == undefined) { ilmtIp      = "N/A";}
+    if (ilmtCoeur   == undefined) { ilmtCoeur   = "N/A";}
+    if (ilmtType    == undefined) { ilmtType    = "N/A";}
+    if (ilmtPvu     == undefined) { ilmtPvu     = "N/A";}
+    
     //
     // Cas particulier ou je remplace discovery par des infos VMWare pour les serveur qui heberges les hyperviseurs
     //
@@ -441,7 +457,7 @@ function format ( d ) {
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Status</span> : '+TSMStatus+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Début</span> : '+TSMDebut+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Fin</span> : '+TSMFin+'</td></tr>'+
-                    '<tr><td class="'+classTSM+'"><span class="titreLigne">Retention</span> : '+TSMRetention+' jours</td></tr>'+
+                    '<tr><td class="'+classTSM+'"><span class="titreLigne">Retention</span> : '+TSMRetention+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
@@ -501,7 +517,7 @@ function format ( d ) {
                     '<tr><td class="'+classIlmt+'">'+ 
                     	'<span class="titreLigne">Modèle :</span> '+ilmtModele+'</td></tr>'+
                     '<tr><td class="'+classIlmt+'">'+ 
-                    	'<span class="titreLigne">PVU :</span> '+ilmtPvu+'</td></tr>'+
+                    	'<span class="titreLigne">PVU par coeur:</span> '+ilmtPvu+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
         '</tr>'+
@@ -581,7 +597,17 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "className"           : "dt-center"
                     },
                     { "data"                : "Tr",
-                        "className"           : "dt-center"
+                        "className"           : "dt-center",
+                        render                : function( data, type, row){
+                            if (data != undefined) {
+                                return('<div class ="bulleHelp bulleHelpAuDessus"><a>'+data[0]+
+                                ' versions sur '+data[2]+data[3]+' jours'+
+                                '<span>La sauvegarde TSM a une rétention de '+data[2]+data[3]+' Jours, '+
+                                'sauf si les fichiers sont modifiés souvent, dans ce cas la rétension sera donc de '+data[0]+' version<br>'+
+                                'Si le fichier a été effacé, alors la rétention est de '+data[7]+data[8]+
+                                'jours, avec un maximum de '+data[5]+' versions du fichiers</span></a></div>');
+                            }
+                    },
                     }
                 ];
     
