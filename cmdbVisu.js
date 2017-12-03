@@ -13,8 +13,10 @@ var TypeColonneDataHead = [];
 var Table               = null;
 
 // constance de lien vers des appli externe
-var LienCentreon = "http://supervision.si2m.tec/centreon/main.php?p=204&mode=0&svc_id=";
- 
+var LienCentreon 
+LienCentreonPPD="http://vli1sup011/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id="; 
+LienCentreon="http://supervision.si2m.tec/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id="; 
+
 //
 // dateDiff
 //
@@ -724,7 +726,7 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>SupervisionInfo</th>
                     `;
 
-       //   *********************** 4 eme TYPE Supervision **********************
+       //   *********************** 5 eme TYPE Supervision **********************
     TypeColonneDataJS [5]= [
                     {
                         "className"         : 'details-control',
@@ -752,6 +754,15 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>Modèle</th>
                     <th>PVU</th>
                     `;
+
+     //   *********************** 6 eme TYPE Full **********************
+    TypeColonneDataJS [6]= [
+                    
+                ];
+    
+    TypeColonneDataHead[6] = `
+                    `;
+    
     console.log("TypeColonneNo = "+typeColonneNo);
     if (type == "javascript")
         return(TypeColonneDataJS[typeColonneNo]);
