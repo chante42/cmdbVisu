@@ -2001,7 +2001,8 @@ Tu peux aussi passer par la table `centreon_storage`.`hosts` qui présente un pe
 def encodeJsonTsmRetention() :
 	refFile = "TSMRetention"
 	filename=dataPath(refFile)
-	DateFile[refFile]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier de recupération de la rétention des fichier TSM:dsmadmc -id=J15D401 -password=XXXX -DATAONLY=YES \"TSMA:SELECT nodes.node_name, nodes.domain_name, bu_copygroups.verexists, bu_copygroups.verdeleted, bu_copygroups.retextra, bu_copygroups.retonly, bu_copygroups.destination FROM nodes, mgmtclasses mgmtclasses, bu_copygroups bu_copygroups WHERE mgmtclasses.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name = bu_copygroups.set_name AND mgmtclasses.class_name = bu_copygroups.class_name AND nodes.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name='ACTIVE' AND mgmtclasses.defaultmc='Yes' ORDER BY nodes.node_name, nodes.domain_name\""  }
+	DateFile[refFile]= { u'file' : filename, 'date' :creationDateFile(filename), 
+		u'info' : "fichier de recupération de la rétention des fichier TSM:dsmadmc -id=J15D401 -password=XXXX -DATAONLY=YES 'TSMA:SELECT nodes.node_name, nodes.domain_name, bu_copygroups.verexists, bu_copygroups.verdeleted, bu_copygroups.retextra, bu_copygroups.retonly, bu_copygroups.destination FROM nodes, mgmtclasses mgmtclasses, bu_copygroups bu_copygroups WHERE mgmtclasses.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name = bu_copygroups.set_name AND mgmtclasses.class_name = bu_copygroups.class_name AND nodes.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name='ACTIVE' AND mgmtclasses.defaultmc='Yes' ORDER BY nodes.node_name, nodes.domain_name"  }
 		
 	print "traitement fichier : %s " % filename
 	with open(filename, "r") as fdSrc:
