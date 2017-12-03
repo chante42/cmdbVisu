@@ -847,6 +847,11 @@ function readyCreateDataTable() {
         "iDisplayLength" : 19,
         keys : true,
         colReorder: true,
+        processing: true,
+        'language':{ 
+            "emptyTable": "Loading...",
+            "processing" :""
+        },
         dom: 'Blfrtip',
 
         "oSearch": {
@@ -868,7 +873,7 @@ function readyCreateDataTable() {
             },              
             {
                 extend: 'excel',
-                messageTop: 'information extraite de http://vli5res01/cmdb'
+                messageTop: 'information extraite de http://vli5res01.si2m.tec/cmdbVisu'
             },
             {
                 extend: 'pdf',
@@ -950,4 +955,35 @@ function readyCreateDataTable() {
         $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
     });
 
+} // FIN de readyCreateDataTable
+
+//
+//    changeBdd
+//
+function changeBdd(noBdd) {
+    BddNo = noBdd;
+    window.history.pushState({state:1}, "State 1", "?type="+TypeColonneNo+"&bdd="+BddNo); // logs {state:1}, "State 1", "?state=1"
+    console.log('changeBdd bdd :'+BddNo+ "vue :" +  TypeColonneNo);
+    Table.clear();
+    Table.draw();
+    Table.ajax.url(getDataTableFileData(BddNo)).load();
+
 }
+
+//
+//    changeBdd
+//
+function changeVue(noVue) {
+    TypeColonneNo = noVue;
+    window.location = "?type="+TypeColonneNo+"&bdd="+BddNo;
+
+    // je n'arrive pas a changer les colonne afficher en repassant par la structure
+    // la technique est peut etre de jiurer les colonne visible
+    //
+    //window.history.pushState({state:1}, "State 1", "?type="+TypeColonneNo+"&bdd="+BddNo); // logs {state:1}, "State 1", "?state=1"
+
+    //Table.fnFilter( 1, Table.oApi._fnVisibleToColumnIndex( 
+    //                    Table.fnSettings(), 1 ) );
+    //changeBdd(BddNo);
+
+}   

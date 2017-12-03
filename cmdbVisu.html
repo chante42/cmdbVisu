@@ -60,7 +60,7 @@
 
         <div class="gauche">
             <div class="border-group">       
-                <select id="typeOfTable" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
+                <select id="typeOfTable" class="selectpicker" data-style="btn-info" onchange="changeVue(this.value);">
                     <optgroup label="Vue sur les données">
                     </optgroup>
 
@@ -71,7 +71,7 @@
 
         <div class="gauche">
             <div class="border-group">       
-                <select id="typeOfBdd" class="selectpicker" data-style="btn-info" onchange="location = this.value;">
+                <select id="typeOfBdd" class="selectpicker" data-style="btn-info" onchange="changeBdd(this.value);">
                     <optgroup label="Source de donnée">
                     </optgroup>
                     
@@ -127,21 +127,20 @@
             readyCreateDataTable();
 
             // Ajoute les options qui represente les differente vue
-            select[0]=select[1]=select[2]=select[3]=select[4]=select[5]="";
+            select[0]=select[1]=select[2]=select[3]=select[4]=select[5]=select[6]=select[7]="";
             select[TypeColonneNo] = ' selected="selected"';
-            $('#typeOfTable > optgroup').append('<option value="?type=0&bdd='+BddNo+' "'+select[0]+'>Responsable</option>');
-            $('#typeOfTable > optgroup').append('<option value="?type=1&bdd='+BddNo+' "'+select[1]+'>Sauvegarde</option>');
-            $('#typeOfTable > optgroup').append('<option value="?type=2&bdd='+BddNo+' "'+select[2]+'>Ressource</option>');
-            $('#typeOfTable > optgroup').append('<option value="?type=3&bdd='+BddNo+' "'+select[3]+'>Stockage</option>');
-            $('#typeOfTable > optgroup').append('<option value="?type=4&bdd='+BddNo+' "'+select[4]+'>Supervision</option>');
-            $('#typeOfTable > optgroup').append('<option value="?type=5&bdd='+BddNo+' "'+select[5]+'>ILMT</option>');
+            $('#typeOfTable > optgroup').append('<option value="0"  '+select[0]+'>Responsable</option>');
+            $('#typeOfTable > optgroup').append('<option value="1" '+select[1]+'>Sauvegarde</option>');
+            $('#typeOfTable > optgroup').append('<option value="2" '+select[2]+'>Ressource</option>');
+            $('#typeOfTable > optgroup').append('<option value="3" '+select[3]+'>Stockage</option>');
+            $('#typeOfTable > optgroup').append('<option value="4" '+select[4]+'>Supervision</option>');
+            //$('#typeOfTable > optgroup').append('<option value="?type=5&bdd='+BddNo+' "'+select[5]+'>ILMT</option>');
 
             //  Ajoute les options represente les différente source de donnée
             select[0]=select[1]=select[2]=select[3]="";
             select[BddNo] = ' selected="selected"';
-            $('#typeOfBdd > optgroup').append('<option value="?type='+TypeColonneNo+'&bdd=0" '+select[0]+'>CMDB</option>');
-            $('#typeOfBdd > optgroup').append('<option value="?type='+TypeColonneNo+'&bdd=1" '+select[1]+'>Serveurs</option>');
-            
+            $('#typeOfBdd > optgroup').append('<option value="0" '+ select[0] +'>CMDB</option>');
+            $('#typeOfBdd > optgroup').append('<option value="1" '+ select[1] +'>Serveurs</option>');            
             // affiche le bouton MAP pour revenir au referer
             if (MapOption == 1)
                 $('#mapButton').show();
