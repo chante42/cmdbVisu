@@ -273,6 +273,7 @@ function format ( d ) {
     dicoveryNbProc      = d.PROCESSOR_COUNT;
     discoveryProcessor  = d.Processeur;
     discoveryFrequence  = d.Frequence;
+    discoveryDate       = d.date;
     hostname            = d.Nom;
     vserveur            = d.Vserveur;
     dbaInfo             = d.dbaInfo;
@@ -378,6 +379,7 @@ function format ( d ) {
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">NbProc</span> :'+dicoveryNbProc+' </td></tr>'+
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Type</span> :'+discoveryProcessor+' </td></tr>'+
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Freq</span> :'+discoveryFrequence+' Mhz </td></tr>'+
+                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Date de collecte</span> : '+discoveryDate+'  </td></tr>'+
                 '</table>'+
             '</div></td>';
     
@@ -926,6 +928,9 @@ function readyCreateDataTable() {
             } );
 
         } // fin de initcomplete 
+
+        
+
     } ); // fin table variable 
 
     Table.buttons().container()
@@ -966,6 +971,16 @@ function readyCreateDataTable() {
         $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
     });
 
+    
+    //
+    // mARCHE VOIR PAGE / https://datatables.net/forums/discussion/1393/pagination-paging-through-results-with-page-down-page-up-keys-and-mousewheel-scrolling
+    //
+    $('#dataTable tbody')
+        .bind('mousewheel', function(event, delta) {
+            var dir = delta > 0 ? 'previous' : 'next';
+            oTable.fnPageChange(dir);
+            return false;
+    });
 } // FIN de readyCreateDataTable
 
 //

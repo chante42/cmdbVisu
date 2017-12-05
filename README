@@ -6,3 +6,11 @@ TD1 : Isoler les mot de passe dans un fichier de configuration a pars que le scr
 
 TD2 : Faire en sorte que le changement de vue ne nessecite pas le reload de la page complète
       cd Doc DataTable
+
+TD3 : faire un lien directement sur une image de centreon par GrapheGroupe par exemple : 
+http://supervision.si2m.tec/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&timerange=-7d&hostname=aixdadswp1&service=CPU_AIX
+
+TD4 : Ci-dessous la requête pour afficher la liste des services en fonction du nom de "host"
+SELECT service.service_description FROM (host INNER JOIN host_service_relation ON host.host_id = host_service_relation.host_host_id) INNER JOIN service ON host_service_relation.service_service_id = service.service_id WHERE (((host.host_name)="host"));
+ 
+

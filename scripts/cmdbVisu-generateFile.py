@@ -643,7 +643,7 @@ def generateExcel():
 			allocated = used = storage =  allocated_HDS = used_HDS = storage_HDS = ""
 			veeamDure = veeamFin = VeeamScheduleStatus = VeeamVolTransfert = ""
 			tsmDebut = tsmFin = tsmStatus = TsmData = ""
-			ram = frequence = processor_count = os = modele = processeur = ""
+			ram = frequence = processor_count = os = modele = processeur = dateCollecte = ""
 			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
 			supOk = supInfo = veeamRetention = tsmRetention = ""
 			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ""
@@ -746,6 +746,10 @@ def generateExcel():
 			if CmdbDataServer[server].get("Processeur") != None:
 				processeur 	= CmdbDataServer[server]["Processeur"]
 
+			if CmdbDataServer[server].get("date") != None:
+				dateCollecte 	= CmdbDataServer[server]["date"]
+
+			#Netscaler
 			if CmdbDataServer[server].get("VIP") != None:
 				vip 	= CmdbDataServer[server]["VIP"]
 
@@ -785,7 +789,7 @@ def generateExcel():
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
 						 veeamDure, veeamFin,  VeeamScheduleStatus, veeamRetention,
 						tsmDebut, tsmFin, tsmStatus, tsmRetention,
-						ram, os, processor_count, frequence, processeur, modele, 
+						ram, os, processor_count, frequence, processeur, modele, dateCollecte, 
 						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo,
 						ilmtOs, ilmtIp, ilmtCoeur, ilmtType, ilmtModele, ilmtPvu])
 
@@ -911,6 +915,10 @@ def generateExcel():
 		                        'format' : column_format
 		                        },
 		                        {'header': u'Discovery modele',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Discovery date de collecte',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        },
@@ -1209,7 +1217,7 @@ def  getDiscoverySoap():
 
 
 	#url="https://malakoffmederic.easyvista.com:443/WebService/SmoBridge.php"
-	url="https://malakoffmederic-qualif.easyvista.com:443/WebService/SmoBridge.php"
+	#url="https://malakoffmederic-qualif.easyvista.com:443/WebService/SmoBridge.php"
 	url="https://malakoffmederic.easyvista.com:443/WebService/SmoBridge.php"
 	#headers = {'content-type': 'application/soap+xml'}
 	headers = {'content-type': 'text/xml', 'accept-encoding': 'gzip;q=0,deflate,sdch'}
@@ -1257,6 +1265,11 @@ def encodeJsonDiscoverySoap():
 
 		#<Fieldname _0= "" _1= "" _2= "Nb de processeurs" _3= "" _4= "" _5= "" _6= "" _7= "" _8= "" _9= "" _10= "Marque"
 		# _11= "Modèle" _12= "FREQUENCY" _13= "PROCESSOR_TFMS_ID" _14= "PROCESSOR_TFMS_PK"/>
+		# nouveau Field le 2017/12/05
+		# <Fieldname _0= "Identifiant PC" _1= "CPU" _2= "Processeur" _3= "Nb de coeurs" _4= "Nb de processeurs" 
+		# _5= "Frquence CPU" _6= "RAM" _7= "D.Dur(Mo)" _8= "N de srie" _9= "OS" _10= "Version de l&apos;OS" 
+		# _11= "Marque" _12= "Modle" _13= "Date du dernier inventaire"/>
+
 		
 		if line.find("<Fieldname") == 0:
 			line = line.replace("<Fieldname", "")
@@ -1314,12 +1327,16 @@ def encodeJsonDiscoverySoap():
 
 			data 		= line.split('~')
 			server 		= data[0].upper().replace('"',"").rstrip()
-			os 			= data[8].upper().replace('"',"").rstrip()
-			modele 		= data[10].upper().replace('"',"").rstrip()
-			nbProc 		= data[2].upper().replace('"',"").rstrip()
-			ram 		= data[5].upper().replace('"',"").rstrip()
-			frequence 	= data[4].upper().replace('"',"").rstrip()
+			os 			= data[9].upper().replace('"',"").rstrip()
+			#passage de l'index 10 a 12 le 05/12/2017
+			modele 		= data[12].upper().replace('"',"").rstrip()
+			nbProc 		= data[4].upper().replace('"',"").rstrip()
+			#passage de l'index 5 a 6 le 05/12/2017
+			ram 		= data[6].upper().replace('"',"").rstrip()
+			frequence 	= data[5].upper().replace('"',"").rstrip()
 			typeProc	= data[1].upper().replace('"',"").rstrip()
+			date		= data[13].upper().replace('"',"").rstrip()
+
 			if os == "" :
 				os = data[9].upper().replace('"',"").rstrip()
 			if os =="" :
@@ -1330,17 +1347,18 @@ def encodeJsonDiscoverySoap():
 			if modele == "":
 				modele = "inconnue"
 
-			#print "s :%s, os : %s, ram: %s, nbProc : %s" %(server, os, ram, nbProc	)
 			DiscoveryData[server] = {
 						u'RAM' : ram, 
 						u'PROCESSOR_COUNT' : nbProc,
 					 	u'Processeur':  typeProc,
 					 	u'Frequence' : frequence,
 					 	u'modele' : modele,
-					 	u'os' : os}
+					 	u'os' : os,
+					 	u'date' : date
+					 	}
+			#pprint(DiscoveryData[server])
 
-
-#
+# 
 # dataPAth
 #
 
