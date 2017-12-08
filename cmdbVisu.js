@@ -8,7 +8,7 @@ var TypeColonneNo       = 0;
 var BddNo               = 0;
 var Search              = "";
 var MapOption           = 0;
-var TypeColonneDataJS   = [];
+var TypeColonneDataJS   = []; 
 var TypeColonneDataHead = [];
 var Table               = null;
 
@@ -207,6 +207,7 @@ function format ( d ) {
     var storageCount = storageHDSCount = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
     classDBA = classSupervision =classIlmt = "normal";
+    classNlyte = "normal";
      
     if  (d.storage != undefined) {
         //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
@@ -253,6 +254,9 @@ function format ( d ) {
         classDiscovery ="pas-d-info";
     }
     
+    if ( d.n1 == undefined){
+        classNlyte = "pas-d-info";
+    }
     vmCpu               = d.vmCpu;
     vmMem               = d.vmMem;
     vmDisk              = d.vmDisk;
@@ -274,6 +278,7 @@ function format ( d ) {
     discoveryProcessor  = d.Processeur;
     discoveryFrequence  = d.Frequence;
     discoveryDate       = d.date;
+    discoveryNoSerie    = d.nS;
     hostname            = d.Nom;
     vserveur            = d.Vserveur;
     dbaInfo             = d.dbaInfo;
@@ -358,15 +363,20 @@ function format ( d ) {
 
     }
     
-    if (d.Imodele   == undefined) { ilmtModele  = "N/A";}
-    if (ilmtOs      == undefined) { ilmtOs      = "N/A";}
-    if (ilmtIp      == undefined) { ilmtIp      = "N/A";}
-    if (ilmtCoeur   == undefined) { ilmtCoeur   = "N/A";}
-    if (ilmtType    == undefined) { ilmtType    = "N/A";}
-    if (ilmtPvu     == undefined) { ilmtPvu     = "N/A";}
-    
+    if (d.Imodele   == undefined) { ilmtModele      = "N/A";}
+    if (ilmtOs      == undefined) { ilmtOs          = "N/A";}
+    if (ilmtIp      == undefined) { ilmtIp          = "N/A";}
+    if (ilmtCoeur   == undefined) { ilmtCoeur       = "N/A";}
+    if (ilmtType    == undefined) { ilmtType        = "N/A";}
+    if (ilmtPvu     == undefined) { ilmtPvu         = "N/A";}
+    if (d.Nm        == undefined) { NlyteMatos      = "N/A";} else {NlyteMatos      = d.Nm;}
+    if (d.Ns        == undefined) { NlyteNomSite    = "N/A";} else {NlyteNomSite    = d.Ns;}
+    if (d.Nb        == undefined) { NlyteBaie       = "N/A";} else {NlyteBaie       = d.Nb;}
+    if (d.Nu        == undefined) { NlyteNoU        = "N/A";} else {NlyteNoU        = d.Nu;}
+    if (d.Nn        == undefined) { NlyteNoSerie    = "N/A";} else {NlyteNoSerie    = d.Nn;}
+            
     //
-    // Cas particulier ou je remplace discovery par des infos VMWare pour les serveur qui heberges les hyperviseurs
+    // Cas particulier ou je remplace discovery par des infos VMWare Host pour les serveur qui heberges les hyperviseurs
     //
     discoveryTable =  '<td width="10%"><div class="infoPlus">'+
                 '<table cellspacing="0" border="1" >'+
@@ -380,6 +390,7 @@ function format ( d ) {
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Type</span> :'+discoveryProcessor+' </td></tr>'+
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Proc Freq</span> :'+discoveryFrequence+' Mhz </td></tr>'+
                     '<tr><td class="'+classDiscovery+'"><span class="titreLigne">Date de collecte</span> : '+discoveryDate+'  </td></tr>'+
+                    '<tr><td class="'+classDiscovery+'"><span class="titreLigne">No Série</span> : '+discoveryNoSerie+'  </td></tr>'+
                 '</table>'+
             '</div></td>';
     
@@ -478,19 +489,6 @@ function format ( d ) {
                     '<span class="titreLigne">type DB :</span> '+typeBd+'</td></tr>'+
                     '<tr><td class="'+classDBA+'">'+ 
                     '<span class="titreLigne">nb Instance :</span> '+nbInstance+'</td></tr>'+
-                '</table>'+
-            '</div></td>'+
-            '<td width="10%"><div class="infoPlus">'+
-                '<table cellspacing="0" border="1" >'+
-                    '<tr><th><div  class ="bulle"><a href="#">Netscaler<span>Date de génération des données : '+getDataFileDisplay('vpx3p', 'date')+'</span></div></th></tr>'+
-                    '<tr><td class="'+classNetscaler+'"><span class="titreLigne">VIP</span> : '+vip+'</td></tr>'+
-                    '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vserveur</span> : '+vserveur+'</td></tr>'+
-                    '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vpx</span> : '+vpx+'</td></tr>'+
-                '</table>'+
-            '</div></td>'+
-            discoveryTable+
-            '<td width="10%"><div class="infoPlus">'+
-                '<table cellspacing="0" border="1" >'+
                     '<tr><th>'+
                         '<div  class ="bulle"><a href="#">SUPERVISION<span>'+
                         'Date de génération des données : '+getDataFileDisplay('Supervision', 'date')+
@@ -501,6 +499,25 @@ function format ( d ) {
                         lienCentreon+
                     '</td></tr>'+
                     '<tr><td class="'+classSupervision+'"><span class="titreLigne">Info</span> : '+supInfo+' </td></tr>'+
+                '</table>'+
+            '</div></td>'+
+            '<td width="10%"><div class="infoPlus">'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th><div  class ="bulle"><a href="#">Netscaler<span>Date de génération des données : '+getDataFileDisplay('vpx3p', 'date')+'</span></div></th></tr>'+
+                    '<tr><td class="'+classNetscaler+'"><span class="titreLigne">VIP</span> : '     +vip+'</td></tr>'+
+                    '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vserveur</span> : '+vserveur+'</td></tr>'+
+                    '<tr><td class="'+classNetscaler+'"><span class="titreLigne">Vpx</span> : '     +vpx+'</td></tr>'+
+                '</table>'+
+            '</div></td>'+
+            discoveryTable+
+            '<td width="10%"><div class="infoPlus">'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th><div  class ="bulle"><a href="#">Nlyte<span>Date de génération des données : '+getDataFileDisplay('nlyte', 'date')+'</span></div></th></tr>'+    
+                      '<tr><td class="'+classNlyte+'"><span class="titreLigne">Matériel</span> : '  +NlyteMatos+'</td></tr>'+
+                      '<tr><td class="'+classNlyte+'"><span class="titreLigne">Site</span> : '      +NlyteNomSite+'</td></tr>'+
+                      '<tr><td class="'+classNlyte+'"><span class="titreLigne">Baie</span> : '      +NlyteBaie+'</td></tr>'+
+                      '<tr><td class="'+classNlyte+'"><span class="titreLigne">No U</span> : '      +NlyteNoU+'</td></tr>'+
+                      '<tr><td class="'+classNlyte+'"><span class="titreLigne">No série</span> : '  +NlyteNoSerie+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
@@ -558,10 +575,10 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                         
                     },
-                    { "data"                : "Nom", "width" : "17%"},
-                    { "data"                : "CINom", "width" : "40%"},
-                    { "data"                : "CIResponsable", "width" : "20%"},
-                    { "data"                : "CIImpactantResponsable", "width" : "20%"}
+                    { "data"                : "CM", "width" : "17%"},
+                    { "data"                : "CN", "width" : "40%"},
+                    { "data"                : "CR", "width" : "20%"},
+                    { "data"                : "CI", "width" : "20%"}
                     //,{ "data"                : "vmCpu"}
                 ];
     
@@ -582,8 +599,8 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    { "data"                : "Nom", "width" : "17%" },
-                    { "data"                : "CINom", "width" : "40%" },
+                    { "data"                : "CM", "width" : "17%" },
+                    { "data"                : "CN", "width" : "40%" },
                     { "data"                : "VeeamScheduleStatus",
                         "className"           : "dt-center"
                     },
@@ -636,8 +653,8 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    { "data"                : "Nom" , "width" : "17%"},
-                    { "data"                : "CINom", "width" : "40%" },
+                    { "data"                : "CM" , "width" : "17%"},
+                    { "data"                : "CN", "width" : "40%" },
                     { "data"                : "vmCpu",
                         "className"           : "dt-center"
                     },
@@ -671,8 +688,8 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    {   "data"                : "Nom" , "width" : "17%"},
-                    {   "data"                : "CINom", "width" : "40%" },
+                    {   "data"                : "CM" , "width" : "17%"},
+                    {   "data"                : "CN", "width" : "40%" },
                     {   "data"                : "allocated",
                         "className"           : "dt-center"
                     },
@@ -702,8 +719,8 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    {   "data"                : "Nom" , "width" : "17%"},
-                    {   "data"                : "CINom", "width" : "40%" },
+                    {   "data"                : "CM" , "width" : "17%"},
+                    {   "data"                : "CN", "width" : "40%" },
                     {   "data"                : "supOK",
                         "className"           : "dt-center",
                         render                : function( data, type, row){
@@ -737,8 +754,8 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    {   "data"                : "Nom" 		, "width" 		: "17%"},
-                    {   "data"                : "CINom"		, "width" 		: "30%" },
+                    {   "data"                : "CM" 		, "width" 		: "17%"},
+                    {   "data"                : "CN"		, "width" 		: "30%" },
                     {   "data"                : "Ios"		, "className" 	: "dt-center"},
                     {   "data"                : "Iip"		, "className" 	: "dt-center"},
                     {   "data"                : "Icoeur"	, "className" 	: "dt-center"},
@@ -954,8 +971,9 @@ function readyCreateDataTable() {
     } ); // FIN Add event listener for opening and closing details
 
     // fin de lecture du json
-    Table.on( 'xhr', function () {
+    Table.on( 'xhr', function (e, settings, json) {
         DataJson = Table.ajax.json();
+        console.log("fin lecture json ");  
         
     } );
 
@@ -965,7 +983,7 @@ function readyCreateDataTable() {
     // récupère les date de fichier pour les info Bulle
     $.getJSON("data/fileDate.json", function(data) {
         DateFile = data;
-        console.log(data)
+        console.log(data);
 
         // affiche la date du fichier Datatable
         $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));

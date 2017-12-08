@@ -1,0 +1,46 @@
+{ 
+	"data" : [
+		{
+			"labelFile" :"CIImpactantResponsable",
+			"labselJson" : "CI",
+		},
+		{
+			"labelFile" :"CICategorie",
+			"labselJson" : "CG"
+		
+		},
+		{
+			"labelFile" :"CIResponsable",
+			"labselJson" :  "CR"
+		}
+		{
+			"labelFile" :"GSA",
+			"labselJson" :  "CA"
+			
+		},
+		{
+			"labelFile" :"Relation", 
+			"labselJson" : "CQ"
+		},
+		{
+			"labelFile" :"CIImpactantStatutduCI",
+			"labselJson" :  "CS"
+		},
+		{
+			"labelFile" :"CLE_APP",
+			"labselJson" :  "CC"
+		},
+		{
+			"labelFile" :"CINom",
+			"labselJson" :  "CN"
+		},
+		{
+			"labelFile" :"Nom", 
+			"labselJson" : "CM"
+		},
+		{
+			"labelFile" :"Bloquant",
+			"labselJson" :  "CB"
+		}
+	]
+}

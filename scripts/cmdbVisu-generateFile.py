@@ -63,6 +63,8 @@ Dba     		= {}
 Supervision 	= {}
 Esx 			= {}
 Ilmt 			= {}
+Nlyte 			= {}
+NlyteS 			= {}
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
 #
@@ -173,10 +175,10 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 		Ajoute toutes les infos (TSM,VEEAM, ......) sur un serveur qui n'est pas dans la CMDB
 	"""
 	CmdbDataServer[server] = {
-							"Nom"			: server,
-							"CINom" 		: "APPLI INCONNUE(info "+infoAppli+")",
-							"CIResponsable" : "",
-							"GSA"			: ""
+							"CM"	: server,
+							"CN" 	: "APPLI INCO("+infoAppli+")",
+							"CR" 	: "",
+							"CA"	: ""
 						}
 
 	# Ajoute info TSM
@@ -232,6 +234,16 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 		for item, value  in Ilmt[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
+	# Ajoute info NLYTE
+	if server in Nlyte.keys() :
+		#print "Nlyte serveur : "+server
+		for item, value  in Nlyte[server].items() :
+			CmdbDataServer[server][item]=str(value)
+	else : # essais avec le NO serie 
+		noSerie = "Arecuperer"
+		if noSerie in NlyteS.keys():
+			for item, value  in NlyteS[server].items() :
+				CmdbDataServer[server][item]=str(value)
 #
 # generateDataTableFile
 #
@@ -282,7 +294,20 @@ def generateDataTableFile():
 			line = line.replace("è", "e");
 			line = line.replace("ç", "c");
 
+			line = line.replace('CIImpactantResponsable','CI')
+			line = line.replace('CICategorie','CG')
+			line = line.replace("CIResponsable", 'CR')
+			line = line.replace("GSA", "CA")
+			line = line.replace("Relation", "CQ")
+			line = line.replace("CIImpactantStatutduCI", "CS")
+			line = line.replace("CLE_APP", "CC")
+			line = line.replace("CINom", "CN")
+			line = line.replace("Nom", "CM")
+			line = line.replace("Bloquant", "CB")
 			entete = line.split('~')
+			
+			#print "entête :"
+			#pprint(entete)
 			
 		#
 		# CmdbDataServer
@@ -321,13 +346,15 @@ def generateDataTableFile():
 									entete[8].replace('"',"").rstrip(): data[8].replace('"',"").rstrip(),
 									entete[9].replace('"',"").rstrip(): data[9].replace('"',"").rstrip()
 									}
+				#pprint (CmdbDataServer[server])
 			else :
+				#pprint(CmdbDataServer[server])
 				# CI : Nom
-				CmdbDataServer[server]["CINom"] = CmdbDataServer[server]["CINom"] + "," + data[1].replace('"',"").rstrip()
+				CmdbDataServer[server]["CN"] = CmdbDataServer[server]["CN"] + "," + data[1].replace('"',"").rstrip()
 				# CI : Responsable
-				CmdbDataServer[server]["CIResponsable"] = CmdbDataServer[server]["CIResponsable"] + "," + data[6].replace('"',"").rstrip()
+				CmdbDataServer[server]["CR"] = CmdbDataServer[server]["CR"] + "," + data[6].replace('"',"").rstrip()
 				# CI : GSA
-				CmdbDataServer[server]["GSA"] = CmdbDataServer[server]["GSA"] + "," + data[6].replace('"',"").rstrip()
+				CmdbDataServer[server]["CA"] = CmdbDataServer[server]["CA"] + "," + data[6].replace('"',"").rstrip()
 
 			#
 			# 	AppliDataServeur 
@@ -346,7 +373,7 @@ def generateDataTableFile():
 									}
 			else :
 				# CI : Nom
-				CmdbDataAppli[appli]["Nom"] = CmdbDataAppli[appli]["Nom"] + "," + data[1].replace('"',"").rstrip()
+				CmdbDataAppli[appli]["CM"] = CmdbDataAppli[appli]["CM"] + "," + data[1].replace('"',"").rstrip()
 				
 			fd.write('\t\t{\n')  #-=- pour dataTable
 			i = 0
@@ -439,6 +466,24 @@ def generateDataTableFile():
 				for item, value  in TsmRetension[server].items() :
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
+
+			# ecrire les info de rétention ILMT
+			if server in Ilmt.keys() :
+				for item, value  in Ilmt[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+
+			# Ajoute info NLYTE
+			if server in Nlyte.keys() :
+				#print "Nlyte serveur : "+server
+				for item, value  in Nlyte[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+			else : # essais avec le NO serie 
+				noSerie = "Arecuperer"
+				if noSerie in NlyteS.keys():
+					for item, value  in NlyteS[server].items() :
+						CmdbDataServer[server][item]=str(value)
 
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
@@ -647,20 +692,20 @@ def generateExcel():
 			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
 			supOk = supInfo = veeamRetention = tsmRetention = ""
 			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ""
-			if CmdbDataServer[server].get("Nom") != None :
-				NomServer = CmdbDataServer[server]["Nom"]
+			if CmdbDataServer[server].get("CN") != None :
+				NomServer = CmdbDataServer[server]["CN"]
 
-			if CmdbDataServer[server].get("CINom") != None:
-				CINom = CmdbDataServer[server]["CINom"]
+			if CmdbDataServer[server].get("CM") != None:
+				CINom = CmdbDataServer[server]["CM"]
 
-			if CmdbDataServer[server].get("CIResponsable") != None:
-				CIResponsable = CmdbDataServer[server]["CIResponsable"]
+			if CmdbDataServer[server].get("CR") != None:
+				CIResponsable = CmdbDataServer[server]["CR"]
 
-			if CmdbDataServer[server].get("CLE_APP") != None:
-				CLE_APP = CmdbDataServer[server]["CLE_APP"]
+			if CmdbDataServer[server].get("CC") != None:
+				CLE_APP = CmdbDataServer[server]["CC"]
 
-			if CmdbDataServer[server].get("CIImpactantResponsable") != None:
-				CIImpactantResponsable = CmdbDataServer[server]["CIImpactantResponsable"]
+			if CmdbDataServer[server].get("CI") != None:
+				CIImpactantResponsable = CmdbDataServer[server]["CI"]
 
 			# VMWare
 			if CmdbDataServer[server].get("vmCpu") != None:
@@ -1106,14 +1151,24 @@ def encodeJsonCmdbSoapFile(filename):
 			line = line.replace("/>", "")
 			
 			# pour pouvoir est traiter correctement pas dataTable, pas espace ni de : dans les nom des colonnes
-			line = line.replace(" ", "");
-			line = line.replace(":", "");
-			line = line.replace("é", "e");
-			line = line.replace("ê", "e");
-			line = line.replace("à", "a");
-			line = line.replace("è", "e");
-			line = line.replace("ç", "c");
+			line = line.replace(" ", "")
+			line = line.replace(":", "")
+			line = line.replace("é", "e")
+			line = line.replace("ê", "e")
+			line = line.replace("à", "a")
+			line = line.replace("è", "e")
+			line = line.replace("ç", "c")
 
+			line.replace('CIImpactantResponsable','CI')
+			line.replace('CICategorie','CG')
+			line.replace("CIResponsable", 'GR')
+			line.replace("GSA", "CA")
+			line.replace("Relation", "CQ")
+			line.replace("CIImpactantStatutduCI", "CS")
+			line.replace("CLE_APP", "CC")
+			line.replace("CINom", "CN")
+			line.replace("Nom", "CM")
+			line.replace("Bloquant", "CB")
 			entete = line.split('~')
 			
 
@@ -1336,6 +1391,7 @@ def encodeJsonDiscoverySoap():
 			frequence 	= data[5].upper().replace('"',"").rstrip()
 			typeProc	= data[1].upper().replace('"',"").rstrip()
 			date		= data[13].upper().replace('"',"").rstrip()
+			noSerie		= data[8].upper().replace('"',"").rstrip()
 
 			if os == "" :
 				os = data[9].upper().replace('"',"").rstrip()
@@ -1348,13 +1404,14 @@ def encodeJsonDiscoverySoap():
 				modele = "inconnue"
 
 			DiscoveryData[server] = {
-						u'RAM' : ram, 
-						u'PROCESSOR_COUNT' : nbProc,
-					 	u'Processeur':  typeProc,
-					 	u'Frequence' : frequence,
-					 	u'modele' : modele,
-					 	u'os' : os,
-					 	u'date' : date
+						u'RAM' 				: ram, 
+						u'PROCESSOR_COUNT' 	: nbProc,
+					 	u'Processeur'		: typeProc,
+					 	u'Frequence' 		: frequence,
+					 	u'modele' 			: modele,
+					 	u'os' 				: os,
+					 	u'date' 			: date,
+					 	u'nS' 				: noSerie 
 					 	}
 			#pprint(DiscoveryData[server])
 
@@ -1418,6 +1475,8 @@ def dataPath(type):
 		return rootPathStatBaies+ "discovery-easyvista-20170918.csv"
 	elif type == "ILMT" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "Inventaire_ILMT-")
+	elif type == "NLYTE" :
+		return getLastFilesByDate("/var/www/virtu/exportWindows/", "NLYTE-")
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue"
 
@@ -2107,7 +2166,68 @@ def encodeJsonILMT():
 	print "\n"
 	wb1.release_resources()
 	del wb1
+
+#
+#   encodeJsonNlyte
+#	
+def encodeJsonNlyte():
+	"""
+		Lecture du fichier Nlyte
+	"""
+	filename = dataPath("NLYTE")
+	DateFile["NLYTE"]= { u'file' : filename, 'date' :creationDateFile(filename), 'info' : 'Fichier généré par un export Manuel de nlyte' }
 	
+	print "traitement fichier : %s " % filename
+	# ouverture du fichier Excel 
+	try: 
+		wb1=xlrd.open_workbook(filename)
+	except Exception  as e:
+		print "\nERREUR:\n  Impossible d'ouvrir le 1er fichier : \n\t\t'%s' \n" % filename
+		print "I/O error({0}): {1}".format(e.errno, e.strerror)
+		sys.exit(-1)
+
+	# feuilles dans le classeur
+	shname1=wb1.sheet_names()[0]
+	sh1 = wb1.sheet_by_name(shname1)
+
+	noLigne = 0
+	# Positionnement des colonne 
+	#-=- Crade a refaire en utilisant les noms de colonnes
+	colNomServer 		= 0
+	colTypeMatos 		= 2
+	colNoSerie 			= 8
+	colNomSite		 	= 9
+	colBaie				= 11
+	colNoU 				= 12 
+
+	for rownum in range(sh1.nrows):
+		noLigne = noLigne + 1
+		if noLigne < 5 :
+			continue
+		nomServer 	= sh1.row_values(rownum)[colNomServer].encode('utf8').upper()
+		typeMatos 	= sh1.row_values(rownum)[colTypeMatos].encode('utf8').upper()
+		noSerie 	= sh1.row_values(rownum)[colNoSerie].encode('utf8').upper()
+		nomSite  	= sh1.row_values(rownum)[colNomSite].encode('utf8').upper()
+		nomSite     = nomSite.replace('\\',"/")
+		noBaie 		= sh1.row_values(rownum)[colBaie].encode('utf8').upper()
+		noU 		= sh1.row_values(rownum)[colNoU].encode('utf8').upper()
+	
+
+		Nlyte[nomServer] = {
+			u'Nm'		: typeMatos,
+			u'Ns'		: nomSite,
+			u'Nb' 		: noBaie,
+			u'Nu'		: noU, 
+			u'Nn'       : noSerie
+		}
+		NlyteS[noSerie] = {
+			u'Nm'		: typeMatos,
+			u'Ns'		: nomSite,
+			u'Nb' 		: noBaie,
+			u'Nu'		: noU, 
+			u'NnomServeur'    : nomServer
+		}
+		
 
 # ----------------------------------------------------------------------------
 #
@@ -2119,8 +2239,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
-#print "|"+getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")+"|"
-#encodeJsonDbaSQL()
+#encodeJsonNlyte()
 #sys.exit(-1)
 
 print "-----------------------------------------------------------------------------"
@@ -2137,6 +2256,7 @@ encodeJsonNetscaler()
 encodeJsonDbaSQL()
 encodeJsonSupervisionSQL()
 encodeJsonILMT()
+encodeJsonNlyte()
 generateDataTableFile()
 
 generateExcel()
