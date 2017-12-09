@@ -691,7 +691,8 @@ def generateExcel():
 			ram = frequence = processor_count = os = modele = processeur = dateCollecte = ""
 			vip = vpx = vserveur = dbaInfo = dbaType = dbaNbInstance = ""
 			supOk = supInfo = veeamRetention = tsmRetention = ""
-			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ""
+			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ilmtNoSerie = ""
+			nlyteTypeMatos =  nlyteNomSite = nlyteNoBaie = nlyteNoU = nlyteNoSerie = ""
 			if CmdbDataServer[server].get("CN") != None :
 				NomServer = CmdbDataServer[server]["CN"]
 
@@ -828,6 +829,18 @@ def generateExcel():
 				ilmtType	= Ilmt[server].get("Itype")
 				ilmtModele	= Ilmt[server].get("Imodele")
 				ilmtPvu		= Ilmt[server].get("Ipvu")
+				ilmtNoSerie	= Ilmt[server].get("In")
+
+			if Nlyte.get(server) != None :
+				nlyteTypeMatos = Nlyte[server].get(u'Nm')
+				nlyteNomSite 	= Nlyte[server].get(u'Ns')
+				if Nlyte[server].get(u'Nb') != None :
+					nlyteNoBaie 	= Nlyte[server].get(u'Nb')
+				if Nlyte[server].get(u'Nu') != None :
+					nlyteNoU 		= Nlyte[server].get(u'Nu')
+				if Nlyte[server].get(u'Nn') != None :
+					nlyteNoSerie 	= Nlyte[server].get(u'Nn')
+
 
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
@@ -836,7 +849,8 @@ def generateExcel():
 						tsmDebut, tsmFin, tsmStatus, tsmRetention,
 						ram, os, processor_count, frequence, processeur, modele, dateCollecte, 
 						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo,
-						ilmtOs, ilmtIp, ilmtCoeur, ilmtType, ilmtModele, ilmtPvu])
+						ilmtOs, ilmtIp, ilmtCoeur, ilmtType, ilmtModele, ilmtPvu, ilmtNoSerie,
+						nlyteTypeMatos, nlyteNomSite, nlyteNoBaie, nlyteNoU, nlyteNoSerie])
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -1022,7 +1036,32 @@ def generateExcel():
 		                        {'header': u'ILMT PVU',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': u'ILMT No Série ',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Nlyte Matériel',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Nlyte Site',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Nlyte Baie',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Nlyte no U',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'Nlyte No Série',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
+
 		                       ],
 		            'data': data
 		           }
@@ -1057,7 +1096,7 @@ def generateExcel():
 		worksheetServer.set_column('AP:AP', 13)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 + 6, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 + 6 + 7, options)
 
 	except :
 		print "Exception in user code:"
@@ -2136,12 +2175,20 @@ def encodeJsonILMT():
 		colType 	= 5	
 		colModele	= 14
 		colPvu 		= 15
+		colNoSerie  = 7
  
 
 		noLigne = noLigne + 1
 		if noLigne < 2 :
 			continue
 		nomServer = sh1.row_values(rownum)[colNomServer].encode('utf8').upper()
+		noSerieTmp   = sh1.row_values(rownum)[colNoSerie].encode('utf8').upper()
+		tmp = noSerieTmp.split(' ')
+		if len(tmp) > 2 :
+			noSerie = tmp[len(tmp)-1]
+		else :
+			noSerie = ""
+
 
 		#print nomVm
 		if (sh1.row_values(rownum)[colType].encode('utf8') == u"Physique" or
@@ -2153,6 +2200,7 @@ def encodeJsonILMT():
 						u'Itype' 	: sh1.row_values(rownum)[colType].encode('utf8'),
 						u'Imodele' 	: sh1.row_values(rownum)[colModele].encode('utf8'),
 						u'Ipvu'		: str(int(sh1.row_values(rownum)[colPvu])), 		
+						u'In' 		: noSerie
 					}
 		else : 
 			Ilmt[nomServer] = {
@@ -2161,6 +2209,7 @@ def encodeJsonILMT():
 						u'Icoeur'	: str(float(sh1.row_values(rownum)[colCoeur])), 
 						u'Itype' 	: sh1.row_values(rownum)[colType].encode('utf8'),
 						u'Ipvu'		: str(int(sh1.row_values(rownum)[colPvu])), 		
+						u'In' 		: noSerie
 					}
 
 	print "\n"
@@ -2252,7 +2301,7 @@ encodeJsonVeeam()
 encodeJsonTsm()
 encodeJsonTsmRetention()
 encodeJsonDiscoverySoap() 
-encodeJsonNetscaler() 
+#encodeJsonNetscaler() 
 encodeJsonDbaSQL()
 encodeJsonSupervisionSQL()
 encodeJsonILMT()

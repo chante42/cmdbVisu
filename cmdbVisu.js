@@ -254,7 +254,7 @@ function format ( d ) {
         classDiscovery ="pas-d-info";
     }
     
-    if ( d.n1 == undefined){
+    if ( d.Ns == undefined){
         classNlyte = "pas-d-info";
     }
     vmCpu               = d.vmCpu;
@@ -363,17 +363,18 @@ function format ( d ) {
 
     }
     
-    if (d.Imodele   == undefined) { ilmtModele      = "N/A";}
-    if (ilmtOs      == undefined) { ilmtOs          = "N/A";}
-    if (ilmtIp      == undefined) { ilmtIp          = "N/A";}
-    if (ilmtCoeur   == undefined) { ilmtCoeur       = "N/A";}
-    if (ilmtType    == undefined) { ilmtType        = "N/A";}
-    if (ilmtPvu     == undefined) { ilmtPvu         = "N/A";}
-    if (d.Nm        == undefined) { NlyteMatos      = "N/A";} else {NlyteMatos      = d.Nm;}
-    if (d.Ns        == undefined) { NlyteNomSite    = "N/A";} else {NlyteNomSite    = d.Ns;}
-    if (d.Nb        == undefined) { NlyteBaie       = "N/A";} else {NlyteBaie       = d.Nb;}
-    if (d.Nu        == undefined) { NlyteNoU        = "N/A";} else {NlyteNoU        = d.Nu;}
-    if (d.Nn        == undefined) { NlyteNoSerie    = "N/A";} else {NlyteNoSerie    = d.Nn;}
+    if (d.Imodele       == undefined) { ilmtModele      = "N/A";}
+    if (ilmtOs          == undefined) { ilmtOs          = "N/A";}
+    if (ilmtIp          == undefined) { ilmtIp          = "N/A";}
+    if (ilmtCoeur       == undefined) { ilmtCoeur       = "N/A";}
+    if (ilmtType        == undefined) { ilmtType        = "N/A";}
+    if (ilmtPvu         == undefined) { ilmtPvu         = "N/A";}
+    if (d.In            == undefined) { ilmtNoSerie     = "N/A";} else {ilmtNoSerie     = d.In}
+    if (d.Nm            == undefined) { NlyteMatos      = "N/A";} else {NlyteMatos      = d.Nm;}
+    if (d.Ns            == undefined) { NlyteNomSite    = "N/A";} else {NlyteNomSite    = d.Ns;}
+    if (d.Nb            == undefined) { NlyteBaie       = "N/A";} else {NlyteBaie       = d.Nb;}
+    if (d.Nu            == undefined) { NlyteNoU        = "N/A";} else {NlyteNoU        = d.Nu;}
+    if (d.Nn            == undefined) { NlyteNoSerie    = "N/A";} else {NlyteNoSerie    = d.Nn;}
             
     //
     // Cas particulier ou je remplace discovery par des infos VMWare Host pour les serveur qui heberges les hyperviseurs
@@ -539,6 +540,8 @@ function format ( d ) {
                     	'<span class="titreLigne">Modèle :</span> '+ilmtModele+'</td></tr>'+
                     '<tr><td class="'+classIlmt+'">'+ 
                     	'<span class="titreLigne">PVU par coeur:</span> '+ilmtPvu+'</td></tr>'+
+                    '<tr><td class="'+classIlmt+'">'+ 
+                        '<span class="titreLigne">No Série:</span> '+ilmtNoSerie+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
         '</tr>'+
@@ -776,10 +779,31 @@ function getDataTableColonneData(type, typeColonneNo) {
 
      //   *********************** 6 eme TYPE Full **********************
     TypeColonneDataJS [6]= [
-                    
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "width"             : "2%",
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "CM"        , "width"       : "17%"},
+                    {   "data"                : "CN"        , "width"       : "30%" },
+                    {   "data"                : "Nm"       , "className"   : "dt-center"},
+                    {   "data"                : "Ns"       , "className"   : "dt-center"},
+                    {   "data"                : "Nb"       , "width"       : "5%", "className"   : "dt-center"},
+                    {   "data"                : "Nu"       , "width"       : "5%", "className"   : "dt-center"},
+                    {   "data"                : "Nn"       , "className"   : "dt-center"},               
                 ];
     
     TypeColonneDataHead[6] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>Matériel</th>
+                    <th>Nom Site</th>
+                    <th>Baie</th>
+                    <th>No U</th>
+                    <th>No Serie</th>
                     `;
     
     console.log("TypeColonneNo = "+typeColonneNo);
