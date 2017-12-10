@@ -513,7 +513,7 @@ function format ( d ) {
             discoveryTable+
             '<td width="10%"><div class="infoPlus">'+
                 '<table cellspacing="0" border="1" >'+
-                    '<tr><th><div  class ="bulle"><a href="#">Nlyte<span>Date de génération des données : '+getDataFileDisplay('nlyte', 'date')+'</span></div></th></tr>'+    
+                    '<tr><th><div  class ="bulle"><a href="#">Nlyte<span>Date de génération des données : '+getDataFileDisplay('NLYTE', 'date')+'</span></div></th></tr>'+    
                       '<tr><td class="'+classNlyte+'"><span class="titreLigne">Matériel</span> : '  +NlyteMatos+'</td></tr>'+
                       '<tr><td class="'+classNlyte+'"><span class="titreLigne">Site</span> : '      +NlyteNomSite+'</td></tr>'+
                       '<tr><td class="'+classNlyte+'"><span class="titreLigne">Baie</span> : '      +NlyteBaie+'</td></tr>'+
@@ -1007,7 +1007,7 @@ function readyCreateDataTable() {
     // récupère les date de fichier pour les info Bulle
     $.getJSON("data/fileDate.json", function(data) {
         DateFile = data;
-        console.log(data);
+        //console.log(data);
 
         // affiche la date du fichier Datatable
         $('#dateFileDataTable').html("Le batch de récupération des infos a été lancé le :"+getDataFileDisplay('CMDB', 'date'));
