@@ -347,7 +347,7 @@ function format ( d ) {
         lienCentreon        = "NON";
     }
     else {
-        lienCentreon='<a target="_blank" href="'+LienCentreon+d.Nom+'" >OUI</a>';
+        lienCentreon='<a target="_blank" href="'+LienCentreon+d.CM+'" >OUI</a>';
         if (d.supInfo                  == undefined){
             supInfo             = "N/A";
         }
@@ -728,7 +728,7 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "className"           : "dt-center",
                         render                : function( data, type, row){
                             if (data == "1") {
-                                return('<a target="_blanc" href ='+LienCentreon+row.Nom+'>OUI</a>');
+                                return('<a target="_blanc" href ='+LienCentreon+row.CM+'>OUI</a>');
                             }
                             else {
                                 return("NON");
