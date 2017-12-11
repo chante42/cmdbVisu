@@ -693,10 +693,10 @@ def generateExcel():
 			supOk = supInfo = veeamRetention = tsmRetention = ""
 			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ilmtNoSerie = ""
 			nlyteTypeMatos =  nlyteNomSite = nlyteNoBaie = nlyteNoU = nlyteNoSerie = ""
-			if CmdbDataServer[server].get("CN") != None :
+			if CmdbDataServer[server].get("CM") != None :
 				NomServer = CmdbDataServer[server]["CN"]
 
-			if CmdbDataServer[server].get("CM") != None:
+			if CmdbDataServer[server].get("CN") != None:
 				CINom = CmdbDataServer[server]["CM"]
 
 			if CmdbDataServer[server].get("CR") != None:
