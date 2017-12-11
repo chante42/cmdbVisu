@@ -694,10 +694,10 @@ def generateExcel():
 			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ilmtNoSerie = ""
 			nlyteTypeMatos =  nlyteNomSite = nlyteNoBaie = nlyteNoU = nlyteNoSerie = ""
 			if CmdbDataServer[server].get("CM") != None :
-				NomServer = CmdbDataServer[server]["CN"]
+				NomServer = CmdbDataServer[server]["CM"]
 
 			if CmdbDataServer[server].get("CN") != None:
-				CINom = CmdbDataServer[server]["CM"]
+				CINom = CmdbDataServer[server]["CN"]
 
 			if CmdbDataServer[server].get("CR") != None:
 				CIResponsable = CmdbDataServer[server]["CR"]
