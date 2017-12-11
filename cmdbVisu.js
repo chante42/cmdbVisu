@@ -279,7 +279,7 @@ function format ( d ) {
     discoveryFrequence  = d.Frequence;
     discoveryDate       = d.date;
     discoveryNoSerie    = d.nS;
-    hostname            = d.Nom;
+    hostname            = d.CM;
     vserveur            = d.Vserveur;
     dbaInfo             = d.dbaInfo;
     nbInstance          = d.nbInstance;
