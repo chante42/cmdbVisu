@@ -65,6 +65,10 @@ Esx 			= {}
 Ilmt 			= {}
 Nlyte 			= {}
 NlyteS 			= {}
+RepGGConfDir		= "../graphgroupe-conf/"
+GraphGroupe 		= {}
+DictService2No     	= {}
+DictNo2Service     	= {}
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
 #
@@ -91,6 +95,64 @@ netscalersList = {
 		  	"zvpx8p" : { "dnsname" : "zvpx8p.si2m.tec", "description" : "Load balancer pour le recette reseau DMZ en A92" },
 		  	"zvpx9p" : { "dnsname" : "zvpx9p.si2m.tec", "description" : "Load balancer pour le test DMZ en A92"}
 		  }
+
+EnteteConfData = u"""
+//DESCRIPTION DES MOTS CLEF :
+//---------------------------
+// groupeNom 			: [Obligatoire] Nom du groupe qui apparait dans le menu sur la gauche
+//                         si contient [separateur] affiche une ligne horizontale
+// groupeTitre 			: [facultatif] 
+// groupeDescription 	: [facultatif] Description du nom du graphe (apparait en hover)
+// groupeImageURL		: [facultatif] URL pour le groupe
+// groupeIframe			: [facultatif] si égale a "true"  l'URL est affiché dans un iframe
+// groupeIframeWidth 	: [facultatif] Largeur de l'iframe 
+// groupeIframeHeight 	: [facultatif] Hauteur de l'iframe
+// groupeClickURL       : [facultatif] URL appelé si on click sur une image du groupe
+// groupeEchelleParam   : [facultatif] contient un tableau qui représente la echelleeur de la variable %%echelles%% 
+//                         ex : [ {"echelle" : "10800"},{"echelle" : "108000"},	{"echelle" : "864000"},{"echelle" : "34560000"},{"echelle" : "34560000"}],
+//
+// groupeType			: [facultatif] : type de groupe, si definie seul valeur accepté pour l'instant :
+//                               WithSubMenu : Permet d'avoir une selection de valeur
+//                  			Necessite alors que les champs suivant soient definie
+//                                * groupeSubMenuUrl"		: URL pour téléchargeer la liste de valeur ex : "my-js/host_V400_A92.txt",
+//								  * grouoeSubMenuVariable"  : Nom et valuer par défaut de la variable initialisé par la selection d'une valeur.
+//                                      ex : {"host" :""},
+			
+//
+
+//
+// graph				: [Obligatoire] Tableau de structure {nom, imageURL, ...} qui permet de définir un graphique
+// nomTitre          	: [facultatif]  Titre du graphique 
+// nomDescription       : [facultatif] 
+// imageURL 			: [Obligatoire si pas groupeImageURL non définie] URL pour afficher l'image. Peux contenir des variables (%%nomvar%%)
+// clickURL             : [facultatif] URL appelé si on click  l'image
+//
+//
+// Les variables :
+//    Pour éechelleuer une variable il faut l'entrourrer de '%%'.    ex %%var1%%
+// 
+// Les variables Pres-définie
+//      %%echelle%% : Permet de choisir le zoom actuel : telque définie par "cacti,pnp4nagios, ..."
+//
+var conf = {
+	"groups" : [  
+		{	"groupeNom"         : "Ecran initial",     
+	    	"groupeTitre" 		: "Ecran initial",
+			"groupeDescription" : "",
+			"groupeImageURL" 	: "images/debug/1%%echelle%%%%var1%%.png",
+			"groupeClickURL" 	: "http://www.google.fr",
+	    	"graph" : [    
+				{"nom" : "img 0"		, "var1" : "0", "clickURL" : "images/debug/100.png"},  
+				{"nom" : "img 1"		, "var1" : "1"},  
+			    
+			]
+		}
+"""
+
+FinConfData = u"""
+	]
+};
+"""
 
 
 def creationDateFile(path_to_file):
@@ -332,7 +394,7 @@ def generateDataTableFile():
 
 			data = line.split('~')
 			server = data[5].upper().replace('"',"").rstrip()
-			appli  = data[0].upper().replace('"',"").rstrip()
+			appli  = data[1].upper().replace('"',"").rstrip()
 
 			if server  not in CmdbDataServer.keys():
 				CmdbDataServer[server] = { entete[0].replace('"',"").rstrip(): data[0].replace('"',"").rstrip(),
@@ -373,8 +435,9 @@ def generateDataTableFile():
 									}
 			else :
 				# CI : Nom
-				CmdbDataAppli[appli]["CM"] = CmdbDataAppli[appli]["CM"] + "," + data[1].replace('"',"").rstrip()
+				CmdbDataAppli[appli]["CM"] = CmdbDataAppli[appli]["CM"] + "," + server
 				
+
 			fd.write('\t\t{\n')  #-=- pour dataTable
 			i = 0
 			
@@ -455,19 +518,13 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
-			# ecrire les info Supervision
-			if server in Ilmt.keys() :
-				for item, value  in Ilmt[server].items() :
-					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
-					CmdbDataServer[server][item]=str(value)
-
 			# ecrire les info de rétention TSM
 			if server in TsmRetension.keys() :
 				for item, value  in TsmRetension[server].items() :
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
-			# ecrire les info de rétention ILMT
+			# ecrire les info de ILMT
 			if server in Ilmt.keys() :
 				for item, value  in Ilmt[server].items() :
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
@@ -2112,6 +2169,124 @@ Tu peux aussi passer par la table `centreon_storage`.`hosts` qui présente un pe
 		print("args: ", e.args)
 
 #
+# encodeJsonSupervisionService
+#
+def encodeJsonSupervisionService():
+	try : 
+
+		print "traitement des infos  de service de la Supervision : "
+		db = MySQLdb.connect(host="centdb.si2m.tec",    # your host, usually localhost
+	                     user="centreonbr",         # your username
+	                     passwd="centreon",  # your password
+	                     db="centreon")        # name of the data base
+
+		# you must create a Cursor object. It will let    
+		#  you execute all the queries you need
+		cur = db.cursor()
+
+
+		host =""
+#		print "traitemnt de : "+host
+		# Use all the SQL you like
+		cur.execute('SELECT host.host_name, service.service_description FROM (host INNER JOIN host_service_relation '+
+			'ON host.host_id = host_service_relation.host_host_id) INNER JOIN service '+
+			'ON host_service_relation.service_service_id = service.service_id '+
+		#	'WHERE (((host.host_name)="'+host+'"))'+
+			'')
+
+		noService = 0
+		for row in cur.fetchall(): #-=- OCH 20171123
+			#print row
+			server = row[0].replace(".si2m.tec", "").upper().decode('latin-1').encode('utf-8')
+			service = row[1].decode('latin-1').encode('utf-8')
+			if DictService2No.get(service) == None :
+					DictService2No[service] = noService
+					DictNo2Service[noService] =  service
+					noService = noService + 1 
+			if GraphGroupe.get(server) != None:
+				GraphGroupe[server] =  GraphGroupe[server] + ',' + service
+			else :
+				GraphGroupe[server] = service
+
+		db.close()
+		
+		#DateFile['Supervision']= { u'file' : "mysql://centreonbr@centdb.si2m.tec/centreon",
+		#				   u'date' : datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+		#				   u'info' : "description de la chaine de connection a la base de donnée de la supervision :  select host_name, host_address, host_alias  from host where host_address != ''  ;" }
+ 
+	# par défaut on continue le script
+	except Exception as e:
+		print("encodeJsonSupervisionService : Erreur")
+		print("args: ", e.args)
+		traceback.print_exc(file=sys.stdout)
+		
+
+
+#
+#
+#
+def writeGraphGroupeConf() :
+	print "GrapheGroupe : génération du fichier :" 
+	for appli in CmdbDataAppli.keys():
+		filename1 = appli+"-conf.js"
+		filename = RepGGConfDir+filename1
+
+		try :
+			#print "%s," % filename1
+			fd = codecs.open(filename, 'w', 'utf-8')
+
+			fd.write(EnteteConfData)
+
+			done = False
+			#if appli == "VMWARE_ESX_PRD":
+			#	print "DEBUG ------------------------ writeGraphGroupeConf"
+			#	pprint ( CmdbDataAppli[appli])
+
+			# pour chaque serveur d'une appli boucle tant qu'on en a pas trouvé un dans la supervision
+			for server1 in CmdbDataAppli[appli]["CM"].split(','):
+				#server1=CmdbDataAppli[appli]["CM"].split(',')[0]
+				#print "\t ref :" + server1 
+				
+				if GraphGroupe.get(server1) != None and done == False:
+					for service in GraphGroupe[server1].split(','):
+						done = True
+						#print "\t\t service :"+service
+						fd.write('\t\t,{"groupeNom"         	: "'+appli+'-'+service+'",\n')     
+						fd.write('\t\t"groupeTitre" 			: "'+appli+'-'+service+'",\n')
+						fd.write('\t\t"groupeDescription" 	    : "'+'Application :'+appli+'<br>Service :'+service+u'<br>Groupe Généré Par CmdbVisu le jj/mm/aa '+'",\n')
+						fd.write('\t\t"groupeImageURL"          : "'+'http://supervision.si2m.tec/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&start=%%varDebut%%-%%echelle%%&end=%%varDebut%%&hostname=%%server%%&service='+service+'",\n')
+						
+						fd.write('\t\t"groupeVariable"          : {"varDebut" : "now()"},\n')					
+						#gestion des echelle
+						fd.write('\t\t"groupeEchelleParam"	: [ {"echelleNom" : "3 h ",      "echelle" : "10800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "24 h ",     "echelle" : "86400"},\n')
+						fd.write('\t\t					        {"echelleNom" : "48 h ",     "echelle" : "172800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "1 semaine", "echelle" : "691200"},\n')
+						fd.write('\t\t					        {"echelleNom" : "1 mois",    "echelle" : "2764800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "6 mois",    "echelle" : "16588800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "1 an",      "echelle" : "35942400"}\n')
+						fd.write('\t\t				  ],\n')
+
+	            		# gestion des serveur a qui ont applique ImageURL
+						fd.write('\t\t"graph" : [ \n')
+						virgule = ""
+						for server in CmdbDataAppli[appli]["CM"].split(','):
+							#print "\t\t\t: "+server
+							fd.write('\t\t\t\t'+virgule+'{"nom" : "'+ server+'" , "server" : "'+server+'"}\n')
+							virgule =','
+						
+						fd.write('\t\t\t]\n\t\t}\n')
+											
+
+			fd.write(FinConfData)
+			fd.close()
+
+		except Exception as e:
+			print("writeGraphGroupeConf : Erreur")
+			print("args: ", e.args)
+			traceback.print_exc(file=sys.stdout)
+
+#
 # encodeJsonSupervisionSQL
 #
 def encodeJsonTsmRetention() :
@@ -2301,13 +2476,15 @@ encodeJsonVeeam()
 encodeJsonTsm()
 encodeJsonTsmRetention()
 encodeJsonDiscoverySoap() 
-encodeJsonNetscaler() 
+#encodeJsonNetscaler() 
 encodeJsonDbaSQL()
+encodeJsonSupervisionService()
 encodeJsonSupervisionSQL()
 encodeJsonILMT()
 encodeJsonNlyte()
-generateDataTableFile()
 
+generateDataTableFile()
+writeGraphGroupeConf()
 generateExcel()
 
 generateFileDate()
