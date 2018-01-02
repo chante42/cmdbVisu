@@ -2235,8 +2235,6 @@ def writeGraphGroupeConf() :
 			#print "%s," % filename1
 			fd = codecs.open(filename, 'w', 'utf-8')
 
-			fd.write(EnteteConfData)
-
 			done = False
 			#if appli == "VMWARE_ESX_PRD":
 			#	print "DEBUG ------------------------ writeGraphGroupeConf"
@@ -2249,6 +2247,8 @@ def writeGraphGroupeConf() :
 				
 				if GraphGroupe.get(server1) != None and done == False:
 					for service in GraphGroupe[server1].split(','):
+						if done == False:
+							fd.write(EnteteConfData)
 						done = True
 						#print "\t\t service :"+service
 						fd.write('\t\t,{"groupeNom"         	: "'+appli+'-'+service+'",\n')     
@@ -2277,9 +2277,16 @@ def writeGraphGroupeConf() :
 						
 						fd.write('\t\t\t]\n\t\t}\n')
 											
+			if done == True :
+				fd.write(FinConfData)
+				fd.close()
+			# efface le fichier
+			else :
+				fd.close()
+				if os.path.isfile(filename):
+					print "tototo"
+    				os.remove(filename)
 
-			fd.write(FinConfData)
-			fd.close()
 
 		except Exception as e:
 			print("writeGraphGroupeConf : Erreur")
