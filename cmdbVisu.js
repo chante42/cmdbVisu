@@ -17,6 +17,7 @@ var LienCentreon
 LienCentreonPPD="http://vli1sup011/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id="; 
 LienCentreon="http://supervision.si2m.tec/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id="; 
 
+lienGrapheGroupeBase="http://vli5res01/graphes-groupes/graphes-groupes-cmdbVisu.html?conffile=";
 //
 // dateDiff
 //
@@ -375,7 +376,14 @@ function format ( d ) {
     if (d.Nb            == undefined) { NlyteBaie       = "N/A";} else {NlyteBaie       = d.Nb;}
     if (d.Nu            == undefined) { NlyteNoU        = "N/A";} else {NlyteNoU        = d.Nu;}
     if (d.Nn            == undefined) { NlyteNoSerie    = "N/A";} else {NlyteNoSerie    = d.Nn;}
-            
+      
+    if (d.CN.indexOf("APPLI INCO") == 0 || d.CN.indexOf("_PRD") == -1 ) {
+        lienGrapheGroupe ="N/A";
+    }   
+    else {
+        lienGrapheGroupe    = '<a href="'+lienGrapheGroupeBase+d.CN+'" target="_blank">OUI</a>';
+        classSupervision    = "normal";
+    }   
     //
     // Cas particulier ou je remplace discovery par des infos VMWare Host pour les serveur qui heberges les hyperviseurs
     //
@@ -500,6 +508,10 @@ function format ( d ) {
                         lienCentreon+
                     '</td></tr>'+
                     '<tr><td class="'+classSupervision+'"><span class="titreLigne">Info</span> : '+supInfo+' </td></tr>'+
+                    '<tr><td class="'+classSupervision+'">'+
+                        '<span class="titreLigne">Graphe : </span>'+
+                        lienGrapheGroupe+
+                    '</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
@@ -897,7 +909,7 @@ function readyCreateDataTable() {
         "columns": getDataTableColonneData("javascript", TypeColonneNo),
         //AutoWidth: false, 
         "order": [[1, 'asc']],
-        lengthMenu: [[15,16,17,18,19, 25, 50, -1], [15,16,17,18,19, 25, 50, "All"]],
+        lengthMenu: [[7,8,10,13,15,16,17,18,19, 25, 50, -1], [7,8,10,13,15,16,17,18,19, 25, 50, "All"]],
         "iDisplayLength" : 19,
         keys : true,
         colReorder: true,
