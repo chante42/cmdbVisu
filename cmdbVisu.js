@@ -98,8 +98,11 @@ function getDataFileDisplay(type, field) {
     match = 0
     if (DateFile != null ) {
         for (item in DateFile['data']) {
-            //console.log(DateFile['data'][item]['type']);
+            
             if (DateFile['data'][item]['type'].search(type) != -1) {
+                //console.log("getDataFileDisplay - type : " + type);            
+                //console.log("getDataFileDisplay - " + DateFile['data'][item]['type'] + " : " + DateFile['data'][item]['date']);
+
                 var tmp = DateFile['data'][item][field];
                 tmp = tmp.substr(0,10);
                 d = new Date(tmp);
@@ -198,6 +201,16 @@ function datatableAddColumn() {
 //
 function datatableDelColumn() {
     console.log("DataTable DEL  Colonne");
+}
+
+//
+// openUrlMetrologie
+//
+function openUrlMetrologie(obj) {
+    console.log("openUrlMetrologie : "+LienCentreon);
+    window.open(LienCentreon,"metro"); //ouvrir un target
+    window.open(lienGrapheGroupeBase+obj); //ouvrir un target _blank
+    
 }
 
 //
@@ -381,7 +394,7 @@ function format ( d ) {
         lienGrapheGroupe ="N/A";
     }   
     else {
-        lienGrapheGroupe    = '<a href="'+lienGrapheGroupeBase+d.CN+'" target="_blank">OUI</a>';
+        lienGrapheGroupe    = '<a href="#" onclick="openUrlMetrologie(\''+d.CN+'\');return false;">OUI</a>';
         classSupervision    = "normal";
     }   
     //

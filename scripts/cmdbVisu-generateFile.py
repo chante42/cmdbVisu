@@ -2266,11 +2266,13 @@ def writeGraphGroupeConf() :
 				if GraphGroupe.get(server1) != None and done == False:
 					for service in GraphGroupe[server1].split(','):
 						if done == False:
-							fd.write(EnteteConfData)
+							tmp = EnteteConfData.replace('"groupeTitre" 		: "Ecran initial"', '"groupeTitre" 		: "'+appli+'"')
+
+							fd.write(tmp)
 						done = True
 						#print "\t\t service :"+service
-						fd.write('\t\t,{"groupeNom"         	: "'+appli+'-'+service+'",\n')     
-						fd.write('\t\t"groupeTitre" 			: "'+appli+'-'+service+'",\n')
+						fd.write('\t\t,{"groupeNom"         	: "'+service+'",\n')     
+						fd.write('\t\t"groupeTitre" 			: "'+appli+' : '+service+'",\n')
 						fd.write('\t\t"groupeDescription" 	    : "'+'Application :'+appli+'<br>Service :'+service+u'<br>Groupe Généré Par CmdbVisu le jj/mm/aa '+'",\n')
 						fd.write('\t\t"groupeImageURL"          : "'+'http://supervision.si2m.tec/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&start=%%varDebut%%-%%echelle%%&end=%%varDebut%%&hostname=%%server%%&service='+service+'",\n')
 						
