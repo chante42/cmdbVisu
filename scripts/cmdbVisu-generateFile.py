@@ -630,21 +630,39 @@ def generateDataTableFile():
 			nb = nb +1
  	print "%-4.4d Serveur ont été ajouté par les info de Supervision  " % nb 
  	
+
+
  	#
  	# Création du fichier full serveur
  	#  
  	filename = dataPath("DataTableServerFile")	
  	try:
-		print "sauvegarde dans le fichier %s" % filename
+		print "sauvegarde dans le fichier %s avec enreichissemeent des infos du SAN." % filename
 		fd = codecs.open(filename, 'w', 'utf-8')
 
 		fd.write('{\n\t"data" : [\n') #-=- pour dataTable
+
 
 		lineFinServeur=""
 		for server in CmdbDataServer.keys() :
 			fd.write(lineFinServeur)			
 			fd.write('{')			
 			lineFin=""
+
+			# Enrichissement avec les info des baies 
+			
+ 			# ecrire les infos de 3PAR
+			#print "|%s|" % server
+			if server in Baie3PAR.keys() :
+				for item, value  in Baie3PAR[server].items() :
+					CmdbDataServer[server][item]=str(value)
+
+			# ecrire les infos de HDS
+			#print "|%s|" % server
+			if server in BaieHDS.keys() :
+				for item, value  in BaieHDS[server].items() :
+					CmdbDataServer[server][item]=str(value)
+	
 			for item in CmdbDataServer[server]:
 				fd.write(lineFin)
 				fd.write('"'+item + '":"' +  CmdbDataServer[server][item]+'"')
@@ -2284,8 +2302,7 @@ def writeGraphGroupeConf() :
 			else :
 				fd.close()
 				if os.path.isfile(filename):
-					print "tototo"
-    				os.remove(filename)
+					os.remove(filename)
 
 
 		except Exception as e:
@@ -2300,7 +2317,7 @@ def encodeJsonTsmRetention() :
 	refFile = "TSMRetention"
 	filename=dataPath(refFile)
 	DateFile[refFile]= { u'file' : filename, 'date' :creationDateFile(filename), 
-		u'info' : "fichier de recupération de la rétention des fichier TSM:dsmadmc -id=J15D401 -password=XXXX -DATAONLY=YES 'TSMA:SELECT nodes.node_name, nodes.domain_name, bu_copygroups.verexists, bu_copygroups.verdeleted, bu_copygroups.retextra, bu_copygroups.retonly, bu_copygroups.destination FROM nodes, mgmtclasses mgmtclasses, bu_copygroups bu_copygroups WHERE mgmtclasses.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name = bu_copygroups.set_name AND mgmtclasses.class_name = bu_copygroups.class_name AND nodes.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name='ACTIVE' AND mgmtclasses.defaultmc='Yes' ORDER BY nodes.node_name, nodes.domain_name"  }
+		u'info' : "fichier de recupération de la rétention des fichier lancer par le script : /home/j15d401/martin/scripts/RET_TSM/Ret_TSM.sh qui réalise les commandes : TSM:dsmadmc -id=J15D401 -password=XXXX -DATAONLY=YES 'TSMA:SELECT nodes.node_name, nodes.domain_name, bu_copygroups.verexists, bu_copygroups.verdeleted, bu_copygroups.retextra, bu_copygroups.retonly, bu_copygroups.destination FROM nodes, mgmtclasses mgmtclasses, bu_copygroups bu_copygroups WHERE mgmtclasses.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name = bu_copygroups.set_name AND mgmtclasses.class_name = bu_copygroups.class_name AND nodes.domain_name = bu_copygroups.domain_name AND mgmtclasses.set_name='ACTIVE' AND mgmtclasses.defaultmc='Yes' ORDER BY nodes.node_name, nodes.domain_name"  }
 		
 	print "traitement fichier : %s " % filename
 	with open(filename, "r") as fdSrc:
