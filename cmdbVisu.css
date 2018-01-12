@@ -176,8 +176,8 @@ div#menu a {
 }
 .bulle a span{
     position          : absolute;    
-    margin-top        : -50px;
-    margin-left       : 120px;   
+    margin-top        : 20px;
+    margin-left       : -10px;   
     color             : #09c;
     background        : rgba(0,0,0,.9);
     padding           : 15px;
