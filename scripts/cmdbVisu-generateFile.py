@@ -62,6 +62,7 @@ DiscoveryData	= {}
 Dba     		= {}
 Supervision 	= {}
 Esx 			= {}
+EsxCluster 		= {}
 Ilmt 			= {}
 Nlyte 			= {}
 NlyteS 			= {}
@@ -2001,6 +2002,15 @@ def encodeJsonVmWare():
 							u'ESXCluster' 	: sh2.row_values(rownum)[2].encode('utf8'),
 							u'ESXModele'	: sh2.row_values(rownum)[3].encode('utf8')
 						}
+
+		nomESXCluster = sh2.row_values(rownum)[2].encode('utf8')
+		if nomESXCluster == "":
+			nomESXCluster = "Delegation"
+
+		if EsxCluster.get(nomESXCluster) == None :
+			EsxCluster[nomESXCluster] = nomESX
+		else : 	
+			EsxCluster[nomESXCluster] =  EsxCluster[nomESXCluster]  + ',' + nomESX
 	print "\n"
 	wb1.release_resources()
 	del wb1
@@ -2241,10 +2251,10 @@ def encodeJsonSupervisionService():
 
 
 #
-#
+# writeGraphGroupeConf
 #
 def writeGraphGroupeConf() :
-	print "GrapheGroupe : génération du fichier :" 
+	print "GrapheGroupe : génération des fichier :" 
 	for appli in CmdbDataAppli.keys():
 		filename1 = appli+"-conf.js"
 		filename = RepGGConfDir+filename1
@@ -2273,7 +2283,7 @@ def writeGraphGroupeConf() :
 						#print "\t\t service :"+service
 						fd.write('\t\t,{"groupeNom"         	: "'+service+'",\n')     
 						fd.write('\t\t"groupeTitre" 			: "'+appli+' : '+service+'",\n')
-						fd.write('\t\t"groupeDescription" 	    : "'+'Application :'+appli+'<br>Service :'+service+u'<br>Groupe Généré Par CmdbVisu le jj/mm/aa '+'",\n')
+						fd.write('\t\t"groupeDescription" 	    : "'+'Application :'+appli+'<br>Service :'+service+u'<br>Groupe Généré Par CmdbVisu le '+datetime.datetime.now().strftime('%d-%m-%Y')+'",\n')
 						fd.write('\t\t"groupeImageURL"          : "'+'http://supervision.si2m.tec/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&start=%%varDebut%%-%%echelle%%&end=%%varDebut%%&hostname=%%server%%&service='+service+'",\n')
 						
 						fd.write('\t\t"groupeVariable"          : {"varDebut" : "now()"},\n')					
@@ -2292,7 +2302,9 @@ def writeGraphGroupeConf() :
 						virgule = ""
 						for server in CmdbDataAppli[appli]["CM"].split(','):
 							#print "\t\t\t: "+server
-							fd.write('\t\t\t\t'+virgule+'{"nom" : "'+ server+'" , "server" : "'+server+'"}\n')
+							fd.write('\t\t\t\t'+virgule+'{"nom" : "'+ server+'" , "server" : "'+server+'"')
+							fd.write('\t\t\t\t, "clickURL" :"http://supervision.si2m.tec/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id='+server+'"}\n')
+							
 							virgule =','
 						
 						fd.write('\t\t\t]\n\t\t}\n')
@@ -2312,6 +2324,82 @@ def writeGraphGroupeConf() :
 			print("args: ", e.args)
 			traceback.print_exc(file=sys.stdout)
 
+#
+# writeGraphGroupeConfSpecifique
+#
+def writeGraphGroupeConfSpecifique() :
+	print "GrapheGroupe Spécifique: génération des fichier :" 
+
+	HTMLCodeListeGG = "<html><head></head><body><ul>"
+	for cluster in EsxCluster.keys():
+		filename1 = "ESX-"+cluster+"-conf.js"
+		filename = RepGGConfDir+filename1
+
+		HTMLCodeListeGG = HTMLCodeListeGG + '<li><a href="filename1">cluster</a></li>'
+		try :
+			#print "%s," % filename1
+			fd = codecs.open(filename, 'w', 'utf-8')
+
+			done = False
+			#if appli == "VMWARE_ESX_PRD":
+			#	print "DEBUG ------------------------ writeGraphGroupeConf"
+			#	pprint ( CmdbDataAppli[appli])
+
+			# pour chaque serveur d'une appli boucle tant qu'on en a pas trouvé un dans la supervision
+			for server1 in EsxCluster[cluster].split(','):
+				#server1=CmdbDataAppli[appli]["CM"].split(',')[0]
+				#print "\t ref :" + server1 
+				
+				if GraphGroupe.get(server1) != None and done == False:
+					for service in GraphGroupe[server1].split(','):
+						if done == False:
+							tmp = EnteteConfData.replace('"groupeTitre" 		: "Ecran initial"', '"groupeTitre" 		: "'+cluster+'"')
+
+							fd.write(tmp)
+						done = True
+						#print "\t\t service :"+service
+						fd.write('\t\t,{"groupeNom"         	: "'+service+'",\n')     
+						fd.write('\t\t"groupeTitre" 			: "'+cluster+' : '+service+'",\n')
+						fd.write('\t\t"groupeDescription" 	    : "'+'Application : ESX-'+cluster+'<br>Service :'+service+u'<br>Groupe Généré Par CmdbVisu le '+datetime.datetime.now().strftime('%d-%m-%Y') +'",\n')
+						fd.write('\t\t"groupeImageURL"          : "'+'http://supervision.si2m.tec/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&start=%%varDebut%%-%%echelle%%&end=%%varDebut%%&hostname=%%server%%&service='+service+'",\n')
+						
+						fd.write('\t\t"groupeVariable"          : {"varDebut" : "now()"},\n')					
+						#gestion des echelle
+						fd.write('\t\t"groupeEchelleParam"	: [ {"echelleNom" : "3 h ",      "echelle" : "10800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "24 h ",     "echelle" : "86400"},\n')
+						fd.write('\t\t					        {"echelleNom" : "48 h ",     "echelle" : "172800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "1 semaine", "echelle" : "691200"},\n')
+						fd.write('\t\t					        {"echelleNom" : "1 mois",    "echelle" : "2764800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "6 mois",    "echelle" : "16588800"},\n')
+						fd.write('\t\t					        {"echelleNom" : "1 an",      "echelle" : "35942400"}\n')
+						fd.write('\t\t				  ],\n')
+
+	            		# gestion des serveur a qui ont applique ImageURL
+						fd.write('\t\t"graph" : [ \n')
+						virgule = ""
+						for server in EsxCluster[cluster].split(','):
+							#print "\t\t\t: "+server
+							fd.write('\t\t\t\t'+virgule+'{"nom" : "'+ server+'" , "server" : "'+server+'"')
+							fd.write('\t\t\t\t, "clickURL" :"http://supervision.si2m.tec/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id='+server+'"}\n')
+							virgule =','
+						
+						fd.write('\t\t\t]\n\t\t}\n')
+											
+			if done == True :
+				fd.write(FinConfData)
+				fd.close()
+			# efface le fichier
+			else :
+				fd.close()
+				if os.path.isfile(filename):
+					os.remove(filename)
+
+
+		except Exception as e:
+			print("writeGraphGroupeConf : Erreur")
+			print("args: ", e.args)
+			traceback.print_exc(file=sys.stdout)
+	HTMLCodeListeGG = HTMLCodeListeGG+"</ul></body></html>"
 #
 # encodeJsonSupervisionSQL
 #
@@ -2511,6 +2599,7 @@ encodeJsonNlyte()
 
 generateDataTableFile()
 writeGraphGroupeConf()
+writeGraphGroupeConfSpecifique()
 generateExcel()
 
 generateFileDate()

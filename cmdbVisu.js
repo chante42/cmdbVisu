@@ -394,7 +394,7 @@ function format ( d ) {
         lienGrapheGroupe ="N/A";
     }   
     else {
-        lienGrapheGroupe    = '<a href="#" onclick="openUrlMetrologie(\''+d.CN+'\');return false;">OUI</a>';
+        lienGrapheGroupe    = '<a href="#" onclick="openUrlMetrologie(\''+d.CN.toUpperCase()+'\');return false;">OUI</a>';
         classSupervision    = "normal";
     }   
     //
@@ -1026,6 +1026,7 @@ function readyCreateDataTable() {
         
     } );
 
+    
     // supression des warning quand une colonne afficher n'est pas définie dans la bdd
     $.fn.dataTable.ext.errMode = 'none'
 
@@ -1045,7 +1046,7 @@ function readyCreateDataTable() {
     $('#dataTable tbody')
         .bind('mousewheel', function(event, delta) {
             var dir = delta > 0 ? 'previous' : 'next';
-            oTable.fnPageChange(dir);
+            Table.fnPageChange(dir);
             return false;
     });
 } // FIN de readyCreateDataTable
