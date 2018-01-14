@@ -44,6 +44,8 @@ import datetime
 import re
 import json
 import unicodecsv
+import urllib
+
 from stat import ST_CTIME
 from netscaler.netscaler import *
 
@@ -2328,14 +2330,18 @@ def writeGraphGroupeConf() :
 # writeGraphGroupeConfSpecifique
 #
 def writeGraphGroupeConfSpecifique() :
+	"""
+	généré un graphe en fonction des cluster ESX et non pas de la CMDDB.
+	"""
 	print "GrapheGroupe Spécifique: génération des fichier :" 
 
-	HTMLCodeListeGG = "<html><head></head><body><ul>"
+	HTMLCodeListeGG = "<html><head></head><body><h1>ESX GrapheGroupe</h1><p>Cliquez sur le cluster VMWare que vous voulez visualiser</p><ul>"
 	for cluster in EsxCluster.keys():
-		filename1 = "ESX-"+cluster+"-conf.js"
+		filename2 = "ESX-"+cluster
+		filename1 = filename2+"-conf.js"
 		filename = RepGGConfDir+filename1
 
-		HTMLCodeListeGG = HTMLCodeListeGG + '<li><a href="filename1">cluster</a></li>'
+		HTMLCodeListeGG = HTMLCodeListeGG + '<li><a href=http://vli5res01/graphes-groupes/graphes-groupes-cmdbVisu.html?conffile='+ urllib.pathname2url(filename2)+' target="'+filename2+'">'+filename2+'</a></li>'
 		try :
 			#print "%s," % filename1
 			fd = codecs.open(filename, 'w', 'utf-8')
@@ -2396,10 +2402,24 @@ def writeGraphGroupeConfSpecifique() :
 
 
 		except Exception as e:
-			print("writeGraphGroupeConf : Erreur")
+			print("writeGraphGroupeConfSpecifique : Erreur")
 			print("args: ", e.args)
 			traceback.print_exc(file=sys.stdout)
 	HTMLCodeListeGG = HTMLCodeListeGG+"</ul></body></html>"
+
+	# ecrit le fichier HTML des serveurs ESX
+	try :
+		#print "%s," % filename1
+		filename = RepGGConfDir+"../GrapheGroupe-ESX.html"
+		print "GrapheGroupe Spécifique: génération des fichier du fichier html : %s " % filename 
+		fd = codecs.open(filename, 'w', 'utf-8')
+		fd.write(HTMLCodeListeGG)
+		fd.close()
+	except Exception as e:
+		print("writeGraphGroupeConfSpecifique HTML: Erreur")
+		print("args: ", e.args)
+		traceback.print_exc(file=sys.stdout)
+
 #
 # encodeJsonSupervisionSQL
 #
