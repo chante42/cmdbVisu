@@ -32,6 +32,7 @@ from unidecode import unidecode
 import xlsxwriter
 # librairie pour lire des fichiers excel
 import xlrd
+import csv
 import sys
 from dictdiffer import diff, patch, swap, revert
 from collections import defaultdict
@@ -68,6 +69,8 @@ EsxCluster 		= {}
 Ilmt 			= {}
 Nlyte 			= {}
 NlyteS 			= {}
+IpamMac   		= {}
+IpamServeur 	= {}
 RepGGConfDir		= "../graphgroupe-conf/"
 GraphGroupe 		= {}
 DictService2No     	= {}
@@ -309,6 +312,14 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 		if noSerie in NlyteS.keys():
 			for item, value  in NlyteS[server].items() :
 				CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info IPAM
+	if server in IpamServeur.keys() :
+		print "IPAMserveur : "+server
+		for item, value  in IpamServeur[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+
 #
 # generateDataTableFile
 #
@@ -544,6 +555,14 @@ def generateDataTableFile():
 				if noSerie in NlyteS.keys():
 					for item, value  in NlyteS[server].items() :
 						CmdbDataServer[server][item]=str(value)
+
+			# Ajoute info IPAM
+			if server in IpamServeur.keys() :
+				print "IPAMserveur : "+server
+				for item, value  in IpamServeur[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
+			
 
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
@@ -1549,9 +1568,11 @@ def dataPath(type):
 
 	rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
 	if  "cmdb-test" in os.getcwd() :
-		rootPathStatBaies ="/home/i14sj00/cmdbVisu/cmdb-test/data/"
+		rootPathStatBaies 	="/home/i14sj00/cmdbVisu/cmdb-test/data/"
+		RepGGConfDir		= rootPathStatBaies+"../graphgroupe-conf/"
 	else : 
-		rootPathStatBaies ="/home/i14sj00/cmdbVisu/data/"  
+		rootPathStatBaies 	="/home/i14sj00/cmdbVisu/data/"  
+		RepGGConfDir		= rootPathStatBaies+"../graphgroupe-conf/"
 
 	if  type == "VeeamProd" :
 		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Production.html")
@@ -1594,6 +1615,10 @@ def dataPath(type):
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "Inventaire_ILMT-")
 	elif type == "NLYTE" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "NLYTE-")
+	elif type == "IPAM" :
+		return getLastFilesByDate("/var/www/virtu/exportWindows/", "export_IPAM_MAC-SW-")
+	elif type == "GrapheGroupe":
+		return rootPathStatBaies+"../graphgroupe-conf/"
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue"
 
@@ -2339,8 +2364,9 @@ def writeGraphGroupeConfSpecifique() :
 	for cluster in EsxCluster.keys():
 		filename2 = "ESX-"+cluster
 		filename1 = filename2+"-conf.js"
-		filename = RepGGConfDir+filename1
-
+		rep=dataPath("GrapheGroupe")
+		filename = rep+filename1
+		
 		HTMLCodeListeGG = HTMLCodeListeGG + '<li><a href=http://vli5res01/graphes-groupes/graphes-groupes-cmdbVisu.html?conffile='+ urllib.pathname2url(filename2)+' target="'+filename2+'">'+filename2+'</a></li>'
 		try :
 			#print "%s," % filename1
@@ -2410,7 +2436,10 @@ def writeGraphGroupeConfSpecifique() :
 	# ecrit le fichier HTML des serveurs ESX
 	try :
 		#print "%s," % filename1
-		filename = RepGGConfDir+"../GrapheGroupe-ESX.html"
+		rep=dataPath("GrapheGroupe")
+
+		filename = rep+"../GrapheGroupe-ESX.html"
+
 		print "GrapheGroupe Spécifique: génération des fichier du fichier html : %s " % filename 
 		fd = codecs.open(filename, 'w', 'utf-8')
 		fd.write(HTMLCodeListeGG)
@@ -2586,6 +2615,63 @@ def encodeJsonNlyte():
 			u'NnomServeur'    : nomServer
 		}
 		
+#
+#   encodeIPAM
+#	
+def encodeIPAM():
+	"""
+		Lecture du fichier export de l'IPAM
+	"""
+	filename = dataPath("IPAM")
+	DateFile["IPAM"]= { u'file' : filename, 'date' :creationDateFile(filename), 'info' : 'Fichier généré par un export Manuel de l IPAM '}
+	
+	print "traitement fichier : %s " % filename
+	# ouverture du fichier Excel 
+	try: 
+		with open(filename) as csvfile:
+			reader = csv.DictReader(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
+	
+			noLigne = 0
+			
+			for row in reader:
+				
+				noLigne = noLigne + 1
+				if noLigne < 2 or row['Port name'].encode('utf8').upper() == "AGGREGATED 0/1" or row['Port name'].encode('utf8').upper() == "AGGREGATED 0/2":
+					continue
+
+				server 						= row['DNS name'].encode('utf8').upper().replace(".SI2M.TEC", "").replace(".SI2M", "")
+				ip 							= row['IP Address'].encode('utf8').upper()
+				mac 	 					= row['MAC Address'].encode('utf8').upper()
+				switch  					= row['Network device'].encode('utf8').upper().replace(".SI2M.TEC", "")
+				port 						= row['Port number'].encode('utf8').upper()
+				vlan 						= row['VLAN name'].encode('utf8').upper()
+				portDescription 			= row['Port description'].encode('utf8').upper()
+
+				IpamMac[mac] = {
+					u'Ps'		: server,
+					u'Pi'		: ip,
+					u'Pw' 		: switch,
+					u'Pp'		: port,
+					u'Pv'       : vlan
+				}
+				IpamServeur[server] = {
+					u'Pm'		: mac,
+					u'Pi'		: ip,
+					u'Pw' 		: switch,
+					u'Pp'		: port,
+					u'Pv'       : vlan	
+				}
+
+	except IOError as e:
+		print "\nERREUR:\n  Impossible d'ouvrir le fichier : \n\t\t'%s' \n" % filename
+		print "I/O error({0}): {1}".format(e.errno, e.strerror)
+		return
+	except csv.Error as e:
+		sys.exit('CVS error in file %s, line %d: %s' % (filename, reader.line_num, e))
+	except Exception  as e:
+		sys.exit('DEFAULT  error in file %s, line %d: %s' % (filename, reader.line_num, e))
+
+	#pprint(IpamMac)
 
 # ----------------------------------------------------------------------------
 #
@@ -2597,7 +2683,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #encodeJsonCmdbSoapFile ("resultssoap.json")
 
-#encodeJsonNlyte()
+
 #sys.exit(-1)
 
 print "-----------------------------------------------------------------------------"
@@ -2616,6 +2702,7 @@ encodeJsonSupervisionService()
 encodeJsonSupervisionSQL()
 encodeJsonILMT()
 encodeJsonNlyte()
+encodeIPAM()
 
 generateDataTableFile()
 writeGraphGroupeConf()
