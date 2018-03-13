@@ -213,12 +213,12 @@ function openUrlMetrologie(obj) {
     
 }
 
-//
+//  
 /* Formatting function for row details - modify as you need */
 //
 function format ( d ) {
     var count = {};
-    var storageCount = storageHDSCount = "N/A";
+    var storageCount = storageHDSCount = classIPAM = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
     classDBA = classSupervision =classIlmt = "normal";
     classNlyte = "normal";
@@ -255,7 +255,7 @@ function format ( d ) {
         classTSM = colorSauvegardeDate(d.TSMFin);
     }
 
-
+    console.log(d);
     if  (d.VIP == undefined) {
         classNetscaler = "pas-d-info";
     }
@@ -308,6 +308,11 @@ function format ( d ) {
     ilmtType			= d.Itype;
     ilmtModele			= d.Imodele;
     ilmtPvu				= d.Ipvu;
+    ipamMac             = d.Pm;
+    ipamIp              = d.Pi;
+    ipamSwitch          = d.Pw;
+    ipamPort            = d.Pp;
+    ipamVlan            = d.Pv;  
     //console.log(d);   
     //console.log(d.Nom);
     //console.log(hostname);
@@ -450,6 +455,17 @@ function format ( d ) {
                     '<tr><td class="'+classVirtu+'"><span class="titreLigne">  Disk</span> : '+vmDisk+'<span class="infoPlusUnite"> Go</span></td></tr>'+
                     '<tr><td class="'+classVirtu+'"><span class="titreLigne">  OS</span> :'+vmOs+'</td></tr>'+
                 '</table>'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th>'+
+                        '<div  class ="bulle"><a href="#">Backup VEEAM<span>'+
+                        'Date de génération des données  : '+getDataFileDisplay('Veeam', 'date')+
+                        '</span></a></div>'+
+                    '</th></tr>'+
+                    '<tr><td class="'+classVeeam+'"><div class="titreLigne bulleLigne"><a>Status'+codeAffichageAjout+'</a></div> : '+VeeamScheduleStatus+'</td></tr>'+
+                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Fin</span> : '+VeeamFin+'</td></tr>'+
+                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Durée</span> : '+VeeamDure+'</td></tr>'+
+                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Rétention</span> : '+VeeamRetention+' J</td></tr>'+
+                '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
                 '<table cellspacing="0" border="1" >'+
@@ -472,29 +488,31 @@ function format ( d ) {
             '</div></td>'+
             
             '<td width="10%"><div class="infoPlus">'+
+                
                 '<table cellspacing="0" border="1" >'+
                     '<tr><th>'+
-                        '<div  class ="bulle"><a href="#">Sauvegarde VEEAM<span>'+
-                        'Date de génération des données  : '+getDataFileDisplay('Veeam', 'date')+
-                        '</span></a></div>'+
-                    '</th></tr>'+
-                    '<tr><td class="'+classVeeam+'"><div class="titreLigne bulleLigne"><a>Status'+codeAffichageAjout+'</a></div> : '+VeeamScheduleStatus+'</td></tr>'+
-                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Fin</span> : '+VeeamFin+'</td></tr>'+
-                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Durée</span> : '+VeeamDure+'</td></tr>'+
-                    '<tr><td class="'+classVeeam+'"><span class="titreLigne">Rétention</span> : '+VeeamRetention+' jours</td></tr>'+
-                '</table>'+
-            '</div></td>'+
-            '<td width="10%"><div class="infoPlus">'+ 
-                '<table cellspacing="0" border="1" >'+
-                    '<tr><th>'+
-                        '<div  class ="bulle"><a href="#"> Sauvegarde TSM<span>'+
+                    '<div  class ="bulle"><a href="#"> Backup TSM<span>'+
                         'Date de génération des données : '+getDataFileDisplay('TSM', 'date')+
                         '</span></a></div>'+
                     '</th></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Status</span> : '+TSMStatus+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Début</span> : '+TSMDebut+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Fin</span> : '+TSMFin+'</td></tr>'+
-                    '<tr><td class="'+classTSM+'"><span class="titreLigne">Retention</span> : '+TSMRetention+'</td></tr>'+
+                    '<tr><td class="'+classTSM+'"><span class="titreLigne">Rétention</span> : '+TSMRetention+'</td></tr>'+
+                '</table>'+
+            '</div></td>'+
+            '<td width="10%"><div class="infoPlus">'+ 
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th>'+
+                        '<div  class ="bulle"><a href="#">IPAM<span>'+
+                        'Date de génération des données a changer : '+getDataFileDisplay('IPAM', 'date')+
+                        '</span></a></div>'+
+                    '</th></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">IP</span> : '+ipamIp+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">MAC</span> : '+ipamMac+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">switch</span> : '+ipamSwitch+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">port</span> : '+ipamPort+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">VLAN</span> : '+ipamVlan+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
@@ -760,6 +778,7 @@ function getDataTableColonneData(type, typeColonneNo) {
                             }
                         }
                     },
+					
                     {   "data"                : "supInfo",
                         "className"           : "dt-center"
                     }
