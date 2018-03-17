@@ -20,10 +20,11 @@ import argparse
 #parser.add_argument("-xls", "--excel", dest='excelFile', action='store', help="export en format excel", default='')
 #
 #args = parser.parse_args()
-
+import pdb
 import requests
 import simplejson
 import codecs 
+
 from pprint import pprint
 import sys
 from unidecode import unidecode
@@ -315,7 +316,7 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 
 	# Ajoute info IPAM
 	if server in IpamServeur.keys() :
-		print "IPAMserveur : "+server
+		#print "IPAMserveur : "+server
 		for item, value  in IpamServeur[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
@@ -558,7 +559,7 @@ def generateDataTableFile():
 
 			# Ajoute info IPAM
 			if server in IpamServeur.keys() :
-				print "IPAMserveur : "+server
+				#print "IPAMserveur : "+server
 				for item, value  in IpamServeur[server].items() :
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
@@ -790,6 +791,8 @@ def generateExcel():
 			supOk = supInfo = veeamRetention = tsmRetention = ""
 			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ilmtNoSerie = ""
 			nlyteTypeMatos =  nlyteNomSite = nlyteNoBaie = nlyteNoU = nlyteNoSerie = ""
+			ipamMac = ipamIp = ipamSwitch = ipamPort = ipamVlan = "" 
+
 			if CmdbDataServer[server].get("CM") != None :
 				NomServer = CmdbDataServer[server]["CM"]
 
@@ -938,7 +941,23 @@ def generateExcel():
 				if Nlyte[server].get(u'Nn') != None :
 					nlyteNoSerie 	= Nlyte[server].get(u'Nn')
 
+			#print "EXCEL : %s " % server
+			#	print 'out EXCELL IpamServeur'
+			if IpamServeur.get(server) != None :
+				#print 'in EXCELL IpamServeur'
+				#print "\tEXECL:"+str(IpamServeur[server]) 
 
+				if IpamServeur[server].get(u'Pw') != None :
+					ipamSwitch          = IpamServeur[server].get(u'Pw')
+				if IpamServeur[server].get(u'Pp') != None :
+					ipamPort            = IpamServeur[server].get(u'Pp')
+				if IpamServeur[server].get(u'Pv') != None :
+					ipamVlan            = IpamServeur[server].get(u'Pv')
+				if IpamServeur[server].get(u'Pm') != None :
+					ipamMac             = IpamServeur[server].get(u'Pm')
+				if IpamServeur[server].get(u'Pi') != None :
+					ipamIp              = IpamServeur[server].get(u'Pi')
+    			
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
@@ -947,7 +966,8 @@ def generateExcel():
 						ram, os, processor_count, frequence, processeur, modele, dateCollecte, 
 						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo,
 						ilmtOs, ilmtIp, ilmtCoeur, ilmtType, ilmtModele, ilmtPvu, ilmtNoSerie,
-						nlyteTypeMatos, nlyteNomSite, nlyteNoBaie, nlyteNoU, nlyteNoSerie])
+						nlyteTypeMatos, nlyteNomSite, nlyteNoBaie, nlyteNoU, nlyteNoSerie,
+						ipamMac, ipamIp, ipamSwitch, ipamPort, ipamVlan])
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -1157,8 +1177,27 @@ def generateExcel():
 		                        {'header': u'Nlyte No Série',
 		                        'header_format' :  column_format,
 		                        'format' : column_format
+		                        },
+		                        {'header': u'IPAM MAC',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'IPAM IP',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'IPAM Switch',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'IPAM Port',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'IPAM Vlan',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
 		                        }
-
 		                       ],
 		            'data': data
 		           }
@@ -1193,7 +1232,7 @@ def generateExcel():
 		worksheetServer.set_column('AP:AP', 13)
 
 		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 + 6 + 7, options)
+		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 + 6 + 7 +5, options)
 
 	except :
 		print "Exception in user code:"
@@ -2694,14 +2733,14 @@ encodeJsonHDS("resultHDS.json")
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
-encodeJsonTsmRetention()
+#encodeJsonTsmRetention()
 encodeJsonDiscoverySoap() 
 #encodeJsonNetscaler() 
-encodeJsonDbaSQL()
-encodeJsonSupervisionService()
-encodeJsonSupervisionSQL()
-encodeJsonILMT()
-encodeJsonNlyte()
+#encodeJsonDbaSQL()
+#encodeJsonSupervisionService()
+#encodeJsonSupervisionSQL()
+#encodeJsonILMT()
+#encodeJsonNlyte()
 encodeIPAM()
 
 generateDataTableFile()
