@@ -2686,20 +2686,41 @@ def encodeIPAM():
 				vlan 						= row['VLAN name'].encode('utf8').upper()
 				portDescription 			= row['Port description'].encode('utf8').upper()
 
-				IpamMac[mac] = {
-					u'Ps'		: server,
-					u'Pi'		: ip,
-					u'Pw' 		: switch,
-					u'Pp'		: port,
-					u'Pv'       : vlan
-				}
-				IpamServeur[server] = {
-					u'Pm'		: mac,
-					u'Pi'		: ip,
-					u'Pw' 		: switch,
-					u'Pp'		: port,
-					u'Pv'       : vlan	
-				}
+				# existe t'il déjà ??
+				if IpamMac.get(mac) == None:
+					IpamMac[mac] = {
+						u'Ps'		: server,
+						u'Pi'		: ip,
+						u'Pw' 		: switch,
+						u'Pp'		: port,
+						u'Pv'       : vlan
+					}
+				else: 
+					IpamMac[mac] = {
+						u'Ps'		: server,
+						u'Pi'		: ip,
+						u'Pw' 		: IpamMac[mac]["Pw"]+','+switch,
+						u'Pp'		: IpamMac[mac]["Pp"]+','+port,
+						u'Pv'       : IpamMac[mac]["Pv"]+','+vlan
+					}
+
+				if IpamServeur.get(server) == None:	
+					IpamServeur[server] = {
+						u'Pm'		: mac,
+						u'Pi'		: ip,
+						u'Pw' 		: switch,
+						u'Pp'		: port,
+						u'Pv'       : vlan	
+					}
+
+				else :
+					IpamServeur[server] = {
+						u'Pm'		: IpamServeur[server]["Pm"]+','+mac,
+						u'Pi'		: ip,
+						u'Pw' 		: IpamServeur[server]["Pw"]+','+switch,
+						u'Pp'		: IpamServeur[server]["Pp"]+','+port,
+						u'Pv'       : IpamServeur[server]["Pv"]+','+vlan	
+					}
 
 	except IOError as e:
 		print "\nERREUR:\n  Impossible d'ouvrir le fichier : \n\t\t'%s' \n" % filename
