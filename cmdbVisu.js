@@ -218,9 +218,9 @@ function openUrlMetrologie(obj) {
 //
 function format ( d ) {
     var count = {};
-    var storageCount = storageHDSCount = classIPAM = "N/A";
+    var storageCount = storageHDSCount = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
-    classDBA = classSupervision =classIlmt = "normal";
+    classDBA = classSupervision =classIlmt = classIPAM = "normal";
     classNlyte = "normal";
      
     if  (d.storage != undefined) {
@@ -382,6 +382,11 @@ function format ( d ) {
 
     }
     
+    if (ipamMac 		== undefined) {ipamMac 			= "N/A"; classIPAM = "pas-d-info"}
+   	if (ipamVlan 		== undefined) {ipamVlan			= "N/A"}
+	if (ipamIp 			== undefined) {ipamIp 			= "N/A"}
+	if (ipamPort 		== undefined) {ipamPort 		= "N/A"}
+	if (ipamSwitch 		== undefined) {ipamSwitch		= "N/A"}
     if (d.Imodele       == undefined) { ilmtModele      = "N/A";}
     if (ilmtOs          == undefined) { ilmtOs          = "N/A";}
     if (ilmtIp          == undefined) { ilmtIp          = "N/A";}
