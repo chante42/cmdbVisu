@@ -191,6 +191,14 @@ function formatNetscalerVpx(vpx) {
     return res;
 }
 //
+// formatIPAM
+//
+function formatIPAM(value) {
+	res ="";
+    res = value.replace(',',",<br>");
+    return res;
+}
+//
 // datatableAddColumn
 //
 function datatableAddColumn() {
@@ -513,11 +521,11 @@ function format ( d ) {
                         'Date de génération des données a changer : '+getDataFileDisplay('IPAM', 'date')+
                         '</span></a></div>'+
                     '</th></tr>'+
-                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">IP</span> : '+ipamIp+'</td></tr>'+
-                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">MAC</span> : '+ipamMac+'</td></tr>'+
-                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">switch</span> : '+ipamSwitch+'</td></tr>'+
-                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">port</span> : '+ipamPort+'</td></tr>'+
-                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">VLAN</span> : '+ipamVlan+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">IP</span> : '		+formatIPAM(ipamIp)+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">MAC</span> : '		+formatIPAM(ipamMac)+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">Switch</span> : '	+formatIPAM(ipamSwitch)+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">Port</span> : '		+ipamPort+'</td></tr>'+
+                    '<tr><td class="'+classIPAM+'"><span class="titreLigne">VLAN</span> : '		+formatIPAM(ipamVlan)+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+
@@ -854,6 +862,63 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>No U</th>
                     <th>No Serie</th>
                     `;
+
+     //   *********************** 6 eme TYPE Virtu **********************
+    TypeColonneDataJS [7]= [
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "width"             : "2%",
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "CM"        , "width"       : "17%"},
+                    {   "data"                : "CN"        , "width"       : "30%" },
+                    {   "data"                : "vmCpu"     , "width"       : "3em", "className"   : "dt-center"},
+                    {   "data"                : "vmMem"     , "width"       : "3em", "className"   : "dt-center"},
+                    {   "data"                : "vmDisk"    , "width"       : "3em", "className"   : "dt-center"},
+                    {   "data"                : "vmOs"      , "className"   : "dt-center"},
+                    
+                ];
+    
+    TypeColonneDataHead[7] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>VCPU</th>
+                    <th>MEM</th>
+                    <th>Disque</th>
+                    <th>OS</th>
+                    `;
+
+     //   *********************** 6 eme TYPE IPAM **********************
+    TypeColonneDataJS [8]= [
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "width"             : "2%",
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "CM"        , "width"       : "17%"},
+                    {   "data"                : "CN"        , "width"       : "30%" },
+                    {   "data"                : "Pi"        , "className"   : "dt-center"},
+                    {   "data"                : "Pm"        , "className"   : "dt-center"},
+                    {   "data"                : "Pw"        , "className"   : "dt-center"},
+                    {   "data"                : "Pp"        , "width"       : "3em",		 "className" : "dt-center"},
+                    {   "data"                : "Pv"        , "className"   : "dt-center"},               
+                ];
+    
+    TypeColonneDataHead[8] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>IP</th>
+                    <th>MAC</th>
+                    <th>Switch</th>
+                    <th>Port</th>
+                    <th>VLAN</th>
+                    `;
     
     console.log("TypeColonneNo = "+typeColonneNo);
     if (type == "javascript")
@@ -929,6 +994,12 @@ function initialiseDataTableColonne() {
 }
 
 //
+// showSearchOption()
+//
+function showSearchOption() {
+	console.log("showSearchOption()");
+}
+//
 //    readyCreateDataTable
 //
 function readyCreateDataTable() {
@@ -952,15 +1023,30 @@ function readyCreateDataTable() {
         colReorder: true,
         processing: true,
         'language':{ 
-            "emptyTable": "Loading...",
-            "processing" :""
+        	"sProcessing":     "Traitement en cours...",
+			"sSearch":         "<div id='searchLabel' class='bulleHelp' onmouseover='showSearchOption()'><a href='#''><img src='images/black-about-16.png'><span>Saisissez une chaine de caractère que vous voulez rechercher dans les colonnes affichées.<br><div style='font-style: italic;'> Supporte les expressions régulières</div><br>Exemples : <ul><li>vli.{1}res</li><li>.*BDD.*5</li><li>vli[^5]res</li></ul></span></a></div>Rechercher&nbsp; _INPUT_",
+		    "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+			"sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+			"sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+			"sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+			"sInfoPostFix":    "",
+			"sLoadingRecords": "Chargement en cours...",
+		    "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+			"sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+			"oPaginate": {
+				"sFirst":      "Premier",
+				"sPrevious":   "Pr&eacute;c&eacute;dent",
+				"sNext":       "Suivant",
+				"sLast":       "Dernier"
+			},
+			"oAria": {
+				"sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+				"sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+			}            
         },
+
         dom: 'Blfrtip',
 
-        "oSearch": {
-            "sSearch": Search
-            },
-    
         "search": {
              "regex"        : true,
              "smart"        : false

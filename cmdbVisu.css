@@ -336,3 +336,10 @@ div#menu a {
     flex-direction: column; /* direction d'affichage verticale */
     justify-content: center; /* alignement vertical */
 }
+
+#searchLabel {
+  display: inline-block;
+  white-space: normal; 
+   text-align: left;
+
+}
