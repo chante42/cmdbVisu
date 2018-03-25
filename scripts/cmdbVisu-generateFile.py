@@ -1761,7 +1761,7 @@ def  encodeJsonTsm():
 #
 # encodeJson3PAR
 #
-def  encodeJson3PAR(filenameDest):
+def  encodeJson3PAR():
 	"""
 		Lit  les 4 fichiers exportés par les baie 3PAR et les transforme en un HASH "Baie3PAR"
 		dont la clef est le nom du serveur
@@ -1856,12 +1856,11 @@ def  encodeJson3PAR(filenameDest):
 	#pprint(Baie3PAR["AIXDADSAR1"]) 
 	#print
 	#ecriture de la structure dans un fichier json
-	fdDst = codecs.open(filenameDest, 'w', 'utf-8')
-
+	
 #
 # encodeJsonHDS
 #
-def  encodeJsonHDS(filenameDest):
+def  encodeJsonHDS():
 	"""
 		Lit  les 4 fichiers exportés par les baie 3PAR et les transforme en un HASH "Baie3PAR"
 		dont la clef est le nom du serveur
@@ -2323,7 +2322,8 @@ def writeGraphGroupeConf() :
 	print "GrapheGroupe : génération des fichier :" 
 	for appli in CmdbDataAppli.keys():
 		filename1 = appli+"-conf.js"
-		filename = RepGGConfDir+filename1
+		rep=dataPath("GrapheGroupe")
+		filename = rep+filename1
 
 		try :
 			#print "%s," % filename1
@@ -2749,20 +2749,21 @@ sys.setdefaultencoding('utf-8')
 print "-----------------------------------------------------------------------------"
 print "-- Début : "+datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 
-encodeJson3PAR("result3PAR.json")
-encodeJsonHDS("resultHDS.json")
+encodeJson3PAR()
+encodeJsonHDS()
 encodeJsonVmWare()
 encodeJsonVeeam()
 encodeJsonTsm()
 encodeJsonTsmRetention()
-encodeJsonDiscoverySoap() 
+encodeJsonDiscoverySoap()  
 encodeJsonDbaSQL()
 encodeJsonSupervisionService()
 encodeJsonSupervisionSQL()
 encodeJsonILMT()
 encodeJsonNlyte()
 encodeIPAM()
-encodeJsonNetscaler() 
+
+#encodeJsonNetscaler() 
 
 generateDataTableFile()
 writeGraphGroupeConf()
