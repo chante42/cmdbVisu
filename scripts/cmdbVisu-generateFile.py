@@ -20,7 +20,7 @@ import argparse
 #parser.add_argument("-xls", "--excel", dest='excelFile', action='store', help="export en format excel", default='')
 #
 #args = parser.parse_args()
-import pdb
+#import pdb
 import requests
 import simplejson
 import codecs 
@@ -1630,11 +1630,15 @@ def dataPath(type):
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_A92")
 	elif type == "V400B" :
 		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_B94")
+	elif type == "9450A" :
+		return getLastFilesByDate(rootPathStatBaies, "Volume-host 9450_A92")
+	elif type == "9450B" :
+		return getLastFilesByDate(rootPathStatBaies, "Volume-host 9450_B94")
 	elif type == "HDS-PPROD-A" :
 		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PPROD")
 	elif type == "HDS-PPROD-B" :
 		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PPROD")
-	elif type == "HDS-PROD-A" :
+	elif type == "HDS-PROD-A" : 
 		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PROD")
 	elif type == "HDS-PROD-B" :
 		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PROD")
@@ -1770,7 +1774,7 @@ def  encodeJson3PAR():
 	"""
 	print
 	
-	for baie in ("T400A","T400B","V400A","V400B"):
+	for baie in ("T400A","T400B","V400A","V400B","9450A","9450B"):
 		filename = dataPath(baie)
 		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par export manuel de l'interface d'admin"  }
 		
