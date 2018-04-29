@@ -4,6 +4,9 @@
 #
 # a lire sur les HASH : http://sametmax.com/aller-plus-loin-avec-les-hash-maps-en-python/
 #
+#recherche dans le fichier généré :
+# grep '"Jd":' ../data/dataTableServer.json | perl -e 'while($a=<STDIN>) { @bid= split(/,/,$a); foreach $b  (@bid) { if ($b =~ /Jd/) {print $b."\n"} } }' | grep RS02
+
 import argparse
 """ 
   Décalage des import pour améliorer la vitesse pour avoir le HELP de ce script 
@@ -76,6 +79,7 @@ RepGGConfDir		= "../graphgroupe-conf/"
 GraphGroupe 		= {}
 DictService2No     	= {}
 DictNo2Service     	= {}
+JasminServeur		= {}
 #
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
 #
@@ -318,6 +322,12 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 	if server in IpamServeur.keys() :
 		#print "IPAMserveur : "+server
 		for item, value  in IpamServeur[server].items() :
+			CmdbDataServer[server][item]=str(value)
+
+	# Ajoute info IPAM
+	if server in JasminServeur.keys() :
+		#print "IPAMserveur : "+server
+		for item, value  in JasminServeur[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
 
@@ -564,6 +574,12 @@ def generateDataTableFile():
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 			
+			# Ajoute info JASMIN
+			if server in JasminServeur.keys() :
+				#print "IPAMserveur : "+server
+				for item, value  in JasminServeur[server].items() :
+					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
+					CmdbDataServer[server][item]=str(value)
 
 			# ecrire les info CMDB
 			# data = line.split de cmdbSoap
@@ -654,13 +670,21 @@ def generateDataTableFile():
  	print "%-4.4d Serveur ont été ajouté par les info de Supervision  " % nb 
  	
 
-
+ 	# Supervision
+ 	nb = 0
+	for server in JasminServeur.keys():
+		if server not in CmdbDataServer.keys():
+			insertInfoServerNotInCMDB(server,"JASMIN")
+			nb = nb +1
+ 	print "%-4.4d Serveur ont été ajouté par les info de Jasmin  " % nb 
+ 	
+ 	
  	#
  	# Création du fichier full serveur
  	#  
  	filename = dataPath("DataTableServerFile")	
  	try:
-		print "sauvegarde dans le fichier %s avec enreichissemeent des infos du SAN." % filename
+		print "sauvegarde dans le fichier %s avec enrichissemeent des infos qui ne sont pas dans la CMDB." % filename
 		fd = codecs.open(filename, 'w', 'utf-8')
 
 		fd.write('{\n\t"data" : [\n') #-=- pour dataTable
@@ -678,17 +702,17 @@ def generateDataTableFile():
 			#print "|%s|" % server
 			if server in Baie3PAR.keys() :
 				for item, value  in Baie3PAR[server].items() :
-					CmdbDataServer[server][item]=str(value)
+					CmdbDataServer[server][item]=str(value).encode('utf8')
 
 			# ecrire les infos de HDS
 			#print "|%s|" % server
 			if server in BaieHDS.keys() :
 				for item, value  in BaieHDS[server].items() :
-					CmdbDataServer[server][item]=str(value)
+					CmdbDataServer[server][item]=str(value).encode('utf8')
 	
 			for item in CmdbDataServer[server]:
 				fd.write(lineFin)
-				fd.write('"'+item + '":"' +  CmdbDataServer[server][item]+'"')
+				fd.write('"'+item + '":"' + CmdbDataServer[server][item]+'"')
 				lineFin=","
 
 			fd.write('}\n')
@@ -1292,106 +1316,6 @@ def generateExcel():
 		#print "\t %s : %s\n" % (file, DateFile[file])
 	# Add a table to the worksheet. (ligne, colone, ligne, colonne)
 	worksheetFichier.add_table(2,1,len(data) + 2, len(data[0]), options)
-#
-# encodeJsonCmdbSoapFile
-#
-def encodeJsonCmdbSoapFile(filename):
-	"""
-	"""
-	chaine = getCmdbSoap()	
-
-	print "sauvegarde dans le fichier %s" % filename
-	fd = codecs.open(filename, 'w', 'utf-8')
-
-	#fd.write('{\n\t"data" : [\n') -=- pour dataTable
-	fd.write('{\n\t"data" : {\n')
-
-	lastLine =""
-	j=0
-	for line in chaine.split("\n"):
-
-		
-		if line.find("<Fieldname") == 0:
-			line = line.replace("<Fieldname", "")
-			line = line.replace("_0= ","")
-			line = line.replace("_1= ","~")
-			line = line.replace("_2= ","~")
-			line = line.replace("_3= ","~")
-			line = line.replace("_4= ","~")
-			line = line.replace("_5= ","~")
-			line = line.replace("_6= ","~")
-			line = line.replace("_7= ","~")
-			line = line.replace("_8= ","~")
-			line = line.replace("_9= ","~")
-			line = line.replace("/>", "")
-			
-			# pour pouvoir est traiter correctement pas dataTable, pas espace ni de : dans les nom des colonnes
-			line = line.replace(" ", "")
-			line = line.replace(":", "")
-			line = line.replace("é", "e")
-			line = line.replace("ê", "e")
-			line = line.replace("à", "a")
-			line = line.replace("è", "e")
-			line = line.replace("ç", "c")
-
-			line.replace('CIImpactantResponsable','CI')
-			line.replace('CICategorie','CG')
-			line.replace("CIResponsable", 'GR')
-			line.replace("GSA", "CA")
-			line.replace("Relation", "CQ")
-			line.replace("CIImpactantStatutduCI", "CS")
-			line.replace("CLE_APP", "CC")
-			line.replace("CINom", "CN")
-			line.replace("Nom", "CM")
-			line.replace("Bloquant", "CB")
-			entete = line.split('~')
-			
-
-		if line.find("<row") == 0  :
-			# astuce pour ne pas avoir la "," a la fin du dernier element du tableau 
-			fd.write(lastLine)
-			lastLine =""
-
-			line = line.replace("<row ","")
-			line = line.replace("_0= ","")
-			line = line.replace("_1= ","~")
-			line = line.replace("_2= ","~")
-			line = line.replace("_3= ","~")
-			line = line.replace("_4= ","~")
-			line = line.replace("_5= ","~")
-			line = line.replace("_6= ","~")
-			line = line.replace("_7= ","~")
-			line = line.replace("_8= ","~")
-			line = line.replace("_9= ","~")
-			line = line.replace("/>", "")
-
-			data = line.split('~')
-			fd.write('\t\t'+data[5].upper()+':{\n')
-			#fd.write('\t\t{\n')  -=- pour dataTable
-			i = 0
-			
-
-			for buf in data :
-
-				#bug dans certain champs retourné par le webService
-				if buf.count('"') == 1:
-					buf = buf +'"'
-
-				if i < len(entete):
-					fd.write('\t\t\t'+entete[i]+': '+buf)
-					i += 1
-					if i == len(entete):
-						fd.write('\n')
-					else :
-						fd.write(',\n')
-			lastLine ='\t\t},\n'
-			j += 1
-
-	fd.write('\t\t}\n')
-
-	#fd.write('\n\t]\n}')   -=- pour dataTable
-	fd.write('\n\t}\n}')
-	fd.close()
 
 #
 # getCmdbSoap
@@ -1660,6 +1584,8 @@ def dataPath(type):
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "NLYTE-")
 	elif type == "IPAM" :
 		return getLastFilesByDate("/var/www/virtu/exportWindows/", "export_IPAM_MAC-SW-")
+	elif type == "JASMIN" :
+		return getLastFilesByDate("/var/www/virtu/exportWindows/", "export-jasmin-")
 	elif type == "GrapheGroupe":
 		return rootPathStatBaies+"../graphgroupe-conf/"
 	else :
@@ -1705,7 +1631,11 @@ def  encodeJsonVeeam():
 					a = line.split('|')
 
 					#// nom de serveur en majuscule
-					a[2] = a[2].upper()
+					a[2] = a[2].decode('latin1').encode('utf8').upper()
+					a[1] = a[1].decode('latin1').encode('utf8')
+					a[4] = a[4].decode('latin1').encode('utf8')
+					a[8] = a[8].decode('latin1').encode('utf8')
+
 					#print a[2]
 
 					# positionnne la retention PROD=36j PProd et Recette... = 15h
@@ -1794,6 +1724,8 @@ def  encodeJson3PAR():
 				#T400A : Name,Set,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
 				#V400B : Name,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
 				#T400B : Name,Set,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
+				#9450A
+				#9450B
 
 				#Parse les entête pour connaitre la position des colonnes
 				if line.startswith("Name,") :
@@ -1822,7 +1754,7 @@ def  encodeJson3PAR():
 						a = col[ColNameNum].find('_')
 						if a == -1 :
 							a = len(col[ColNameNum])
-						server = col[ColNameNum][0:a]
+						server = col[ColNameNum][0:a].upper()
 
 						# je retire  l'unité et les 3 chiffre avant
 						a = col[colAllocatedNum].find(' GiB') -3
@@ -1913,10 +1845,10 @@ def  encodeJsonHDS():
 						# ne garde que le nom du serveur (pas le  pt de montage C, D, Data, ...)
 						# Mais garde l'info replication : "repli" en fin de nom
 						# Attention 
-						server = col[ColNameNum].rstrip()
+						server = col[ColNameNum].rstrip().upper()
 						if server == "" :
 							tmp = col[colLabelNum].rstrip().split('_')
-							server = tmp[0]
+							server = tmp[0].upper()
 						#print "line |%s| server: %s" % (line, server)
 
 						# je retire  l'unité et les 3 chiffre avant
@@ -2737,6 +2669,65 @@ def encodeIPAM():
 
 	#pprint(IpamMac)
 
+#
+#   encodeJasmin
+#
+def encodeJasmin():
+	"""
+    
+	"""
+	filename = dataPath("JASMIN")
+	DateFile["JASMIN"]= { u'file' : filename, 'date' :creationDateFile(filename), 'info' : 'Fichier généré par un export de JASMIN fait une fois par Paul pour l instant '}
+	
+	print "traitement fichier : %s " % filename
+	
+	try:
+		with open(filename) as csvfile:
+			reader = csv.DictReader(csvfile, delimiter=';', quoting=csv.QUOTE_ALL)
+
+			noLigne = 0
+			
+			for row in reader:
+				
+				server 						= row['VM Name'].encode('utf8').upper().replace(".SI2M.TEC", "").replace(".SI2M", "")
+				groupe 						= row['Groupe d\'activit?'].encode('utf8')
+				proprietaire 	 			= row['Proprietaire'].encode('utf8')
+				#On ne peux garder qu'un certain nombre de caractere sinon datatable bug a la lecture du fichier json
+				description  				= row['Description'].encode('utf8').replace('"',"'").replace('\n',' ').replace('\r',' ')[:100]
+				dns 						= row['DNS Resolution'].encode('utf8')
+				os 							= row['OS'].encode('utf8')
+				dateCreation  				= row['Date de creation'].encode('utf8')
+
+				if description.find ("RS02") > 0 :
+					print server+" : |" + description + "| ---> |" + row['Description'] + '|'
+
+				if JasminServeur.get(server) == None:	
+					JasminServeur[server] = {
+						u'Jg'		: groupe,
+						u'Jp'		: proprietaire,
+						u'Jd' 		: description,
+						u'Jn'		: dns,
+						u'Jo'       : os,
+						u'Jc'       : dateCreation
+					}
+				else :
+					print "le serveur : %s est déjà définie ligne  %s " % server, str(noLigne)
+
+				if description.find ("RS02") > 0 :
+					print "----------------------------------"
+					print server+" : |" + description + "| ---> |" + row['Description'] + '|'
+					pprint (JasminServeur[server])
+
+
+	except IOError as e:
+		print "\nERREUR:\n  Impossible d'ouvrir le fichier : \n\t\t'%s' \n" % filename
+		print "I/O error({0}): {1}".format(e.errno, e.strerror)
+		return
+	except csv.Error as e:
+		sys.exit('CVS error in file %s, line %d: %s' % (filename, reader.line_num, e))
+	except Exception  as e:
+		sys.exit('DEFAULT  error in file %s, line %d: %s' % (filename, reader.line_num, e))
+
 # ----------------------------------------------------------------------------
 #
 # M A I N 
@@ -2745,9 +2736,9 @@ def encodeIPAM():
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
-#encodeJsonCmdbSoapFile ("resultssoap.json")
 
-
+#encodeJasmin()
+#pprint(JasminServeur)
 #sys.exit(-1)
 
 print "-----------------------------------------------------------------------------"
@@ -2766,6 +2757,7 @@ encodeJsonSupervisionSQL()
 encodeJsonILMT()
 encodeJsonNlyte()
 encodeIPAM()
+encodeJasmin()
 
 #encodeJsonNetscaler() 
 

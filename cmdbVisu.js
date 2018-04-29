@@ -224,12 +224,12 @@ function openUrlMetrologie(obj) {
 //  
 /* Formatting function for row details - modify as you need */
 //
-function format ( d ) {
+function format( d ) {
     var count = {};
     var storageCount = storageHDSCount = "N/A";
     class3PAR = classHDS = classVirtu = classVeeam = classTSM = classDiscovery = classNetscaler = "normal";
     classDBA = classSupervision =classIlmt = classIPAM = "normal";
-    classNlyte = "normal";
+    classNlyte = classJASMIN= "normal";
      
     if  (d.storage != undefined) {
         //var tmp = d.storage.split(',').forEach(function(i) { count[i] = (count[i]||0)+1;  });
@@ -279,6 +279,7 @@ function format ( d ) {
     if ( d.Ns == undefined){
         classNlyte = "pas-d-info";
     }
+    TSMRetention        = "N/A"
     vmCpu               = d.vmCpu;
     vmMem               = d.vmMem;
     vmDisk              = d.vmDisk;
@@ -321,6 +322,11 @@ function format ( d ) {
     ipamSwitch          = d.Pw;
     ipamPort            = d.Pp;
     ipamVlan            = d.Pv;  
+    JASMINCreation      = d.Jc;
+    JASMINProprietaire  = d.Jp;
+    JASMINGroupe        = d.Jg;
+    JASMINOs            = d.Jo;
+    JASMINDescription   = d.Jd;
     //console.log(d);   
     //console.log(d.Nom);
     //console.log(hostname);
@@ -484,7 +490,7 @@ function format ( d ) {
                 '<table cellspacing="0" border="1" >'+
                     '<tr><th>'+
                         '<div  class ="bulle"><a href="#"> SAN 3PAR<span>'+
-                            '<p>Date de génération des données :</p> '+getDataFileDisplay('400', 'date')+
+                            '<p>Date de génération des données :</p> '+getDataFileDisplay('400', 'date')+getDataFileDisplay('9450', 'date')+
                         '</span></a></div>'+
                     '</th></tr>'+
                     '<tr><td class="'+class3PAR+'">'+storageCount+'</td></tr>'+
@@ -512,6 +518,18 @@ function format ( d ) {
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Début</span> : '+TSMDebut+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Fin</span> : '+TSMFin+'</td></tr>'+
                     '<tr><td class="'+classTSM+'"><span class="titreLigne">Rétention</span> : '+TSMRetention+'</td></tr>'+
+                '</table>'+
+                '<table cellspacing="0" border="1" >'+
+                    '<tr><th>'+
+                    '<div  class ="bulle"><a href="#"> JASMIN<span>'+
+                        'Date de génération des données : '+getDataFileDisplay('JASMIN', 'date')+
+                        '</span></a></div>'+
+                    '</th></tr>'+
+                    '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Création</span> : '+JASMINCreation+'</td></tr>'+
+                    '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Propriétaire</span> : '+JASMINProprietaire+'</td></tr>'+
+                    '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Groupe</span> : '+JASMINGroupe+'</td></tr>'+
+                    '<tr><td class="'+classJASMIN+'"><span class="titreLigne">OS</span> : '+JASMINOs+'</td></tr>'+
+                    '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Description</span> : '+JASMINDescription+'</td></tr>'+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+ 
@@ -891,7 +909,7 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>OS</th>
                     `;
 
-     //   *********************** 6 eme TYPE IPAM **********************
+     //   *********************** 8 eme TYPE IPAM **********************
     TypeColonneDataJS [8]= [
                     {
                         "className"         : 'details-control',
@@ -919,6 +937,35 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>Port</th>
                     <th>VLAN</th>
                     `;
+     //   *********************** 9 eme TYPE IPAM **********************
+    TypeColonneDataJS [9]= [
+                    {
+                        "className"         : 'details-control',
+                        "orderable"         : false,
+                        "data"              : null,
+                        "width"             : "2%",
+                        "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
+                    },
+                    {   "data"                : "CM"        , "width"       : "17%"},
+                    {   "data"                : "CN"        , "width"       : "20%" },
+                    {   "data"                : "Jd"        , "width"       : "30%" },
+                    {   "data"                : "Jo"        , "className"   : "dt-center"},
+                    {   "data"                : "Jp"        , "className"   : "dt-center"},
+                    {   "data"                : "Jg"        , "width"       : "3em",         "className" : "dt-center"},
+                    {   "data"                : "Jc"        , "className"   : "dt-center"},               
+                ];
+    
+    TypeColonneDataHead[9] = `
+                    <th></th>
+                    <th>Serveur (Nom) </th>
+                    <th>Application(CINom)</th>
+                    <th>Description</th>
+                    <th>OS</th>
+                    <th>Propriétaire</th>
+                    <th>Groupe</th>
+                    <th>Date création</th>
+                    `;
+    
     
     console.log("TypeColonneNo = "+typeColonneNo);
     if (type == "javascript")
@@ -1024,7 +1071,7 @@ function readyCreateDataTable() {
         processing: true,
         'language':{ 
         	"sProcessing":     "Traitement en cours...",
-			"sSearch":         "<div id='searchLabel' class='bulleHelp' onmouseover='showSearchOption()'><a href='#''><img src='images/black-about-16.png'><span>Saisissez une chaine de caractère que vous voulez rechercher dans les colonnes affichées.<br><div style='font-style: italic;'> Supporte les expressions régulières</div><br>Exemples : <ul><li>vli.{1}res</li><li>.*BDD.*5</li><li>vli[^5]res</li></ul></span></a></div>Rechercher&nbsp; _INPUT_",
+			"sSearch":         "<div id='searchLabel' class='bulleHelp' onmouseover='showSearchOption()'><a href='#''><img src='images/black-about-16.png'><span>Saisissez une chaine de caractère que vous voulez rechercher dans les colonnes affichées.<br><div style='font-style: italic;'> Supporte les expressions régulières</div><br>Exemples : <ul><li>vli.{1}res</li><li>.*BDD.*5</li><li>vli[^5]res</li><li>vli0bdd001 | vwi0bdd001</li><li>serveur jasmin : vlc.* | vwc.*  </li></ul></span></a></div>Rechercher&nbsp; _INPUT_",
 		    "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
 			"sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
 			"sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
@@ -1083,7 +1130,7 @@ function readyCreateDataTable() {
                 messageBottom: null
             }  // fin PRINT
         ], // fin BUTTON
-        initComplete: function () {  
+        initComplete: function () { 
             this.api().columns().every( function () {  
                 var column = this;  
                 var select = $('<select><option value=""></option></select>')  
