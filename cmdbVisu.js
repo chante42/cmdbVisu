@@ -958,7 +958,7 @@ function getDataTableColonneData(type, typeColonneNo) {
                         "width"             : "2%",
                         "defaultContent"    : '<div class ="bulleHelp"><a href="#">_<span> Cliquer sur le \'+\' pour afficher plus d\'infos</span></a></div>'
                     },
-                    {   "data"                : "CM"        , "width"       : "17%"},
+                    {   "data"                : "CM"        , "width"       : "10%"},
                     {   "data"                : "CN"        , "width"       : "20%" },
                     {   "data"                : "Jd"        , "width"       : "30%" },
                     {   "data"                : "Jo"        , "className"   : "dt-center"},
