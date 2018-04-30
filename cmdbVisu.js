@@ -327,6 +327,7 @@ function format( d ) {
     JASMINGroupe        = d.Jg;
     JASMINOs            = d.Jo;
     JASMINDescription   = d.Jd;
+    JASMINExpiration    = d.Je;
     //console.log(d);   
     //console.log(d.Nom);
     //console.log(hostname);
@@ -421,6 +422,15 @@ function format( d ) {
         lienGrapheGroupe    = '<a href="#" onclick="openUrlMetrologie(\''+d.CN.toUpperCase()+'\');return false;">OUI</a>';
         classSupervision    = "normal";
     }   
+    if (JASMINProprietaire == undefined) {
+        JASMINCreation      = "N/A";
+        JASMINProprietaire  = "N/A";
+        JASMINGroupe        = "N/A";
+        JASMINOs            = "N/A";
+        JASMINDescription   = "N/A";
+        JASMINExpiration    = "N/A";
+        classJASMIN         = "pas-d-info";
+    }
     //
     // Cas particulier ou je remplace discovery par des infos VMWare Host pour les serveur qui heberges les hyperviseurs
     //
@@ -529,7 +539,9 @@ function format( d ) {
                     '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Propriétaire</span> : '+JASMINProprietaire+'</td></tr>'+
                     '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Groupe</span> : '+JASMINGroupe+'</td></tr>'+
                     '<tr><td class="'+classJASMIN+'"><span class="titreLigne">OS</span> : '+JASMINOs+'</td></tr>'+
+                    '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Expiration</span> : '+JASMINExpiration+'</td></tr>'+
                     '<tr><td class="'+classJASMIN+'"><span class="titreLigne">Description</span> : '+JASMINDescription+'</td></tr>'+
+
                 '</table>'+
             '</div></td>'+
             '<td width="10%"><div class="infoPlus">'+ 
@@ -953,6 +965,7 @@ function getDataTableColonneData(type, typeColonneNo) {
                     {   "data"                : "Jp"        , "className"   : "dt-center"},
                     {   "data"                : "Jg"        , "width"       : "3em",         "className" : "dt-center"},
                     {   "data"                : "Jc"        , "className"   : "dt-center"},               
+                    {   "data"                : "Je"        , "className"   : "dt-center"},               
                 ];
     
     TypeColonneDataHead[9] = `
@@ -963,7 +976,8 @@ function getDataTableColonneData(type, typeColonneNo) {
                     <th>OS</th>
                     <th>Propriétaire</th>
                     <th>Groupe</th>
-                    <th>Date création</th>
+                    <th>Création</th>
+                    <th>Expiration</th>
                     `;
     
     

@@ -324,7 +324,7 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 		for item, value  in IpamServeur[server].items() :
 			CmdbDataServer[server][item]=str(value)
 
-	# Ajoute info IPAM
+	# Ajoute info JASMIN
 	if server in JasminServeur.keys() :
 		#print "IPAMserveur : "+server
 		for item, value  in JasminServeur[server].items() :
@@ -803,8 +803,9 @@ def generateExcel():
 
 		i=0;
 		data=[]
-		for server in CmdbDataServer.keys() :
 
+		for server in CmdbDataServer.keys() :
+			
 			NomServer = CINom = CIResponsable = CLE_APP =CIImpactantResponsable =""
 			vmCpu = vmMem = vmDisk = vmBanc =vmOs = CICategorie =""
 			allocated = used = storage =  allocated_HDS = used_HDS = storage_HDS = ""
@@ -816,7 +817,8 @@ def generateExcel():
 			ilmtModele = ilmtOs = ilmtIp = ilmtCoeur = ilmtType = ilmtPvu = ilmtNoSerie = ""
 			nlyteTypeMatos =  nlyteNomSite = nlyteNoBaie = nlyteNoU = nlyteNoSerie = ""
 			ipamMac = ipamIp = ipamSwitch = ipamPort = ipamVlan = "" 
-
+			jasminGroupe = jasminProprietaire = jasminDescription = jasminDns = jasminOs = jasminDateCreation = jasminDateExpiration = ""
+						
 			if CmdbDataServer[server].get("CM") != None :
 				NomServer = CmdbDataServer[server]["CM"]
 
@@ -965,7 +967,6 @@ def generateExcel():
 				if Nlyte[server].get(u'Nn') != None :
 					nlyteNoSerie 	= Nlyte[server].get(u'Nn')
 
-			#print "EXCEL : %s " % server
 			#	print 'out EXCELL IpamServeur'
 			if IpamServeur.get(server) != None :
 				#print 'in EXCELL IpamServeur'
@@ -981,7 +982,23 @@ def generateExcel():
 					ipamMac             = IpamServeur[server].get(u'Pm')
 				if IpamServeur[server].get(u'Pi') != None :
 					ipamIp              = IpamServeur[server].get(u'Pi')
-    			
+    	
+			if JasminServeur.get(server) != None :
+				if JasminServeur[server].get(u'Jg') != None :
+					jasminGroupe 			= JasminServeur[server].get(u'Jg')
+				if JasminServeur[server].get(u'Jp') != None :
+					jasminProprietaire 		= JasminServeur[server].get(u'Jp')
+				if JasminServeur[server].get(u'Jd') != None :
+					jasminDescription 		= JasminServeur[server].get(u'Jd')
+				if JasminServeur[server].get(u'Jn') != None :
+					jasminDns 				= JasminServeur[server].get(u'Jn')
+				if JasminServeur[server].get(u'Jo') != None :
+					jasminOs 				= JasminServeur[server].get(u'Jo')
+				if JasminServeur[server].get(u'Jc') != None :
+					jasminDateCreation 		= JasminServeur[server].get(u'Jc')
+				if JasminServeur[server].get(u'Je') != None :
+					jasminDateExpiration 	= JasminServeur[server].get(u'Je')
+
 			data.append([NomServer, CINom, CIResponsable,CLE_APP,CIImpactantResponsable,
 						vmCpu, vmMem, vmDisk, vmBanc, vmOs, CICategorie,
 						allocated,used, storage, allocated_HDS, used_HDS, storage_HDS,
@@ -991,7 +1008,11 @@ def generateExcel():
 						vip, vpx, vserveur, dbaInfo, dbaType, dbaNbInstance, supOk, supInfo,
 						ilmtOs, ilmtIp, ilmtCoeur, ilmtType, ilmtModele, ilmtPvu, ilmtNoSerie,
 						nlyteTypeMatos, nlyteNomSite, nlyteNoBaie, nlyteNoU, nlyteNoSerie,
-						ipamMac, ipamIp, ipamSwitch, ipamPort, ipamVlan])
+						ipamMac, ipamIp, ipamSwitch, ipamPort, ipamVlan,
+						jasminGroupe, jasminProprietaire, jasminDescription, jasminDns, jasminOs, jasminDateCreation,
+					    jasminDateExpiration])
+			
+		# fin boucle 
 
 		options = {
 		           'columns': [{'header': u'Nom serveur',
@@ -1222,9 +1243,43 @@ def generateExcel():
 		                        'header_format' :  column_format,
 		                        'format' : column_format
 		                        }
+		                        ,
+		                        {'header': u'JASMIN Groupe',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'JASMIN Propriétaire',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'JASMIN Description',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'JASMIN Dns',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'JASMIN OS',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'JASMIN Date création',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        },
+		                        {'header': u'JASMIN Date Expiration',
+		                        'header_format' :  column_format,
+		                        'format' : column_format
+		                        }
 		                       ],
 		            'data': data
 		           }
+					
+				
+
+		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
+		worksheetServer.add_table(2,1,len(data) + 2, 1 + 16 +15 + 3 + 2 +2 + 6 + 7 +5 + 7, options)
 
 		# fixe la largeur des colonnes
 		worksheetServer.set_column('B:B', 14)
@@ -1254,9 +1309,10 @@ def generateExcel():
 		worksheetServer.set_column('AF:AF', 13)
 		worksheetServer.set_column('AO:AO', 13)
 		worksheetServer.set_column('AP:AP', 13)
+		worksheetServer.set_column('BI:BI', 28)
+		worksheetServer.set_column('BL:BL', 18)
+		worksheetServer.set_column('BM:BM', 18)
 
-		# Add a table to the worksheet. (ligne, colone, ligne, colonne)
-		worksheetServer.add_table(2,1,len(data) + 2,1 + 16 +15 + 3 + 2 +2 + 6 + 7 +5, options)
 
 	except :
 		print "Exception in user code:"
@@ -1316,6 +1372,8 @@ def generateExcel():
 		#print "\t %s : %s\n" % (file, DateFile[file])
 	# Add a table to the worksheet. (ligne, colone, ligne, colonne)
 	worksheetFichier.add_table(2,1,len(data) + 2, len(data[0]), options)
+
+	workbook.close()
 
 #
 # getCmdbSoap
@@ -2697,9 +2755,7 @@ def encodeJasmin():
 				dns 						= row['DNS Resolution'].encode('utf8')
 				os 							= row['OS'].encode('utf8')
 				dateCreation  				= row['Date de creation'].encode('utf8')
-
-				if description.find ("RS02") > 0 :
-					print server+" : |" + description + "| ---> |" + row['Description'] + '|'
+				dateExpiration 				= row['Date d\'expiration'].encode('utf8')
 
 				if JasminServeur.get(server) == None:	
 					JasminServeur[server] = {
@@ -2708,16 +2764,11 @@ def encodeJasmin():
 						u'Jd' 		: description,
 						u'Jn'		: dns,
 						u'Jo'       : os,
-						u'Jc'       : dateCreation
+						u'Jc'       : dateCreation,
+						u'Je'       : dateExpiration
 					}
 				else :
 					print "le serveur : %s est déjà définie ligne  %s " % server, str(noLigne)
-
-				if description.find ("RS02") > 0 :
-					print "----------------------------------"
-					print server+" : |" + description + "| ---> |" + row['Description'] + '|'
-					pprint (JasminServeur[server])
-
 
 	except IOError as e:
 		print "\nERREUR:\n  Impossible d'ouvrir le fichier : \n\t\t'%s' \n" % filename
