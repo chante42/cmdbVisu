@@ -254,6 +254,16 @@ def insertInfoServerNotInCMDB(server, infoAppli):
 							"CA"	: ""
 						}
 
+	# Ajoute info 3PAR
+	if server in Baie3PAR.keys() :
+		if server.find('ESX104') > -1:
+			print "insertInfoServerNotInCMDB=" + server
+		for item, value  in Baie3PAR[server].items() :
+			if server.find('ESX104') > -1 :
+				print item + "=" + str(value)
+
+			CmdbDataServer[server][item]=str(value)
+
 	# Ajoute info TSM
 	if server in Tsm.keys() :
 		for item, value  in Tsm[server].items() :
@@ -468,9 +478,11 @@ def generateDataTableFile():
 			
 
 			# ecrire les infos de 3PAR
-			#print "|%s|" % server
+			print "|%s|" % server
 			if server in Baie3PAR.keys() :
 				for item, value  in Baie3PAR[server].items() :
+					if server.find("ESX104")> -1 :
+						print "\t"+server+"-->"+item+"="+str(value)
 					fd.write('\t\t\t"'+item+'" : "'+str(value)+'",\n')
 					CmdbDataServer[server][item]=str(value)
 
@@ -1538,7 +1550,7 @@ def encodeJsonDiscoverySoap():
 			line = line.replace("/>", "") # 
 
 			data 		= line.split('~')
-			server 		= data[0].upper().replace('"',"").rstrip()
+			server 		= data[0].upper().replace('"',"").rstrip().replace('.SI2M.TEC','')
 			os 			= data[9].upper().replace('"',"").rstrip()
 			#passage de l'index 10 a 12 le 05/12/2017
 			modele 		= data[12].upper().replace('"',"").rstrip()
@@ -1557,7 +1569,7 @@ def encodeJsonDiscoverySoap():
 
 			if modele == "(Unknown)":
 				modele = data[11].upper().replace('"',"").rstrip()
-			if modele == "":
+			if modele == "":  
 				modele = "inconnue"
 
 			DiscoveryData[server] = {
@@ -1587,35 +1599,47 @@ def dataPath(type):
 	moisStr  = str(time.localtime().tm_mon).zfill(2)
 	anneeStr = str(time.localtime().tm_year)
 
-	rootPathCtrlN1 = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
+
 	if  "cmdb-test" in os.getcwd() :
-		rootPathStatBaies 	="/home/i14sj00/cmdbVisu/cmdb-test/data/"
-		RepGGConfDir		= rootPathStatBaies+"../graphgroupe-conf/"
+		rootPathStatBaies 	= "/var/www/virtu/exportSto/"
+		dataDir                 = "/home/i14sj00/cmdbVisu/cmdb-test/data"
+		RepGGConfDir		= dataDir+"/../graphgroupe-conf/"
+		rootPathCtrlN1          = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
+		exportVirtu             = "/var/www/virtu/exportWindows/"
+	# pour la serveur vlc0inf008
+	elif os.path.exists('/data/cmdbVisu/data/') :
+		rootPathStatBaies 	= "/data/exportStockage3PAR/"
+		dataDir                 = "/data/cmdbVisu/data"
+		RepGGConfDir		= dataDir+"/../graphgroupe-conf/"
+		exportVirtu             = "/data/exportVirtu/"
 	else : 
-		rootPathStatBaies 	="/home/i14sj00/cmdbVisu/data/"  
-		RepGGConfDir		= rootPathStatBaies+"../graphgroupe-conf/"
+		rootPathStatBaies 	= "/var/www/virtu/exportSto/"
+		dataDir                 = "/home/i14sj00/cmdbVisu/data"
+		RepGGConfDir		= dataDir+"/../graphgroupe-conf/"
+		rootPathCtrlN1          = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
+		exportVirtu             = "/var/www/virtu/exportWindows/"
 
 	if  type == "VeeamProd" :
 		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Production.html")
 	elif type ==  "VeeamRecette" :
 			return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde VEEAM/", ".*Rapport-sauvegarde-VEEAM_Recette.html")
 	elif type == "TSMRetention" :
-		return getLastFilesByDate(rootPathStatBaies, "TSM-retention-")
+		return getLastFilesByDate(dataDir, "TSM-retention-")
 	elif type == "TSM" :
 		return getLastFilesByDate(rootPathCtrlN1+anneeStr+"/"+str(mois[time.localtime()[1]-1])+"/Rapport Sauvegarde TSM/", ".*TSM_Controle_Niv1.html")
 	
 	elif type == "T400A" :
-		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_A92")
+		return getLastFilesByDate(rootPathStatBaies, "T400_A92")
 	elif type == "T400B" :
-		return getLastFilesByDate(rootPathStatBaies, "Volume-host T400_B94")
+		return getLastFilesByDate(rootPathStatBaies, "T400_B94")
 	elif type == "V400A" :
-		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_A92")
+		return getLastFilesByDate(rootPathStatBaies, "V400_A92")
 	elif type == "V400B" :
-		return getLastFilesByDate(rootPathStatBaies, "Volume-host V400_B94")
+		return getLastFilesByDate(rootPathStatBaies, "V400_B94")
 	elif type == "9450A" :
-		return getLastFilesByDate(rootPathStatBaies, "Volume-host 9450_A92")
+		return getLastFilesByDate(rootPathStatBaies, "9450_A92")
 	elif type == "9450B" :
-		return getLastFilesByDate(rootPathStatBaies, "Volume-host 9450_B94")
+		return getLastFilesByDate(rootPathStatBaies, "9450_B94")
 	elif type == "HDS-PPROD-A" :
 		return getLastFilesByDate(rootPathStatBaies, "HDS_A92_PPROD")
 	elif type == "HDS-PPROD-B" :
@@ -1625,27 +1649,27 @@ def dataPath(type):
 	elif type == "HDS-PROD-B" :
 		return getLastFilesByDate(rootPathStatBaies, "HDS_B94_PROD")
 	elif type == "VmWare" :
-		return getLastFilesByDate("/var/www/virtu/exportWindows/", "InfraVMware-")
+		return getLastFilesByDate(exportVirtu, "InfraVMware-")
 	elif type == "fileDate":
-		return rootPathStatBaies+ "fileDate.json"
+		return dataDir+ "fileDate.json"
 	elif type == "DataTableFile":
-		return rootPathStatBaies+ "dataTable.json"
+		return dataDir+ "dataTable.json"
 	elif type == "DataTableServerFile":
-		return rootPathStatBaies+ "dataTableServer.json"
+		return dataDir+ "dataTableServer.json"
 	elif type == "DataTableExcel":
-		return rootPathStatBaies+ "cmdbVisu.xlsx"
+		return dataDir+ "cmdbVisu.xlsx"
 	elif type == "Discovery":
-		return rootPathStatBaies+ "discovery-easyvista-20170918.csv"
+		return dataDir+ "discovery-easyvista-20170918.csv"
 	elif type == "ILMT" :
-		return getLastFilesByDate("/var/www/virtu/exportWindows/", "Inventaire_ILMT-")
+		return getLastFilesByDate(exportVirtu, "Inventaire_ILMT-")
 	elif type == "NLYTE" :
-		return getLastFilesByDate("/var/www/virtu/exportWindows/", "NLYTE-")
+		return getLastFilesByDate(exportVirtu, "NLYTE-")
 	elif type == "IPAM" :
-		return getLastFilesByDate("/var/www/virtu/exportWindows/", "export_IPAM_MAC-SW-")
+		return getLastFilesByDate(exportVirtu, "export_IPAM_MAC-SW-")
 	elif type == "JASMIN" :
-		return getLastFilesByDate("/var/www/virtu/exportWindows/", "export-jasmin-")
+		return getLastFilesByDate(exportVirtu, "export-jasmin-")
 	elif type == "GrapheGroupe":
-		return rootPathStatBaies+"../graphgroupe-conf/"
+		return RepGGConfDir
 	else :
 		return "le chemin pour accéder a "+type+" est inconnue"
 
@@ -1755,7 +1779,7 @@ def  encodeJsonTsm():
 #
 def  encodeJson3PAR():
 	"""
-		Lit  les 4 fichiers exportés par les baie 3PAR et les transforme en un HASH "Baie3PAR"
+		Lit  les 6 fichiers exportés par les baie 3PAR et les transforme en un HASH "Baie3PAR"
 		dont la clef est le nom du serveur
 		Attention repose sur des commentaires coté baie
 		La bonne méthode sera de se baser sur le WorldWideName, mais pas dispo dans le cmddb
@@ -1764,92 +1788,100 @@ def  encodeJson3PAR():
 	
 	for baie in ("T400A","T400B","V400A","V400B","9450A","9450B"):
 		filename = dataPath(baie)
-		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par export manuel de l'interface d'admin"  }
+		DateFile[baie]= { u'file' : filename, 'date' :creationDateFile(filename), u'info' : "fichier match nom serveur (champs commentaire) de "+baie+" généré par export automatique le mercredi par le script exportCmdb lancé vwi0mix02"  }
 		
 		print "traitement fichier : %s " % filename
+		ColNameNum = colAllocatedNum = colUseNum = -1
+
 		with open(filename, "r") as fdSrc:
 			i = 0;
 			for line in fdSrc.readlines():
 				i += 1
 				line = line.rstrip()
 
-				# saute les 3 premeire ligne
-				# Provisioning : Storage Systems : B94_T400 : Virtual Volumes - Virtual Volumes
-				#
-				# Name,Set,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
-				#
-				#V400A : Name,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
-				#T400A : Name,Set,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
-				#V400B : Name,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
-				#T400B : Name,Set,State,Virtual Size (GiB),Reserved User Size (GiB),Exported To,RC Group
-				#9450A
-				#9450B
-
 				#Parse les entête pour connaitre la position des colonnes
 				if line.startswith("Name,") :
 					col = line.split(",")
+					ColNameNum = colAllocatedNum = colUseNum = -1
 
-					ColNameNum = colAllocatedNum = colUseNum =0
 					for j, e in enumerate(col):
-						if e == 'Name':
+						if e == 'Exported To':
 							ColNameNum 			= j
-						elif e == 'Virtual Size (GiB)':
+						elif e == 'Virtual Size (MB)':
 							colAllocatedNum 	= j
-						elif e == 'Reserved User Size (GiB)' :
+						elif e == 'Reserved User Size (MB)' :
 							colUseNum 			= j
 
-				if i > 4 and  not(
-								line.startswith(".srdata") or
-								line.startswith(".admin") or
-								line.startswith("admin") or
-								line.startswith("-----") or
-								line.startswith(",") or
-								line == ""):
+					#print "encodeJSON3PAR : no col export to (server) : "+str(ColNameNum)
+				else :
 					col = line.split(",")
 					if len(col) >= 4 :
-						# ne garde que le nom du serveur (pas le  pt de montage C, D, Data, ...)
-						# Mais garde l'info replication : "repli" en fin de nom
-						a = col[ColNameNum].find('_')
-						if a == -1 :
-							a = len(col[ColNameNum])
-						server = col[ColNameNum][0:a].upper()
+						servers= []
+						#
+					        #Pour les WINDOWS ca change pas
+						#Pour les LINUX ca change pas
+					        #Pour les AIX tu vires tous les underscore
+					        #Ex. AIX_IFC_P -> AIXIFCP
+					        #Pour les ESX tu vires tous les undescore et tous ce qu’il y a après le dernier chiffre
+					        #Ex. ESX_80_R_XENAPP -> ESX80
+						server = ""
+						server = col[ColNameNum].upper()
+						if server.find('AIX') > -1 :
+							server = server.replace("_","")
+						server = server.replace("NEO_","")
+						# si c'est un hostset
+						# set:ESX_R_A92(ESX_104_R;ESX_86_R;ESX_60_R;ESX_90_R;ESX_92_R;ESX_50_R;ESX_102_R;ESX_84_R)
+						if server.find('SET:') > -1 :
+							#print "\n"+line
+							#print '3PAR : SET AV ='+server
+							deb = server.find("(")+1
+							fin = server.find(")")
+							server=server[deb:fin]
+							
+							#print '3PAR : SET AV ='+server
+							serversTmp = server.split(';')
+							# retraitement pour les ESX
+							for serverTmp in serversTmp:
+								serverN = serverTmp.replace("ESX_", "")
+								a       = serverN.find('_')
+								serverTmp  = "ESX"+serverN[0:a]
+								#print '3PAR : SET serverTmp ='+serverTmp
+								servers.append(serverTmp)
+						else : 
+							if server.find('ESX') > -1 :
+								serverN= server.replace("ESX_", "")
+								a = serverN.find('_')
+								server = "ESX"+serverN[0:a]
 
-						# je retire  l'unité et les 3 chiffre avant
-						a = col[colAllocatedNum].find(' GiB') -3
+							servers.append(server)
+
+
+
+
+					        # je retire  l'unité et les 3 chiffre avant
+						a = col[colAllocatedNum].find(' MB') -3
 						if a == -1 :
 							a = len(col[colAllocatedNum])
 						allocated = col[colAllocatedNum][0:a]
 						allocated = unicode(allocated, errors='ignore')
 						allocatedVal = int(allocated)
-
-						# je retire  l'unité et les 3 chiffre avant
-						a = col[colUseNum].find(' GiB') - 3
+					        # je retire  l'unité et les 3 chiffre avant
+						a = col[colUseNum].find(' MB') - 3
 						if a == -1 :
 							a = len(col[colUseNum])
 						used = col[colUseNum][0:a]
 						used = unicode(used, errors='ignore')
 						usedVal = int(used)
 
-						if server in Baie3PAR:
-							Baie3PAR[server]["storage"] 	= Baie3PAR[server]["storage"] +','+baie
-							Baie3PAR[server]["allocated"] 	= Baie3PAR[server]["allocated"] + allocatedVal
-							Baie3PAR[server]["used"] 		= Baie3PAR[server]["used"] + usedVal
-
-						else :
-							Baie3PAR[server] = {u"storage" : baie, u"allocated" : allocatedVal, u"used" : usedVal }
-
-	#pprint(Baie3PAR)
-	#pprint(Baie3PAR["AIXEDITP"]) 
-	#print
-	#pprint(Baie3PAR["AIXEDITR"]) 
-
-	#print
-	#pprint(Baie3PAR["AIXIFCP"]) 	
-
-	#print
-	#pprint(Baie3PAR["AIXDADSAR1"]) 
-	#print
-	#ecriture de la structure dans un fichier json
+						for server in servers :
+							if server in Baie3PAR:
+									       Baie3PAR[server]["storage"] 	= Baie3PAR[server]["storage"] +','+baie
+									       Baie3PAR[server]["allocated"] 	= Baie3PAR[server]["allocated"] + allocatedVal
+									       Baie3PAR[server]["used"] 	= Baie3PAR[server]["used"] + usedVal
+							else :
+									       Baie3PAR[server] = {u"storage" : baie, u"allocated" : allocatedVal, u"used" : usedVal }
+						
+							print "serveur 3PAR='"+server+"'"+str(Baie3PAR[server])
 	
 #
 # encodeJsonHDS
@@ -2102,6 +2134,7 @@ def encodeJsonDiscoveryFile():
 				colNum = colNum + 1
 			#print DiscoveryData[u"Identifiant PC"]+'|'+DiscoveryData[u"RAM"]+'|'+DiscoveryData[u"PROCESSOR_COUNT"]+'|'+DiscoveryData[u"Processeur"]+'|'+DiscoveryData[u"Fréquence"]
 			server = tmpDiscoveryData[u"Identifiant PC"].upper()
+			server = server.replace(' ','')
 			server = server.replace('.SI2M.TEC','')
 			DiscoveryData[server] = {u'RAM' : tmpDiscoveryData[u"RAM"], u'PROCESSOR_COUNT' : tmpDiscoveryData[ u'PROCESSOR_COUNT'], u'Processeur':  tmpDiscoveryData[u'Processeur'], u'Frequence' : tmpDiscoveryData[u'Fréquence']}
 		i = i +  1
