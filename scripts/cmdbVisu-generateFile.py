@@ -1602,19 +1602,19 @@ def dataPath(type):
 
 	if  "cmdb-test" in os.getcwd() :
 		rootPathStatBaies 	= "/var/www/virtu/exportSto/"
-		dataDir                 = "/home/i14sj00/cmdbVisu/cmdb-test/data"
+		dataDir                 = "/home/i14sj00/cmdbVisu/cmdb-test/data/"
 		RepGGConfDir		= dataDir+"/../graphgroupe-conf/"
 		rootPathCtrlN1          = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
 		exportVirtu             = "/var/www/virtu/exportWindows/"
 	# pour la serveur vlc0inf008
 	elif os.path.exists('/data/cmdbVisu/data/') :
 		rootPathStatBaies 	= "/data/exportStockage3PAR/"
-		dataDir                 = "/data/cmdbVisu/data"
+		dataDir                 = "/data/cmdbVisu/data/"
 		RepGGConfDir		= dataDir+"/../graphgroupe-conf/"
 		exportVirtu             = "/data/exportVirtu/"
 	else : 
 		rootPathStatBaies 	= "/var/www/virtu/exportSto/"
-		dataDir                 = "/home/i14sj00/cmdbVisu/data"
+		dataDir                 = "/home/i14sj00/cmdbVisu/data/"
 		RepGGConfDir		= dataDir+"/../graphgroupe-conf/"
 		rootPathCtrlN1          = "/var/www/dashboardstock/capacity_TSM/check_niv1/"
 		exportVirtu             = "/var/www/virtu/exportWindows/"
@@ -2820,6 +2820,7 @@ def encodeJasmin():
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
 
 #encodeJasmin()
 #pprint(JasminServeur)
