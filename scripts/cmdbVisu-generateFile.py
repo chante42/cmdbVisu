@@ -84,27 +84,27 @@ JasminServeur		= {}
 # si VPX1P est en A92 VPX1S est en B94 , reciproquement
 #
 netscalersList = {
-			"vpx1p"  : { "dnsname" : "vpx1p.si2m.tec",  "description" : "Load balancer pour la prod en A92" },
-			"vpx2p"  : { "dnsname" : "vpx2p.si2m.tec",  "description" : "Load balancer pour la preprod en A92" },
-			"vpx3p"  : { "dnsname" : "vpx3p.si2m.tec",  "description" : "Load balancer pour la recette en A92" },
-			"vpx4p"  : { "dnsname" : "vpx4p.si2m.tec",  "description" : "Load balancer de test pour le réseau en A92" },
-			"vpx5p"  : { "dnsname" : "vpx5p.si2m.tec",  "description" : "Load balancer pour la perf en A92" },
+			"vpx1p"  : { "dnsname" : "xxx1.domain.tec",  "description" : "Load balancer pour la prod en A92" },
+			"vpx2p"  : { "dnsname" : "xxx2.domain.tec",  "description" : "Load balancer pour la preprod en A92" },
+			"vpx3p"  : { "dnsname" : "xxx3.domain.tec",  "description" : "Load balancer pour la recette en A92" },
+			"vpx4p"  : { "dnsname" : "xxx4.domain.tec",  "description" : "Load balancer de test pour le réseau en A92" },
+			"vpx5p"  : { "dnsname" : "xxx5.domain.tec",  "description" : "Load balancer pour la perf en A92" },
 
-		  	"vpx6p"  : { "dnsname" : "vpx6p.si2m.tec",  "description" : "Load balancer pour la prod en B94" },
-		  	"vpx7p"  : { "dnsname" : "vpx7p.si2m.tec",  "description" : "Load balancer pour la preprod en B94" },
-		  	"vpx8p"  : { "dnsname" : "vpx8p.si2m.tec",  "description" : "Load balancer pour la recette en B94" },
-		  	"vpx9p"  : { "dnsname" : "vpx9p.si2m.tec",  "description" : "Load balancer de test pour le réseau en B94" },
+		  	"vpx6p"  : { "dnsname" : "xxx1.domain.tec",  "description" : "Load balancer pour la prod en B94" },
+		  	"vpx7p"  : { "dnsname" : "xxx1.domain.tec",  "description" : "Load balancer pour la preprod en B94" },
+		  	"vpx8p"  : { "dnsname" : "xxx1.domain.tec",  "description" : "Load balancer pour la recette en B94" },
+		  	"vpx9p"  : { "dnsname" : "xxx1.domain.tec",  "description" : "Load balancer de test pour le réseau en B94" },
 
-		  	"zvpx1p" : { "dnsname" : "zvpx1p.si2m.tec", "description" : "Load balancer pour la prod DMZ en A92" },
-		  	"zvpx2p" : { "dnsname" : "zvpx2p.si2m.tec", "description" : "Load balancer pour la preprod DMZ en A92" },
-		  	"zvpx3p" : { "dnsname" : "zvpx3p.si2m.tec", "description" : "Load balancer pour la recette DMZ en A92" },
-		  	"zvpx4p" : { "dnsname" : "zvpx4p.si2m.tec", "description" : "Load balancer pour le test reseau DMZ en A92" },
-		  	"zvpx5p" : { "dnsname" : "zvpx5p.si2m.tec", "description" : "Load balancer pour la perf DMZ en A92" },
+		  	"zvpx1p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour la prod DMZ en A92" },
+		  	"zvpx2p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour la preprod DMZ en A92" },
+		  	"zvpx3p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour la recette DMZ en A92" },
+		  	"zvpx4p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour le test reseau DMZ en A92" },
+		  	"zvpx5p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour la perf DMZ en A92" },
 		  	
-		  	"zvpx6p" : { "dnsname" : "zvpx6p.si2m.tec", "description" : "Load balancer pour la prod DMZ en A92" },
-		  	"zvpx7p" : { "dnsname" : "zvpx7p.si2m.tec", "description" : "Load balancer pour la preprod DMZ en A92" },
-		  	"zvpx8p" : { "dnsname" : "zvpx8p.si2m.tec", "description" : "Load balancer pour le recette reseau DMZ en A92" },
-		  	"zvpx9p" : { "dnsname" : "zvpx9p.si2m.tec", "description" : "Load balancer pour le test DMZ en A92"}
+		  	"zvpx6p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour la prod DMZ en A92" },
+		  	"zvpx7p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour la preprod DMZ en A92" },
+		  	"zvpx8p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour le recette reseau DMZ en A92" },
+		  	"zvpx9p" : { "dnsname" : "xxx1.domain.tec", "description" : "Load balancer pour le test DMZ en A92"}
 		  }
 
 EnteteConfData = u"""
@@ -2459,7 +2459,7 @@ def writeGraphGroupeConfSpecifique() :
 						fd.write('\t\t,{"groupeNom"         	: "'+service+'",\n')     
 						fd.write('\t\t"groupeTitre" 			: "'+cluster+' : '+service+'",\n')
 						fd.write('\t\t"groupeDescription" 	    : "'+'Application : ESX-'+cluster+'<br>Service :'+service+u'<br>Groupe Généré Par CmdbVisu le '+datetime.datetime.now().strftime('%d-%m-%Y') +'",\n')
-						fd.write('\t\t"groupeImageURL"          : "'+'http://supervision.si2m.tec/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&start=%%varDebut%%-%%echelle%%&end=%%varDebut%%&hostname=%%server%%&service='+service+'",\n')
+						fd.write('\t\t"groupeImageURL"          : "'+'http://supervisionxxx.domain.org/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&start=%%varDebut%%-%%echelle%%&end=%%varDebut%%&hostname=%%server%%&service='+service+'",\n')
 						
 						fd.write('\t\t"groupeVariable"          : {"varDebut" : "now()"},\n')					
 						#gestion des echelle
@@ -2478,7 +2478,7 @@ def writeGraphGroupeConfSpecifique() :
 						for server in EsxCluster[cluster].split(','):
 							#print "\t\t\t: "+server
 							fd.write('\t\t\t\t'+virgule+'{"nom" : "'+ server+'" , "server" : "'+server+'"')
-							fd.write('\t\t\t\t, "clickURL" :"http://supervision.si2m.tec/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id='+server+'"}\n')
+							fd.write('\t\t\t\t, "clickURL" :"http://supervisionxxx.domain.org/centreon/main.php?p=204&autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&mode=0&svc_id='+server+'"}\n')
 							virgule =','
 						
 						fd.write('\t\t\t]\n\t\t}\n')
@@ -2780,7 +2780,7 @@ def encodeJasmin():
 			
 			for row in reader:
 				
-				server 						= row['VM Name'].encode('utf8').upper().replace(".SI2M.TEC", "").replace(".SI2M", "")
+				server 						= row['VM Name'].encode('utf8').upper().replace(".XXX.TEC", "").replace(".XXX", "")
 				groupe 						= row['Groupe d\'activit?'].encode('utf8')
 				proprietaire 	 			= row['Proprietaire'].encode('utf8')
 				#On ne peux garder qu'un certain nombre de caractere sinon datatable bug a la lecture du fichier json
