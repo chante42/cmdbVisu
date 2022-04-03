@@ -31,8 +31,8 @@ traceback_template = '''Traceback (most recent call last):
 %(type)s: %(message)s\n''' # Skipping the "actual line" item
 
 
-username = "S0E901"
-password = "3Y7P7H8B"
+username = "xxxxxxx"
+password = "xxxxxxx"
 
 Netscaler 	= {}
 
