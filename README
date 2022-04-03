@@ -8,7 +8,7 @@ TD2 : Faire en sorte que le changement de vue ne nessecite pas le reload de la p
       cd Doc DataTable
 
 TD3 : faire un lien directement sur une image de centreon par GrapheGroupe par exemple : 
-http://supervision.xxx.org/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=cmdbVisu&token=v6DjNeLAM&timerange=-7d&hostname=aixdadswp1&service=CPU_AIX
+http://supervision.xxx.org/centreon/include/views/graphs/generateGraphs/generateImage.php?autologin=1&useralias=usercentre&token=tokenCentre&timerange=-7d&hostname=servername&service=CPU_AIX
 
 TD4 : Ci-dessous la requête pour afficher la liste des services en fonction du nom de "host"
 SELECT service.service_description FROM (host INNER JOIN host_service_relation ON host.host_id = host_service_relation.host_host_id) INNER JOIN service ON host_service_relation.service_service_id = service.service_id WHERE (((host.host_name)="host"));
